@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/percy/percy-nodejs.git"
+    "url": "https://github.com/percy/percy-js.git"
   },
   "author": "Perceptual Inc.",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/percy/percy-nodejs/issues"
+    "url": "https://github.com/percy/percy-js/issues"
   },
-  "homepage": "https://github.com/percy/percy-nodejs"
+  "homepage": "https://github.com/percy/percy-js"
 }
