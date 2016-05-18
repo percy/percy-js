@@ -1,79 +1,62 @@
 let path = require('path');
 let assert = require('assert');
 let PercyClient = require(path.join(__dirname, '..', 'index'));
-let fetchMock = require('fetch-mock');
+let nock = require('nock');
+
 
 describe('PercyClient', function() {
   let percyClient;
 
   beforeEach(function() {
     percyClient = new PercyClient('test-token');
-
-    // Inject a new fetch dependency that can mock HTTP requests.
-    percyClient._fetch = fetchMock.fetchMock;
-  });
-  afterEach(function() {
-    fetchMock.restore();
+    nock.disableNetConnect();
   });
 
-  describe('_http_get', function() {
+  describe('_httpGet', function() {
     it('sends a GET request', function(done) {
-      let responseMock = function(url, options) {
+      let responseMock = function(url, requestBody) {
         // Verify some request states.
-        assert.equal(options.headers['Content-Type'], 'application/vnd.api+json');
-        assert.equal(options.headers['Authentication'], `Token token=test-token`);
-        return {
-          status: 200,
-          body: {success: true},
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        };
+        assert.equal(this.req.headers['content-type'], 'application/vnd.api+json');
+        assert.equal(this.req.headers['authentication'], 'Token token=test-token');
+
+        let responseBody = {success: true};
+        let responseHeaders = {'Content-Type': 'application/json'};
+        return [200, responseBody, {headers: responseHeaders}];
       };
-      fetchMock.mock('https://localhost/foo?bar', 'GET', responseMock);
+      nock('https://localhost').get('/foo?bar').reply(200, responseMock);
 
-      let request = percyClient._http_get('https://localhost/foo?bar');
-      request.then((response) => {
-        assert.equal(response.status, 200);
-        assert.equal(response.headers.get('Content-Type'), 'application/json');
-
-        response.json().then((data) => {
-          assert.deepEqual(data, {success: true});
-          done();
-        }).catch((err) => { done(err); });
-      }).catch((err) => { done(err); });;
+      let request = percyClient._httpGet('https://localhost/foo?bar');
+      request.then(function(response) {
+        assert.equal(response.statusCode, 200);
+        assert.equal(response.headers['content-type'], 'application/json');
+        assert.deepEqual(response.body, {success: true});
+        done();
+      }).catch((err) => { done(err); });
     });
   });
-  describe('_http_post', function() {
+  describe('_httpPost', function() {
     it('sends a POST request', function(done) {
       let requestData = {foo: 123};
 
-      let responseMock = function(url, options) {
+      let responseMock = function(url, requestBody) {
         // Verify some request states.
-        assert.equal(options.headers['Content-Type'], 'application/vnd.api+json');
-        assert.equal(options.headers['Authentication'], `Token token=test-token`);
-        assert.equal(options.body, JSON.stringify(requestData));
-        return {
-          status: 201,
-          body: {success: true},
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        };
+        assert.equal(this.req.headers['content-type'], 'application/vnd.api+json');
+        assert.equal(this.req.headers['authentication'], `Token token=test-token`);
+        assert.equal(requestBody, JSON.stringify(requestData));
+
+        let responseBody = {success: true};
+        let responseHeaders = {'Content-Type': 'application/json'};
+        return [201, responseBody, {headers: responseHeaders}];
       };
-      fetchMock.mock('https://localhost/foo', 'POST', responseMock);
+      nock('https://localhost').post('/foo').reply(201, responseMock);
 
-      let request = percyClient._http_post('https://localhost/foo', requestData);
-
+      let request = percyClient._httpPost('https://localhost/foo', requestData);
       request.then((response) => {
-        assert.equal(response.status, 201);
-        assert.equal(response.headers.get('Content-Type'), 'application/json');
-
-        response.json().then((json) => {
-          assert.deepEqual(json, {success: true});
-          done();
-        }).catch((err) => { done(err); });
-      }).catch((err) => { done(err); });;
+        assert.equal(response.statusCode, 201);
+        assert.equal(response.headers['content-type'], 'application/json');
+        assert.deepEqual(response.body, {success: true});
+        done();
+      }).catch((err) => { done(err); });
     });
   });
   describe('token', function() {
@@ -82,20 +65,16 @@ describe('PercyClient', function() {
     });
   });
   describe('createBuild', function() {
-    it('returns build data', function() {
-      let responseData = {
-        status: 201,
-        body: {foo: 123},
-      };
-      fetchMock.mock('https://percy.io/api/v1/repos/foo/bar/builds/', 'POST', responseData);
+    it('returns build data', function(done) {
+      let responseData = {foo: 123};
+      nock('https://percy.io').post('/api/v1/repos/foo/bar/builds/').reply(201, responseData);
 
       let request = percyClient.createBuild('foo/bar');
-      return request.then((response) => {
-        assert.equal(response.status, 201);
-        return response.json();
-      }).then((data) => {
-        assert.deepEqual(data, {foo: 123});
-      });
+      request.then((response) => {
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {foo: 123});
+        done();
+      }).catch((err) => { done(err); });
     });
   });
 });

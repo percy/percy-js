@@ -1,34 +1,48 @@
+const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
+const USER_AGENT = 'percy-js/1.0';
+
 class PercyClient {
   constructor(token) {
     this._token = token;
     this.apiUrl = 'https://percy.io/api/v1';
 
-    // Instead of a global for fetchMock, allow this dependency to be manually injected in tests.
-    this._fetch = require('node-fetch');
+    // Instead of a global, allow this dependency to be manually injected in tests.
+    this._httpClient = require('request-promise');
+  }
+
+  _httpGet(uri) {
+    let options = {
+      method: 'GET',
+      uri: uri,
+      headers: {
+        'Content-Type': JSON_API_CONTENT_TYPE,
+        'Authentication': `Token token=${this._token}`,
+        'User-Agent': USER_AGENT,
+      },
+      json: true,
+      resolveWithFullResponse: true,
+    };
+    return this._httpClient(uri, options);
+  }
+
+  _httpPost(uri, data) {
+    let options = {
+      method: 'POST',
+      uri: uri,
+      body: data,
+      headers: {
+        'Content-Type': JSON_API_CONTENT_TYPE,
+        'Authentication': `Token token=${this._token}`,
+        'User-Agent': USER_AGENT,
+      },
+      json: true,
+      resolveWithFullResponse: true,
+    };
+    return this._httpClient(uri, options);
   }
 
   get token() {
     return this._token;
-  }
-
-  _http_get(url) {
-    return this._fetch(url, {
-      headers: {
-        'Content-Type': 'application/vnd.api+json',
-        'Authentication': `Token token=${this._token}`,
-      }
-    });
-  }
-
-  _http_post(url, data) {
-    return this._fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/vnd.api+json',
-        'Authentication': `Token token=${this._token}`,
-      }
-    });
   }
 
   createBuild(repo) {
@@ -40,7 +54,7 @@ class PercyClient {
         }
       }
     };
-    return this._http_post(`${this.apiUrl}/repos/${repo}/builds/`, data);
+    return this._httpPost(`${this.apiUrl}/repos/${repo}/builds/`, data);
   }
 }
 
