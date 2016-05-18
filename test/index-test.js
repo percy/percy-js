@@ -18,17 +18,14 @@ describe('PercyClient', function() {
         // Verify some request states.
         assert.equal(this.req.headers['content-type'], 'application/vnd.api+json');
         assert.equal(this.req.headers['authentication'], 'Token token=test-token');
-
         let responseBody = {success: true};
-        let responseHeaders = {'Content-Type': 'application/json'};
-        return [200, responseBody, {headers: responseHeaders}];
+        return [200, responseBody];
       };
       nock('https://localhost').get('/foo?bar').reply(200, responseMock);
 
       let request = percyClient._httpGet('https://localhost/foo?bar');
       request.then(function(response) {
         assert.equal(response.statusCode, 200);
-        assert.equal(response.headers['content-type'], 'application/json');
         assert.deepEqual(response.body, {success: true});
         done();
       }).catch((err) => { done(err); });
@@ -43,17 +40,14 @@ describe('PercyClient', function() {
         assert.equal(this.req.headers['content-type'], 'application/vnd.api+json');
         assert.equal(this.req.headers['authentication'], `Token token=test-token`);
         assert.equal(requestBody, JSON.stringify(requestData));
-
         let responseBody = {success: true};
-        let responseHeaders = {'Content-Type': 'application/json'};
-        return [201, responseBody, {headers: responseHeaders}];
+        return [201, responseBody];
       };
       nock('https://localhost').post('/foo').reply(201, responseMock);
 
       let request = percyClient._httpPost('https://localhost/foo', requestData);
       request.then((response) => {
         assert.equal(response.statusCode, 201);
-        assert.equal(response.headers['content-type'], 'application/json');
         assert.deepEqual(response.body, {success: true});
         done();
       }).catch((err) => { done(err); });
