@@ -46,6 +46,7 @@ class PercyClient {
   }
 
   createBuild(repo) {
+    debugger
     let data = {
       data: {
         type: 'builds',
