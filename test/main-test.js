@@ -1,6 +1,6 @@
 let path = require('path');
 let assert = require('assert');
-let PercyClient = require(path.join(__dirname, '..', 'index'));
+let PercyClient = require(path.join(__dirname, '..', 'main'));
 let nock = require('nock');
 
 
