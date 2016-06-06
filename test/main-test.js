@@ -11,6 +11,9 @@ describe('PercyClient', function() {
     percyClient = new PercyClient({token: 'test-token'});
     nock.disableNetConnect();
   });
+  afterEach(function() {
+    nock.cleanAll();
+  });
 
   describe('_httpGet', function() {
     it('sends a GET request', function(done) {
@@ -66,6 +69,43 @@ describe('PercyClient', function() {
       request.then((response) => {
         assert.equal(response.statusCode, 201);
         assert.deepEqual(response.body, {foo: 123});
+        done();
+      }).catch((err) => { done(err); });
+    });
+  });
+  describe('createSnapshot', function() {
+    it('creates a snapshot', function(done) {
+      let expectedRequestData = {
+        'data': {
+          'type': 'snapshots',
+          'attributes': {
+            'name': 'foo',
+            'enable-javascript': true,
+            'widths': [1000],
+          },
+          'relationships': {
+            'resources': {
+              'data': []
+            }
+          }
+        }
+      };
+
+      let responseMock = function(url, requestBody) {
+        // Verify some request states.
+        assert.equal(requestBody, JSON.stringify(expectedRequestData));
+        let responseBody = {success: true};
+        return [201, responseBody];
+      };
+      nock('https://percy.io').post('/api/v1/builds/123/snapshots/').reply(201, responseMock);
+
+      let options = {name: 'foo', enableJavaScript: true, widths: [1000]}
+      let resources = [];
+      let request = percyClient.createSnapshot(123, resources, options);
+      request.then((response) => {
+        assert.equal(response.statusCode, 201);
+        // This is not the actual API response, we just mocked it above.
+        assert.deepEqual(response.body, {success: true});
         done();
       }).catch((err) => { done(err); });
     });

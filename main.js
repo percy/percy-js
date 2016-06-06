@@ -43,14 +43,34 @@ class PercyClient {
 
   createBuild(repo) {
     let data = {
-      data: {
-        type: 'builds',
-        attributes: {
-          branch: 'master',
+      'data': {
+        'type': 'builds',
+        'attributes': {
+          'branch': 'master',
         }
       }
     };
     return this._httpPost(`${this.apiUrl}/repos/${repo}/builds/`, data);
+  }
+
+  createSnapshot(buildId, resources, options) {
+    options = options || {};
+    let data = {
+      'data': {
+        'type': 'snapshots',
+        'attributes': {
+          'name': options.name,
+          'enable-javascript': options.enableJavaScript,
+          'widths': options.widths,
+        },
+        'relationships': {
+          'resources': {
+            'data': [],
+          },
+        },
+      }
+    };
+    return this._httpPost(`${this.apiUrl}/builds/${buildId}/snapshots/`, data);
   }
 
   finalizeBuild(buildId) {
