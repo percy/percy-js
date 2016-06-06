@@ -16,7 +16,6 @@ class PercyClient {
       method: 'GET',
       uri: uri,
       headers: {
-        'Content-Type': JSON_API_CONTENT_TYPE,
         'Authorization': `Token token=${this.token}`,
         'User-Agent': USER_AGENT,
       },

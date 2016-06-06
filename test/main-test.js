@@ -16,7 +16,6 @@ describe('PercyClient', function() {
     it('sends a GET request', function(done) {
       let responseMock = function(url, requestBody) {
         // Verify some request states.
-        assert.equal(this.req.headers['content-type'], 'application/vnd.api+json');
         assert.equal(this.req.headers['authorization'], 'Token token=test-token');
         let responseBody = {success: true};
         return [200, responseBody];
