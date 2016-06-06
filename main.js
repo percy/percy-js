@@ -52,6 +52,10 @@ class PercyClient {
     };
     return this._httpPost(`${this.apiUrl}/repos/${repo}/builds/`, data);
   }
+
+  finalizeBuild(buildId) {
+    return this._httpPost(`${this.apiUrl}/builds/${buildId}/finalize`, {});
+  }
 }
 
 module.exports = PercyClient;

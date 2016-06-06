@@ -70,4 +70,17 @@ describe('PercyClient', function() {
       }).catch((err) => { done(err); });
     });
   });
+  describe('finalizeBuild', function() {
+    it('finalizes the build', function(done) {
+      let responseData = {success: true};
+      nock('https://percy.io').post('/api/v1/builds/123/finalize').reply(201, responseData);
+
+      let request = percyClient.finalizeBuild(123);
+      request.then((response) => {
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {success: true});
+        done();
+      }).catch((err) => { done(err); });
+    });
+  });
 });
