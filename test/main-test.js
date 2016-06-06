@@ -73,6 +73,27 @@ describe('PercyClient', function() {
       }).catch((err) => { done(err); });
     });
   });
+  describe('makeResource', function() {
+    it('returns a Resource object that can be serialized', function() {
+      let resource = percyClient.makeResource({
+        resourceUrl: '/foo',
+        isRoot: true,
+        mimetype: 'text/plain',
+        sha: Array(64).join('a'),
+      });
+      let expected = {
+        'type': 'resources',
+        'id': Array(64).join('a'),
+        'attributes': {
+          'resource-url': '/foo',
+          'mimetype': 'text/plain',
+          'is-root': true,
+        },
+      };
+
+      assert.deepEqual(resource.serialize(), expected);
+    });
+  });
   describe('createSnapshot', function() {
     it('creates a snapshot', function(done) {
       let expectedRequestData = {
@@ -85,7 +106,16 @@ describe('PercyClient', function() {
           },
           'relationships': {
             'resources': {
-              'data': []
+              'data': [
+                {
+                  'type': 'resources',
+                  'id': Array(64).join('a'),
+                  'attributes': {
+                    'resource-url': '/foo',
+                    'is-root': true,
+                  },
+                }
+              ]
             }
           }
         }
@@ -100,7 +130,12 @@ describe('PercyClient', function() {
       nock('https://percy.io').post('/api/v1/builds/123/snapshots/').reply(201, responseMock);
 
       let options = {name: 'foo', enableJavaScript: true, widths: [1000]}
-      let resources = [];
+      let resource = percyClient.makeResource({
+        resourceUrl: '/foo',
+        sha: Array(64).join('a'),
+        isRoot: true,
+      });
+      let resources = [resource];
       let request = percyClient.createSnapshot(123, resources, options);
       request.then((response) => {
         assert.equal(response.statusCode, 201);
