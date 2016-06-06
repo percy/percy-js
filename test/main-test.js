@@ -8,7 +8,7 @@ describe('PercyClient', function() {
   let percyClient;
 
   beforeEach(function() {
-    percyClient = new PercyClient('test-token');
+    percyClient = new PercyClient({token: 'test-token'});
     nock.disableNetConnect();
   });
 
@@ -17,7 +17,7 @@ describe('PercyClient', function() {
       let responseMock = function(url, requestBody) {
         // Verify some request states.
         assert.equal(this.req.headers['content-type'], 'application/vnd.api+json');
-        assert.equal(this.req.headers['authentication'], 'Token token=test-token');
+        assert.equal(this.req.headers['authorization'], 'Token token=test-token');
         let responseBody = {success: true};
         return [200, responseBody];
       };
@@ -38,7 +38,7 @@ describe('PercyClient', function() {
       let responseMock = function(url, requestBody) {
         // Verify some request states.
         assert.equal(this.req.headers['content-type'], 'application/vnd.api+json');
-        assert.equal(this.req.headers['authentication'], `Token token=test-token`);
+        assert.equal(this.req.headers['authorization'], `Token token=test-token`);
         assert.equal(requestBody, JSON.stringify(requestData));
         let responseBody = {success: true};
         return [201, responseBody];

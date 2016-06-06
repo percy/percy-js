@@ -2,9 +2,10 @@ const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const USER_AGENT = 'percy-js/1.0';
 
 class PercyClient {
-  constructor(token) {
-    this._token = token;
-    this.apiUrl = 'https://percy.io/api/v1';
+  constructor(options) {
+    options = options || {};
+    this.token = options.token;
+    this.apiUrl = options.apiUrl || 'https://percy.io/api/v1';
 
     // Instead of a global, allow this dependency to be manually injected in tests.
     this._httpClient = require('request-promise');
@@ -16,7 +17,7 @@ class PercyClient {
       uri: uri,
       headers: {
         'Content-Type': JSON_API_CONTENT_TYPE,
-        'Authentication': `Token token=${this._token}`,
+        'Authorization': `Token token=${this.token}`,
         'User-Agent': USER_AGENT,
       },
       json: true,
@@ -32,7 +33,7 @@ class PercyClient {
       body: data,
       headers: {
         'Content-Type': JSON_API_CONTENT_TYPE,
-        'Authentication': `Token token=${this._token}`,
+        'Authorization': `Token token=${this.token}`,
         'User-Agent': USER_AGENT,
       },
       json: true,
@@ -41,12 +42,7 @@ class PercyClient {
     return this._httpClient(uri, options);
   }
 
-  get token() {
-    return this._token;
-  }
-
   createBuild(repo) {
-    debugger
     let data = {
       data: {
         type: 'builds',
