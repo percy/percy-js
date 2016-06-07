@@ -121,6 +121,10 @@ class PercyClient {
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/snapshots/`, data);
   }
 
+  finalizeSnapshot(snapshotId) {
+    return this._httpPost(`${this.apiUrl}/snapshots/${snapshotId}/finalize`, {});
+  }
+
   finalizeBuild(buildId) {
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/finalize`, {});
   }

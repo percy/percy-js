@@ -206,6 +206,19 @@ describe('PercyClient', function() {
       }).catch((err) => { done(err); });
     });
   });
+  describe('finalizeSnapshot', function() {
+    it('finalizes the snapshot', function(done) {
+      let responseData = {success: true};
+      nock('https://percy.io').post('/api/v1/snapshots/123/finalize').reply(201, responseData);
+
+      let request = percyClient.finalizeSnapshot(123);
+      request.then((response) => {
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {success: true});
+        done();
+      }).catch((err) => { done(err); });
+    });
+  });
   describe('finalizeBuild', function() {
     it('finalizes the build', function(done) {
       let responseData = {success: true};
