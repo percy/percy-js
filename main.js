@@ -29,8 +29,8 @@ class Resource {
       'id': this.sha,
       'attributes': {
         'resource-url': this.resourceUrl,
-        'mimetype': this.mimetype,
-        'is-root': this.isRoot,
+        'mimetype': this.mimetype || null,
+        'is-root': this.isRoot || null,
       },
     }
   }
@@ -121,9 +121,9 @@ class PercyClient {
       'data': {
         'type': 'snapshots',
         'attributes': {
-          'name': options.name,
-          'enable-javascript': options.enableJavaScript,
-          'widths': options.widths,
+          'name': options.name || null,
+          'enable-javascript': options.enableJavaScript || null,
+          'widths': options.widths || null,
         },
         'relationships': {
           'resources': {

@@ -79,6 +79,8 @@ describe('PercyClient', function() {
                   'id': 'fake-sha',
                   'attributes': {
                     'resource-url': '/foo',
+                    'mimetype': null,
+                    'is-root': null,
                   },
                 }
               ],
@@ -111,8 +113,8 @@ describe('PercyClient', function() {
         'id': 'fake-sha',
         'attributes': {
           'resource-url': '/foo',
-          'mimetype': undefined,
-          'is-root': undefined,
+          'mimetype': null,
+          'is-root': null,
         },
       };
       assert.deepEqual(resource.serialize(), expected);
@@ -203,6 +205,7 @@ describe('PercyClient', function() {
                   'id': utils.sha256hash(content),
                   'attributes': {
                     'resource-url': '/foo',
+                    'mimetype': null,
                     'is-root': true,
                   },
                 }
