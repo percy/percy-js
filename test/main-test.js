@@ -76,11 +76,10 @@ describe('PercyClient', function() {
   });
   describe('makeResource', function() {
     it('returns a Resource object with defaults', function() {
-      let content = 'foo';
-      let resource = percyClient.makeResource({resourceUrl: '/foo', content: content});
+      let resource = percyClient.makeResource({resourceUrl: '/foo', sha: 'fake-sha'});
       let expected = {
         'type': 'resources',
-        'id': utils.sha256hash('foo'),
+        'id': 'fake-sha',
         'attributes': {
           'resource-url': '/foo',
           'mimetype': undefined,
@@ -96,12 +95,14 @@ describe('PercyClient', function() {
         isRoot: true,
         mimetype: 'text/plain',
         content: content,
+        localPath: '/absolute/path/foo',
       });
       assert.equal(resource.resourceUrl, '/foo');
       assert.equal(resource.sha, utils.sha256hash(content));
       assert.equal(resource.content, content);
       assert.equal(resource.isRoot, true);
       assert.equal(resource.mimetype, 'text/plain');
+      assert.equal(resource.localPath, '/absolute/path/foo');
       let expected = {
         'type': 'resources',
         'id': utils.sha256hash(content),
@@ -119,7 +120,7 @@ describe('PercyClient', function() {
         let resource = percyClient.makeResource({content: 'foo'});
       }, Error)
     });
-    it('throws an error if content is not given', function() {
+    it('throws an error if neither sha nor content is not given', function() {
       assert.throws(() => {
         let resource = percyClient.makeResource({resourceUrl: '/foo'});
       }, Error)

@@ -9,14 +9,18 @@ class Resource {
     if (!options.resourceUrl) {
       throw new Error('"resourceUrl" arg is required to create a Resource.');
     }
-    if (!options.content) {
-      throw new Error('"content" arg is required to create a Resource.');
+    if (!options.sha && !options.content) {
+      throw new Error('Either "sha" or "content" is required to create a Resource.');
     }
     this.resourceUrl = options.resourceUrl;
     this.content = options.content;
-    this.sha = utils.sha256hash(options.content);
+    this.sha = options.sha || utils.sha256hash(options.content);
     this.mimetype = options.mimetype;
     this.isRoot = options.isRoot;
+
+    // Temporary convenience attributes, will not be serialized. These are used, for example,
+    // to hold the local path so reading file contents can be deferred.
+    this.localPath = options.localPath;
   }
 
   serialize() {
