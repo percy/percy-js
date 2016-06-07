@@ -64,9 +64,38 @@ describe('PercyClient', function() {
   describe('createBuild', function() {
     it('returns build data', function(done) {
       let responseData = {foo: 123};
-      nock('https://percy.io').post('/api/v1/repos/foo/bar/builds/').reply(201, responseData);
+      let resources = [percyClient.makeResource({resourceUrl: '/foo', sha: 'fake-sha'})];
+      let expectedRequestData = {
+        'data': {
+          'type': 'builds',
+          'attributes': {
+            'branch': 'master',
+          },
+          'relationships': {
+            'resources': {
+              'data': [
+                {
+                  'type': 'resources',
+                  'id': 'fake-sha',
+                  'attributes': {
+                    'resource-url': '/foo',
+                  },
+                }
+              ],
+            },
+          },
+        }
+      };
 
-      let request = percyClient.createBuild('foo/bar');
+      let responseMock = function(url, requestBody) {
+        // Verify request data.
+        assert.equal(requestBody, JSON.stringify(expectedRequestData));
+        let responseBody = {foo: 123};
+        return [201, responseBody];
+      };
+      nock('https://percy.io').post('/api/v1/repos/foo/bar/builds/').reply(201, responseMock);
+
+      let request = percyClient.createBuild('foo/bar', {resources: resources});
       request.then((response) => {
         assert.equal(response.statusCode, 201);
         assert.deepEqual(response.body, {foo: 123});

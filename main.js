@@ -74,7 +74,8 @@ class PercyClient {
     return this._httpClient(uri, options);
   }
 
-  createBuild(repo) {
+  createBuild(repo, options) {
+    options = options || {};
     let data = {
       'data': {
         'type': 'builds',
@@ -83,6 +84,15 @@ class PercyClient {
         }
       }
     };
+
+    if (options.resources) {
+      data['data']['relationships'] = {
+        'resources': {
+          'data': options.resources.map(function(resource) { return resource.serialize(); }),
+        },
+      };
+    }
+
     return this._httpPost(`${this.apiUrl}/repos/${repo}/builds/`, data);
   }
 
