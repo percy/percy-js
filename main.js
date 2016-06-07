@@ -1,10 +1,19 @@
+const utils = require('./utils');
+const requestPromise = require('request-promise');
+
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const USER_AGENT = 'percy-js/1.0';
 
 class Resource {
   constructor(options) {
+    if (!options.resourceUrl) {
+      throw new Error('"resourceUrl" is required to create a Resource.');
+    }
+    if (!options.sha && !options.content) {
+      throw new Error('Either "sha" or "content" must be given to create a Resource.');
+    }
     this.resourceUrl = options.resourceUrl;
-    this.sha = options.sha;
+    this.sha = options.sha || utils.sha256hash(options.content);
     this.mimetype = options.mimetype;
     this.isRoot = options.isRoot;
   }
@@ -27,9 +36,7 @@ class PercyClient {
     options = options || {};
     this.token = options.token;
     this.apiUrl = options.apiUrl || 'https://percy.io/api/v1';
-
-    // Instead of a global, allow this dependency to be manually injected in tests.
-    this._httpClient = require('request-promise');
+    this._httpClient = requestPromise;
   }
 
   _httpGet(uri) {
@@ -76,6 +83,20 @@ class PercyClient {
 
   makeResource(options) {
     return new Resource(options);
+  }
+
+  uploadResource(buildId, content) {
+    let sha = utils.sha256hash(content);
+    let data = {
+      'data': {
+        'type': 'resources',
+        'id': sha,
+        'attributes': {
+          'base64-content': utils.base64encode(content),
+        },
+      },
+    }
+    return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
   }
 
   createSnapshot(buildId, resources, options) {
