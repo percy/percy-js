@@ -7,13 +7,14 @@ const USER_AGENT = 'percy-js/1.0';
 class Resource {
   constructor(options) {
     if (!options.resourceUrl) {
-      throw new Error('"resourceUrl" is required to create a Resource.');
+      throw new Error('"resourceUrl" arg is required to create a Resource.');
     }
-    if (!options.sha && !options.content) {
-      throw new Error('Either "sha" or "content" must be given to create a Resource.');
+    if (!options.content) {
+      throw new Error('"content" arg is required to create a Resource.');
     }
     this.resourceUrl = options.resourceUrl;
-    this.sha = options.sha || utils.sha256hash(options.content);
+    this.content = options.content;
+    this.sha = utils.sha256hash(options.content);
     this.mimetype = options.mimetype;
     this.isRoot = options.isRoot;
   }

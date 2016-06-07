@@ -76,7 +76,8 @@ describe('PercyClient', function() {
   });
   describe('makeResource', function() {
     it('returns a Resource object with defaults', function() {
-      let resource = percyClient.makeResource({resourceUrl: '/foo', content: 'foo'});
+      let content = 'foo';
+      let resource = percyClient.makeResource({resourceUrl: '/foo', content: content});
       let expected = {
         'type': 'resources',
         'id': utils.sha256hash('foo'),
@@ -89,15 +90,21 @@ describe('PercyClient', function() {
       assert.deepEqual(resource.serialize(), expected);
     });
     it('handles arguments correctly', function() {
+      let content = 'foo';
       let resource = percyClient.makeResource({
         resourceUrl: '/foo',
         isRoot: true,
         mimetype: 'text/plain',
-        sha: Array(64).join('a'),
+        content: content,
       });
+      assert.equal(resource.resourceUrl, '/foo');
+      assert.equal(resource.sha, utils.sha256hash(content));
+      assert.equal(resource.content, content);
+      assert.equal(resource.isRoot, true);
+      assert.equal(resource.mimetype, 'text/plain');
       let expected = {
         'type': 'resources',
-        'id': Array(64).join('a'),
+        'id': utils.sha256hash(content),
         'attributes': {
           'resource-url': '/foo',
           'mimetype': 'text/plain',
@@ -109,10 +116,10 @@ describe('PercyClient', function() {
     });
     it('throws an error if resourceUrl is not given', function() {
       assert.throws(() => {
-        let resource = percyClient.makeResource({sha: Array(64).join('a')});
+        let resource = percyClient.makeResource({content: 'foo'});
       }, Error)
     });
-    it('throws an error if neither sha nor content is given', function() {
+    it('throws an error if content is not given', function() {
       assert.throws(() => {
         let resource = percyClient.makeResource({resourceUrl: '/foo'});
       }, Error)
@@ -149,6 +156,7 @@ describe('PercyClient', function() {
   });
   describe('createSnapshot', function() {
     it('creates a snapshot', function(done) {
+      let content = 'foo';
       let expectedRequestData = {
         'data': {
           'type': 'snapshots',
@@ -162,7 +170,7 @@ describe('PercyClient', function() {
               'data': [
                 {
                   'type': 'resources',
-                  'id': Array(64).join('a'),
+                  'id': utils.sha256hash(content),
                   'attributes': {
                     'resource-url': '/foo',
                     'is-root': true,
@@ -185,7 +193,7 @@ describe('PercyClient', function() {
       let options = {name: 'foo', enableJavaScript: true, widths: [1000]}
       let resource = percyClient.makeResource({
         resourceUrl: '/foo',
-        sha: Array(64).join('a'),
+        content: content,
         isRoot: true,
       });
       let resources = [resource];
