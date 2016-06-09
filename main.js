@@ -47,7 +47,7 @@ class PercyClient {
     this._httpClient = requestPromise;
   }
 
-  _httpGet(uri) {
+  _httpGet(uri, options) {
     options = options || {};
     let timeout = options.timeout || DEFAULT_TIMEOUT_MS;
     let requestOptions = {
