@@ -1,7 +1,7 @@
 {
   "name": "percy-client",
-  "version": "0.1.1",
-  "description": "Client library for percy.io",
+  "version": "0.2.0",
+  "description": "API client library for percy.io",
   "main": "dist/main.js",
   "scripts": {
     "build:compile": "babel main.js utils.js --presets babel-preset-es2015 --out-dir dist",
