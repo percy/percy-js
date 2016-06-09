@@ -3,6 +3,9 @@ const requestPromise = require('request-promise');
 
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const USER_AGENT = 'percy-js/1.0';
+const DEFAULT_TIMEOUT_MS = 30000;
+const DEFAULT_UPLOAD_TIMEOUT_MS = DEFAULT_TIMEOUT_MS * 4;
+
 
 class Resource {
   constructor(options) {
@@ -45,7 +48,9 @@ class PercyClient {
   }
 
   _httpGet(uri) {
-    let options = {
+    options = options || {};
+    let timeout = options.timeout || DEFAULT_TIMEOUT_MS;
+    let requestOptions = {
       method: 'GET',
       uri: uri,
       headers: {
@@ -54,12 +59,15 @@ class PercyClient {
       },
       json: true,
       resolveWithFullResponse: true,
+      timeout: timeout,
     };
-    return this._httpClient(uri, options);
+    return this._httpClient(uri, requestOptions);
   }
 
-  _httpPost(uri, data) {
-    let options = {
+  _httpPost(uri, data, options) {
+    options = options || {};
+    let timeout = options.timeout || DEFAULT_TIMEOUT_MS;
+    let requestOptions = {
       method: 'POST',
       uri: uri,
       body: data,
@@ -70,8 +78,11 @@ class PercyClient {
       },
       json: true,
       resolveWithFullResponse: true,
+      // Don't let Percy API calls hang forever. Client libraries should be able to handle
+      // rare promise rejection and nicely disable percy integration for that build.
+      timeout: timeout,
     };
-    return this._httpClient(uri, options);
+    return this._httpClient(uri, requestOptions);
   }
 
   createBuild(repo, options) {
@@ -111,7 +122,10 @@ class PercyClient {
         },
       },
     }
-    return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
+    let options = {
+      timeout: DEFAULT_UPLOAD_TIMEOUT_MS,
+    }
+    return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data, options);
   }
 
   createSnapshot(buildId, resources, options) {
