@@ -13,8 +13,8 @@ describe('sha256hash', function() {
     assert.equal(hash, '67e714147fe88f73b000da2f0447d16083801ba3ac9c31f607cf8cbaf994aa09');
   });
   it('correctly handles binary data', function() {
-    let hash = utils.sha256hash('\x01\x02\x03');
-    assert.equal(hash, '039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81');
+    let hash = utils.sha256hash('\x01\x02\x99');
+    assert.equal(hash, '46e9b4475a55f86f185cc978fdaef90d4a2ef6ba66d77cecb8763a60999a41c3');
   });
 });
 describe('base64encode', function() {
@@ -25,6 +25,6 @@ describe('base64encode', function() {
     assert.equal(utils.base64encode('I ♡ \nJavaScript!'), 'SSDimaEgCkphdmFTY3JpcHQh');
   });
   it('correctly handles binary data', function() {
-    assert.equal(utils.base64encode('\x01\x02\x03'), 'AQID');
+    assert.equal(utils.base64encode('\x01\x02\x99'), 'AQLCmQ==');
   });
 });
