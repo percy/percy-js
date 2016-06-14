@@ -1,4 +1,5 @@
 const utils = require('./utils');
+const Environment = require('./environment');
 const requestPromise = require('request-promise');
 
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
@@ -44,6 +45,7 @@ class PercyClient {
     options = options || {};
     this.token = options.token;
     this.apiUrl = options.apiUrl || 'https://percy.io/api/v1';
+    this.environment = options.environment || new Environment(process.env);
     this._httpClient = requestPromise;
   }
 
@@ -91,7 +93,11 @@ class PercyClient {
       'data': {
         'type': 'builds',
         'attributes': {
-          'branch': 'master',
+          'branch': this.environment.branch,
+          'commit-sha': this.environment.commitSha,
+          'pull-request-number': this.environment.pullRequestNumber,
+          'parallel-nonce': this.environment.parallelNonce,
+          'parallel-total-shards': this.environment.parallelTotalShards,
         }
       }
     };

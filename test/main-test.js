@@ -65,11 +65,18 @@ describe('PercyClient', function() {
     it('returns build data', function(done) {
       let responseData = {foo: 123};
       let resources = [percyClient.makeResource({resourceUrl: '/foo', sha: 'fake-sha'})];
+      // Make sure we're at least testing against a truthy value.
+      assert.ok(percyClient.environment.branch);
+
       let expectedRequestData = {
         'data': {
           'type': 'builds',
           'attributes': {
-            'branch': 'master',
+            'branch': percyClient.environment.branch,
+            'commit-sha': percyClient.environment.commitSha,
+            'pull-request-number': percyClient.environment.pullRequestNumber,
+            'parallel-nonce': percyClient.environment.parallelNonce,
+            'parallel-total-shards': percyClient.environment.parallelTotalShards,
           },
           'relationships': {
             'resources': {
