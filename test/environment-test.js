@@ -68,11 +68,14 @@ describe('Environment', function() {
       assert.strictEqual(environment.repo, 'travis/repo-slug');
       assert.strictEqual(environment.parallelNonce, 'build-number');
       assert.strictEqual(environment.parallelTotalShards, 3);
-    });
-    it('branch corrects for strange Travis CI env logic', function() {
-      // See note in environment branch handling.
+
+      // Handles strange Travis branch env var logic. See note in environment.js.
       environment._env['TRAVIS_BRANCH'] = 'master';
       assert.strictEqual(environment.branch, 'github-pr-256');
+
+      // Returns null for pullRequestNumber if TRAVIS_PULL_REQUEST is 'false'.
+      environment._env['TRAVIS_PULL_REQUEST'] = 'false';
+      assert.strictEqual(environment.pullRequestNumber, null);
     });
   });
   context('in Circle CI', function() {

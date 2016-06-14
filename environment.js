@@ -101,7 +101,7 @@ class Environment {
     }
     switch(this.ci) {
       case 'travis':
-        return this._env.TRAVIS_PULL_REQUEST !== 'false' ? this._env.TRAVIS_PULL_REQUEST : nil;
+        return this._env.TRAVIS_PULL_REQUEST !== 'false' ? this._env.TRAVIS_PULL_REQUEST : null;
       case 'jenkins':
         return this._env.ghprbPullId;
       case 'circle':
