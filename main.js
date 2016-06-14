@@ -5,7 +5,7 @@ const requestPromise = require('request-promise');
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const USER_AGENT = 'percy-js/1.0';
 const DEFAULT_TIMEOUT_MS = 30000;
-const DEFAULT_UPLOAD_TIMEOUT_MS = DEFAULT_TIMEOUT_MS * 4;
+const DEFAULT_UPLOAD_TIMEOUT_MS = 90000;  // Less than the 100s CloudFlare timeout.
 
 
 class Resource {
