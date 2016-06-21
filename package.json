@@ -8,6 +8,7 @@
     "build:browserify": "browserify --standalone percy-client --ignore cls-bluebird dist/main.js -o dist/bundle.js",
     "build": "npm run build:compile && npm run build:browserify",
     "test": "mocha --require babel-core/register",
+    "debug": "mocha debug --require babel-core/register",
     "tdd": "mocha --require babel-core/register --watch"
   },
   "files": [

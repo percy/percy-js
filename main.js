@@ -1,11 +1,10 @@
+const http = require('http');
 const utils = require('./utils');
 const Environment = require('./environment');
 const requestPromise = require('request-promise');
 
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const USER_AGENT = 'percy-js/1.0';
-const DEFAULT_TIMEOUT_MS = 30000;
-const DEFAULT_UPLOAD_TIMEOUT_MS = 90000;  // Less than the 100s CloudFlare timeout.
 
 
 class Resource {
@@ -47,11 +46,11 @@ class PercyClient {
     this.apiUrl = options.apiUrl || 'https://percy.io/api/v1';
     this.environment = options.environment || new Environment(process.env);
     this._httpClient = requestPromise;
+    // A custom HttpAgent with pooling and keepalive.
+    this._httpAgent = new http.Agent({maxSockets: 5, keepAlive: true});
   }
 
-  _httpGet(uri, options) {
-    options = options || {};
-    let timeout = options.timeout || DEFAULT_TIMEOUT_MS;
+  _httpGet(uri) {
     let requestOptions = {
       method: 'GET',
       uri: uri,
@@ -61,14 +60,12 @@ class PercyClient {
       },
       json: true,
       resolveWithFullResponse: true,
-      timeout: timeout,
+      agent: this._httpAgent,
     };
     return this._httpClient(uri, requestOptions);
   }
 
-  _httpPost(uri, data, options) {
-    options = options || {};
-    let timeout = options.timeout || DEFAULT_TIMEOUT_MS;
+  _httpPost(uri, data) {
     let requestOptions = {
       method: 'POST',
       uri: uri,
@@ -80,9 +77,7 @@ class PercyClient {
       },
       json: true,
       resolveWithFullResponse: true,
-      // Don't let Percy API calls hang forever. Client libraries should be able to handle
-      // rare promise rejection and nicely disable percy integration for that build.
-      timeout: timeout,
+      agent: this._httpAgent,
     };
     return this._httpClient(uri, requestOptions);
   }
@@ -128,10 +123,7 @@ class PercyClient {
         },
       },
     }
-    let options = {
-      timeout: DEFAULT_UPLOAD_TIMEOUT_MS,
-    }
-    return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data, options);
+    return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
   }
 
   createSnapshot(buildId, resources, options) {
