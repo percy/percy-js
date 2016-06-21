@@ -1,4 +1,4 @@
-const http = require('http');
+const http = require('https');
 const utils = require('./utils');
 const Environment = require('./environment');
 const requestPromise = require('request-promise');
