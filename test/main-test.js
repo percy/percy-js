@@ -75,8 +75,8 @@ describe('PercyClient', function() {
             'branch': percyClient.environment.branch,
             'commit-sha': percyClient.environment.commitSha,
             'pull-request-number': percyClient.environment.pullRequestNumber,
-            'parallel-nonce': percyClient.environment.parallelNonce,
-            'parallel-total-shards': percyClient.environment.parallelTotalShards,
+            'parallel-nonce': null,
+            'parallel-total-shards': null,
           },
           'relationships': {
             'resources': {

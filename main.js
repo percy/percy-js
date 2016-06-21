@@ -83,6 +83,15 @@ class PercyClient {
   }
 
   createBuild(repo, options) {
+    let parallelNonce = this.environment.parallelNonce;
+    let parallelTotalShards = this.environment.parallelTotalShards;
+
+    // Only pass parallelism data if it all exists.
+    if (!parallelNonce || !parallelTotalShards) {
+      parallelNonce = null;
+      parallelTotalShards = null;
+    }
+
     options = options || {};
     let data = {
       'data': {
@@ -91,8 +100,8 @@ class PercyClient {
           'branch': this.environment.branch,
           'commit-sha': this.environment.commitSha,
           'pull-request-number': this.environment.pullRequestNumber,
-          'parallel-nonce': this.environment.parallelNonce,
-          'parallel-total-shards': this.environment.parallelTotalShards,
+          'parallel-nonce': parallelNonce,
+          'parallel-total-shards': parallelTotalShards,
         }
       }
     };
