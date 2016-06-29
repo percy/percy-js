@@ -74,6 +74,13 @@ class Environment {
     return 'master';
   }
 
+  get targetBranch() {
+    if (this._env.PERCY_TARGET_BRANCH) {
+      return this._env.PERCY_TARGET_BRANCH;
+    }
+    return null;
+  }
+
   get repo() {
     if (this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT) {
       return this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT;

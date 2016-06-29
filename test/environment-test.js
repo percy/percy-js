@@ -17,6 +17,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.ci, null);
       assert.strictEqual(environment.commitSha, null);
       assert.strictEqual(environment.branch, 'master');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.repo, null);
       assert.strictEqual(environment.parallelNonce, null);
@@ -28,6 +29,7 @@ describe('Environment', function() {
       environment = new Environment({
         PERCY_COMMIT: 'percy-commit',
         PERCY_BRANCH: 'percy-branch',
+        PERCY_TARGET_BRANCH: 'percy-target-branch',
         PERCY_PULL_REQUEST: '256',
         PERCY_PROJECT: 'foo/bar',
         PERCY_PARALLEL_NONCE: 'percy-nonce',
@@ -37,6 +39,7 @@ describe('Environment', function() {
     it('allows override with percy env vars', function() {
       assert.strictEqual(environment.commitSha, 'percy-commit');
       assert.strictEqual(environment.branch, 'percy-branch');
+      assert.strictEqual(environment.targetBranch, 'percy-target-branch');
       assert.strictEqual(environment.pullRequestNumber, '256');
       assert.strictEqual(environment.repo, 'foo/bar');
       assert.strictEqual(environment.parallelNonce, 'percy-nonce');
