@@ -73,6 +73,7 @@ describe('PercyClient', function() {
           'type': 'builds',
           'attributes': {
             'branch': percyClient.environment.branch,
+            'target-branch': percyClient.environment.targetBranch,
             'commit-sha': percyClient.environment.commitSha,
             'pull-request-number': percyClient.environment.pullRequestNumber,
             'parallel-nonce': null,

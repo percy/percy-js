@@ -98,6 +98,7 @@ class PercyClient {
         'type': 'builds',
         'attributes': {
           'branch': this.environment.branch,
+          'target-branch': this.environment.targetBranch,
           'commit-sha': this.environment.commitSha,
           'pull-request-number': this.environment.pullRequestNumber,
           'parallel-nonce': parallelNonce,
