@@ -5,6 +5,4 @@
 
 JavaScript API client library for [Percy](https://percy.io).
 
-This is a low-level API library, you probably want to use a higher-level plugin. Check out:
-
-* [ember-percy](https://github.com/percy/ember-percy)
+#### Docs here: [https://percy.io/docs/api/javascript-client](https://percy.io/docs/api/javascript-client)
