@@ -64,7 +64,7 @@ describe('PercyClient', function() {
   describe('createBuild', function() {
     it('returns build data', function(done) {
       let responseData = {foo: 123};
-      let resources = [percyClient.makeResource({resourceUrl: '/foo', sha: 'fake-sha'})];
+      let resources = [percyClient.makeResource({resourceUrl: '/foo bar', sha: 'fake-sha'})];
       // Make sure we're at least testing against a truthy value.
       assert.ok(percyClient.environment.branch);
 
@@ -86,7 +86,7 @@ describe('PercyClient', function() {
                   'type': 'resources',
                   'id': 'fake-sha',
                   'attributes': {
-                    'resource-url': '/foo',
+                    'resource-url': '/foo%20bar',
                     'mimetype': null,
                     'is-root': null,
                   },

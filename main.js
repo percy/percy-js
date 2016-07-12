@@ -32,7 +32,7 @@ class Resource {
       'type': 'resources',
       'id': this.sha,
       'attributes': {
-        'resource-url': this.resourceUrl,
+        'resource-url': escape(this.resourceUrl),
         'mimetype': this.mimetype || null,
         'is-root': this.isRoot || null,
       },
