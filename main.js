@@ -1,4 +1,5 @@
-const http = require('https');
+const http = require('http');
+const https = require('https');
 const utils = require('./utils');
 const Environment = require('./environment');
 const requestPromise = require('request-promise');
@@ -46,8 +47,9 @@ class PercyClient {
     this.apiUrl = options.apiUrl || 'https://percy.io/api/v1';
     this.environment = options.environment || new Environment(process.env);
     this._httpClient = requestPromise;
+    this._httpModule = (this.apiUrl.indexOf('http://') === 0) ? http : https;
     // A custom HttpAgent with pooling and keepalive.
-    this._httpAgent = new http.Agent({maxSockets: 5, keepAlive: true});
+    this._httpAgent = new this._httpModule.Agent({maxSockets: 5, keepAlive: true});
   }
 
   _httpGet(uri) {
