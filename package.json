@@ -6,7 +6,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build:compile": "babel main.js utils.js environment.js --presets babel-preset-es2015 --out-dir dist",
-    "build:browserify": "browserify --standalone percy-client --ignore cls-bluebird dist/main.js -o dist/bundle.js",
+    "build:browserify": "browserify --standalone percy-client dist/main.js -o dist/bundle.js",
     "build": "npm run build:compile && npm run build:browserify",
     "test": "mocha --require babel-core/register",
     "debug": "mocha debug --require babel-core/register",
@@ -36,6 +36,6 @@
   "dependencies": {
     "base64-js": "^1.1.2",
     "jssha": "^2.1.0",
-    "request-promise": "^3.0"
+    "request-promise": "^4.0"
   }
 }
