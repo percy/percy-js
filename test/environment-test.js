@@ -117,6 +117,7 @@ describe('Environment', function() {
         CI_BUILD_NUMBER: 'codeship-build-number',
         CI_PULL_REQUEST: 'false',  // This is always false right now in Codeship. :|
         CI_COMMIT_ID: 'codeship-commit-sha',
+        CI_NODE_TOTAL: '3',
       });
     });
 
@@ -127,8 +128,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.repo, null);
       assert.strictEqual(environment.parallelNonce, 'codeship-build-number');
-      // TODO: we cannot automatically pull this from Codeship yet, they don't expose it:
-      assert.strictEqual(environment.parallelTotalShards, null);
+      assert.strictEqual(environment.parallelTotalShards, 3);
     });
   });
   context('in Drone', function() {

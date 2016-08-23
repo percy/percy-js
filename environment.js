@@ -169,6 +169,9 @@ class Environment {
         }
         break;
       case 'codeship':
+        if (this._env.CI_NODE_TOTAL) {
+          return parseInt(this._env.CI_NODE_TOTAL);
+        }
         break;
       case 'drone':
         break;
