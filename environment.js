@@ -19,6 +19,8 @@ class Environment {
       return 'drone';
     } else if (this._env.SEMAPHORE == 'true') {
       return 'semaphore';
+    } else if (this._env.BUILDKITE == 'true') {
+      return 'buildkite';
     }
     return null;
   }
@@ -41,6 +43,10 @@ class Environment {
         return this._env.DRONE_COMMIT;
       case 'semaphore':
         return this._env.REVISION;
+      case 'buildkite':
+        let commitSha = this._env.BUILDKITE_COMMIT;
+        // Buildkite mixes SHAs and non-SHAs in BUILDKITE_COMMIT, so we return null if non-SHA.
+        return commitSha !== 'HEAD' ? this._env.BUILDKITE_COMMIT : null;
     }
     return null;
   }
@@ -69,6 +75,8 @@ class Environment {
         return this._env.DRONE_BRANCH;
       case 'semaphore':
         return this._env.BRANCH_NAME;
+      case 'buildkite':
+        return this._env.BUILDKITE_BRANCH;
     }
     // Not in a git repo? Assume that the branch is master.
     return 'master';
@@ -85,6 +93,7 @@ class Environment {
     if (this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT) {
       return this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT;
     }
+    // Deprecated flow:
     switch(this.ci) {
       case 'travis':
         return this._env.TRAVIS_REPO_SLUG;
@@ -123,6 +132,8 @@ class Environment {
         return this._env.CI_PULL_REQUEST;
       case 'semaphore':
         return this._env.PULL_REQUEST_NUMBER;
+      case 'buildkite':
+        return this._env.BUILDKITE_PULL_REQUEST !== 'false' ? this._env.BUILDKITE_PULL_REQUEST : null;
     }
     return null;
   }
@@ -146,6 +157,8 @@ class Environment {
         return this._env.DRONE_BUILD_NUMBER;
       case 'semaphore':
         return this._env.SEMAPHORE_BUILD_NUMBER;
+      case 'buildkite':
+        return this._env.BUILDKITE_BUILD_ID;
     }
     return null;
   }
@@ -179,6 +192,8 @@ class Environment {
         if (this._env.SEMAPHORE_THREAD_COUNT) {
           return parseInt(this._env.SEMAPHORE_THREAD_COUNT);
         }
+        break;
+      case 'buildkite':
         break;
     }
     return null;

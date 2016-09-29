@@ -175,4 +175,44 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, 2);
     });
   });
+  context('in Buildkite', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        BUILDKITE: 'true',
+        BUILDKITE_COMMIT: 'buildkite-commit-sha',
+        BUILDKITE_BRANCH: 'buildkite-branch',
+        BUILDKITE_PULL_REQUEST: 'false',
+        BUILDKITE_BUILD_ID: 'buildkite-build-id',
+      });
+    });
+    context('push build', function() {
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.ci, 'buildkite');
+        assert.strictEqual(environment.commitSha, 'buildkite-commit-sha');
+        assert.strictEqual(environment.branch, 'buildkite-branch');
+        assert.strictEqual(environment.pullRequestNumber, null);
+        assert.strictEqual(environment.repo, null);
+        assert.strictEqual(environment.parallelNonce, 'buildkite-build-id');
+        assert.strictEqual(environment.parallelTotalShards, null);
+      });
+    });
+    context('pull request build', function() {
+      beforeEach(function() {
+        environment._env.BUILDKITE_PULL_REQUEST = '123';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.pullRequestNumber, '123');
+      });
+    });
+    context('UI-triggered HEAD build', function() {
+      beforeEach(function() {
+        environment._env.BUILDKITE_COMMIT = 'HEAD';
+      });
+
+      it('returns null commit SHA if set to HEAD', function() {
+        assert.strictEqual(environment.commitSha, null);
+      });
+    });
+  });
 });
