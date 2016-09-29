@@ -31,6 +31,9 @@ class Environment {
     }
     switch(this.ci) {
       case 'travis':
+        if (this.pullRequestNumber && this._env.TRAVIS_PULL_REQUEST_SHA) {
+          return this._env.TRAVIS_PULL_REQUEST_SHA;
+        }
         return this._env.TRAVIS_COMMIT;
       case 'jenkins':
         // Pull Request Builder Plugin OR Git Plugin.
@@ -57,12 +60,8 @@ class Environment {
     }
     switch(this.ci) {
       case 'travis':
-        // Note: this is very unfortunately necessary because Travis doesn't expose the head branch,
-        // only the targeted branch in TRAVIS_BRANCH and no way to get the actual head PR branch.
-        // We create a fake branch name so that Percy doesn't mistake this PR as a new master build.
-        // https://github.com/travis-ci/travis-ci/issues/1633#issuecomment-194749671
-        if (this.pullRequestNumber && this._env.TRAVIS_BRANCH == 'master') {
-          return `github-pr-${this.pullRequestNumber}`
+        if (this.pullRequestNumber && this._env.TRAVIS_PULL_REQUEST_BRANCH) {
+          return this._env.TRAVIS_PULL_REQUEST_BRANCH;
         }
         return this._env.TRAVIS_BRANCH;
       case 'jenkins':

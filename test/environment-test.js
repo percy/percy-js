@@ -46,7 +46,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, 3);
 
       // Deprecated: uses PERCY_REPO_SLUG to set project if available.
-      environment._env['PERCY_REPO_SLUG'] = 'other/foo-bar';
+      environment._env.PERCY_REPO_SLUG = 'other/foo-bar';
       assert.strictEqual(environment.repo, 'other/foo-bar');
     });
   });
@@ -55,8 +55,10 @@ describe('Environment', function() {
       environment = new Environment({
         TRAVIS_BUILD_ID: '1234',
         TRAVIS_BUILD_NUMBER: 'build-number',
-        TRAVIS_PULL_REQUEST: '256',
         TRAVIS_REPO_SLUG: 'travis/repo-slug',
+        TRAVIS_PULL_REQUEST: 'false',
+        TRAVIS_PULL_REQUEST_BRANCH: '',
+        TRAVIS_PULL_REQUEST_SHA: '',
         TRAVIS_COMMIT: 'travis-commit-sha',
         TRAVIS_BRANCH: 'travis-branch',
         CI_NODE_TOTAL: '3',
@@ -67,18 +69,22 @@ describe('Environment', function() {
       assert.strictEqual(environment.ci, 'travis');
       assert.strictEqual(environment.commitSha, 'travis-commit-sha');
       assert.strictEqual(environment.branch, 'travis-branch');
-      assert.strictEqual(environment.pullRequestNumber, '256');
+      assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.repo, 'travis/repo-slug');
       assert.strictEqual(environment.parallelNonce, 'build-number');
       assert.strictEqual(environment.parallelTotalShards, 3);
-
-      // Handles strange Travis branch env var logic. See note in environment.js.
-      environment._env['TRAVIS_BRANCH'] = 'master';
-      assert.strictEqual(environment.branch, 'github-pr-256');
-
-      // Returns null for pullRequestNumber if TRAVIS_PULL_REQUEST is 'false'.
-      environment._env['TRAVIS_PULL_REQUEST'] = 'false';
-      assert.strictEqual(environment.pullRequestNumber, null);
+    });
+    context('in Pull Request build', function() {
+      beforeEach(function() {
+        environment._env.TRAVIS_PULL_REQUEST = '256';
+        environment._env.TRAVIS_PULL_REQUEST_BRANCH = 'travis-pr-branch';
+        environment._env.TRAVIS_PULL_REQUEST_SHA = 'travis-pr-head-commit-sha';
+      });
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.pullRequestNumber, '256');
+        assert.strictEqual(environment.branch, 'travis-pr-branch');
+        assert.strictEqual(environment.commitSha, 'travis-pr-head-commit-sha');
+      });
     });
   });
   context('in Circle CI', function() {
@@ -105,7 +111,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, 3);
 
       // Should be null if empty.
-      environment._env['CIRCLE_NODE_TOTAL'] = '';
+      environment._env.CIRCLE_NODE_TOTAL = '';
       assert.strictEqual(environment.parallelTotalShards, null);
     });
   });
