@@ -16,6 +16,9 @@ class Resource {
     if (!options.sha && !options.content) {
       throw new Error('Either "sha" or "content" is required to create a Resource.');
     }
+    if (/\s/.test(options.resourceUrl)) {
+      throw new Error('"resourceUrl" arg includes whitespace. It needs to be encoded.')
+    }
     this.resourceUrl = options.resourceUrl;
     this.content = options.content;
     this.sha = options.sha || utils.sha256hash(options.content);
@@ -32,7 +35,7 @@ class Resource {
       'type': 'resources',
       'id': this.sha,
       'attributes': {
-        'resource-url': escape(this.resourceUrl),
+        'resource-url': this.resourceUrl,
         'mimetype': this.mimetype || null,
         'is-root': this.isRoot || null,
       },
