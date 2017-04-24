@@ -64,7 +64,7 @@ describe('PercyClient', function() {
   describe('createBuild', function() {
     it('returns build data', function(done) {
       let responseData = {foo: 123};
-      let resources = [percyClient.makeResource({resourceUrl: '/foo bar', sha: 'fake-sha'})];
+      let resources = [percyClient.makeResource({resourceUrl: '/foo%20bar', sha: 'fake-sha'})];
       // Make sure we're at least testing against a truthy value.
       assert.ok(percyClient.environment.branch);
 
@@ -157,6 +157,11 @@ describe('PercyClient', function() {
     it('throws an error if resourceUrl is not given', function() {
       assert.throws(() => {
         let resource = percyClient.makeResource({content: 'foo'});
+      }, Error)
+    });
+    it('throws an error if resourceUrl contains a space', function() {
+      assert.throws(() => {
+        let resource = percyClient.makeResource({resourceUrl: 'foo bar'});
       }, Error)
     });
     it('throws an error if neither sha nor content is not given', function() {
