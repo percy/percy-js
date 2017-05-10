@@ -193,6 +193,9 @@ class Environment {
         }
         break;
       case 'buildkite':
+        if (this._env.BUILDKITE_PARALLEL_JOB_COUNT) {
+          return parseInt(this._env.BUILDKITE_PARALLEL_JOB_COUNT);
+        }
         break;
     }
     return null;
