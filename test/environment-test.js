@@ -189,6 +189,7 @@ describe('Environment', function() {
         BUILDKITE_BRANCH: 'buildkite-branch',
         BUILDKITE_PULL_REQUEST: 'false',
         BUILDKITE_BUILD_ID: 'buildkite-build-id',
+        BUILDKITE_PARALLEL_JOB_COUNT: '3',
       });
     });
     context('push build', function() {
@@ -199,7 +200,7 @@ describe('Environment', function() {
         assert.strictEqual(environment.pullRequestNumber, null);
         assert.strictEqual(environment.repo, null);
         assert.strictEqual(environment.parallelNonce, 'buildkite-build-id');
-        assert.strictEqual(environment.parallelTotalShards, null);
+        assert.strictEqual(environment.parallelTotalShards, 3);
       });
     });
     context('pull request build', function() {
