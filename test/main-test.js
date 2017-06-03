@@ -209,6 +209,7 @@ describe('PercyClient', function() {
             'name': 'foo',
             'enable-javascript': true,
             'widths': [1000],
+            'minimum-height': 100,
           },
           'relationships': {
             'resources': {
@@ -236,7 +237,7 @@ describe('PercyClient', function() {
       };
       nock('https://percy.io').post('/api/v1/builds/123/snapshots/').reply(201, responseMock);
 
-      let options = {name: 'foo', enableJavaScript: true, widths: [1000]}
+      let options = {name: 'foo', enableJavaScript: true, widths: [1000], minimumHeight: 100}
       let resource = percyClient.makeResource({
         resourceUrl: '/foo',
         content: content,
