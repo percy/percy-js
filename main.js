@@ -151,6 +151,7 @@ class PercyClient {
           'name': options.name || null,
           'enable-javascript': options.enableJavaScript || null,
           'widths': options.widths || null,
+          'minimum_height': options.minimum_height || null,
         },
         'relationships': {
           'resources': {
