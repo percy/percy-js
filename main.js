@@ -2,11 +2,10 @@ const http = require('http');
 const https = require('https');
 const utils = require('./utils');
 const Environment = require('./environment');
+const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
 const USER_AGENT = 'percy-js/1.0';
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
-
-import { version } from './package.json';
 
 class Resource {
   constructor(options) {
@@ -57,34 +56,10 @@ class PercyClient {
     this._environment_info = options.environment_info;
   }
 
-  _user_agent() {
-    let client = [
-      `Percy/${this._api_version()}`,
-      this._client_info,
-      `percy-js/${version}`,
-    ].filter((el) => el != null).join(' ')
-
-    let environment = [
-      this._environment_info,
-      `node/${this._node_version()}`,
-      this.environment.ci,
-    ].filter((el) => el != null).join('; ')
-
-    return `${client} (${environment})`
-  }
-
-  _node_version() {
-    return process.version;
-  }
-
-  _api_version() {
-    return /\w+$/.exec(this.apiUrl);
-  }
-
   _headers(headers) {
     return Object.assign(
       {'Authorization': `Token token=${this.token}`,
-       'User-Agent': this._user_agent()},
+       'User-Agent': new UserAgent(this).user_agent()},
       headers,
     );
   }
