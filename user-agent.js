@@ -8,27 +8,27 @@ class UserAgent {
     this._client = client;
   }
 
-  user_agent() {
+  userAgent() {
     let client = [
-      `Percy/${this._api_version()}`,
+      `Percy/${this._apiVersion()}`,
       this._client._client_info,
       `percy-js/${version}`,
     ].filter((el) => el != null).join(' ')
 
     let environment = [
       this._client._environment_info,
-      `node/${this._node_version()}`,
+      `node/${this._nodeVersion()}`,
       this._client.environment.ci,
     ].filter((el) => el != null).join('; ')
 
     return `${client} (${environment})`
   }
 
-  _node_version() {
+  _nodeVersion() {
     return process.version;
   }
 
-  _api_version() {
+  _apiVersion() {
     return /\w+$/.exec(this._client.apiUrl);
   }
 }
