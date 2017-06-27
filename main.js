@@ -6,6 +6,8 @@ const requestPromise = require('request-promise');
 const USER_AGENT = 'percy-js/1.0';
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 
+import { version } from './package.json';
+
 class Resource {
   constructor(options) {
     if (!options.resourceUrl) {
@@ -51,12 +53,38 @@ class PercyClient {
     this._httpModule = (this.apiUrl.indexOf('http://') === 0) ? http : https;
     // A custom HttpAgent with pooling and keepalive.
     this._httpAgent = new this._httpModule.Agent({maxSockets: 5, keepAlive: true});
+    this._client_info = options.client_info;
+    this._environment_info = options.environment_info;
+  }
+
+  _user_agent() {
+    let client = [
+      `Percy/${this._api_version()}`,
+      this._client_info,
+      `percy-js/${version}`,
+    ].filter((el) => el != null).join(' ')
+
+    let environment = [
+      this._environment_info,
+      `node/${this._node_version()}`,
+      this.environment.ci,
+    ].filter((el) => el != null).join('; ')
+
+    return `${client} (${environment})`
+  }
+
+  _node_version() {
+    return process.version;
+  }
+
+  _api_version() {
+    return /\w+$/.exec(this.apiUrl);
   }
 
   _headers(headers) {
     return Object.assign(
       {'Authorization': `Token token=${this.token}`,
-       'User-Agent': USER_AGENT},
+       'User-Agent': this._user_agent()},
       headers,
     );
   }
