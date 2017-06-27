@@ -2,6 +2,7 @@ let path = require('path');
 let UserAgent = require(path.join(__dirname, '..', 'user-agent'));
 let PercyClient = require(path.join(__dirname, '..', 'main'));
 let assert = require('assert');
+
 import { version } from '../package.json';
 
 describe('UserAgent', function() {
