@@ -52,8 +52,8 @@ class PercyClient {
     this._httpModule = (this.apiUrl.indexOf('http://') === 0) ? http : https;
     // A custom HttpAgent with pooling and keepalive.
     this._httpAgent = new this._httpModule.Agent({maxSockets: 5, keepAlive: true});
-    this._client_info = options.client_info;
-    this._environment_info = options.environment_info;
+    this._clientInfo = options.clientInfo;
+    this._environmentInfo = options.environmentInfo;
   }
 
   _headers(headers) {
