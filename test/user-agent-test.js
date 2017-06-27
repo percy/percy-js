@@ -30,15 +30,11 @@ describe('UserAgent', function() {
   });
 
   context('client and environment info set from a higher level client', function() {
-    let clientInfo = 'react-percy-storybook/1.0.0'
-    let environmentInfo = 'react/15.6.1'
+    let clientInfo = 'react-percy-storybook/1.0.0';
+    let environmentInfo = 'react/15.6.1';
 
     beforeEach(function() {
-      percyClient = new PercyClient({
-        client_info: clientInfo,
-        environment_info: 'react/15.6.1',
-      });
-
+      percyClient = new PercyClient({client_info: clientInfo, environment_info: environmentInfo});
       userAgent = new UserAgent(percyClient);
     });
 
