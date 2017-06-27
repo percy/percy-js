@@ -8,7 +8,7 @@ class UserAgent {
     this._client = client;
   }
 
-  userAgent() {
+  toString() {
     let client = [
       `Percy/${this._apiVersion()}`,
       this._client._client_info,

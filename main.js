@@ -59,7 +59,7 @@ class PercyClient {
   _headers(headers) {
     return Object.assign(
       {'Authorization': `Token token=${this.token}`,
-       'User-Agent': new UserAgent(this).userAgent()},
+       'User-Agent': new UserAgent(this).toString()},
       headers,
     );
   }

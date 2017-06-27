@@ -24,7 +24,7 @@ describe('UserAgent', function() {
         let regex = new RegExp(`Percy/v1 percy-js/${version} ` +
                                `\\(node/${process.version}(; travis)?\\)`);
 
-        assert(userAgent.userAgent().match(regex), "regex doesn't match user agent");
+        assert(userAgent.toString().match(regex), "regex doesn't match user agent");
       });
     });
   });
@@ -47,7 +47,7 @@ describe('UserAgent', function() {
         let regex = new RegExp(`Percy/v1 ${clientInfo} percy-js/${version} ` +
                                `\\(${environmentInfo}; node/${process.version}(; travis)?\\)`);
 
-        assert(userAgent.userAgent().match(regex), "regex doesn't match user agent");
+        assert(userAgent.toString().match(regex), "regex doesn't match user agent");
       });
     });
   });
