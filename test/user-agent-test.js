@@ -11,6 +11,7 @@ describe('UserAgent', function() {
 
   afterEach(function() {
     userAgent = null;
+    percyClient = null;
   });
 
   context('no client or environment info', function() {
