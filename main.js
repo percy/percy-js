@@ -4,7 +4,6 @@ const utils = require('./utils');
 const Environment = require('./environment');
 const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
-const USER_AGENT = 'percy-js/1.0';
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 
 class Resource {
