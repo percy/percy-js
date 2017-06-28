@@ -2,11 +2,9 @@ const http = require('http');
 const https = require('https');
 const utils = require('./utils');
 const Environment = require('./environment');
+const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
-
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
-const USER_AGENT = 'percy-js/1.0';
-
 
 class Resource {
   constructor(options) {
@@ -53,20 +51,28 @@ class PercyClient {
     this._httpModule = (this.apiUrl.indexOf('http://') === 0) ? http : https;
     // A custom HttpAgent with pooling and keepalive.
     this._httpAgent = new this._httpModule.Agent({maxSockets: 5, keepAlive: true});
+    this._clientInfo = options.clientInfo;
+    this._environmentInfo = options.environmentInfo;
+  }
+
+  _headers(headers) {
+    return Object.assign(
+      {'Authorization': `Token token=${this.token}`,
+       'User-Agent': new UserAgent(this).toString()},
+      headers,
+    );
   }
 
   _httpGet(uri) {
     let requestOptions = {
       method: 'GET',
       uri: uri,
-      headers: {
-        'Authorization': `Token token=${this.token}`,
-        'User-Agent': USER_AGENT,
-      },
+      headers: this._headers(),
       json: true,
       resolveWithFullResponse: true,
       agent: this._httpAgent,
     };
+
     return this._httpClient(uri, requestOptions);
   }
 
@@ -75,15 +81,12 @@ class PercyClient {
       method: 'POST',
       uri: uri,
       body: data,
-      headers: {
-        'Content-Type': JSON_API_CONTENT_TYPE,
-        'Authorization': `Token token=${this.token}`,
-        'User-Agent': USER_AGENT,
-      },
+      headers: this._headers({'Content-Type': JSON_API_CONTENT_TYPE}),
       json: true,
       resolveWithFullResponse: true,
       agent: this._httpAgent,
     };
+
     return this._httpClient(uri, requestOptions);
   }
 
@@ -138,12 +141,14 @@ class PercyClient {
         },
       },
     }
+
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
   }
 
   createSnapshot(buildId, resources, options) {
     options = options || {};
     resources = resources || [];
+
     let data = {
       'data': {
         'type': 'snapshots',
@@ -160,6 +165,7 @@ class PercyClient {
         },
       }
     };
+
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/snapshots/`, data);
   }
 

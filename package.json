@@ -5,7 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "prepublish": "npm run build",
-    "build:compile": "babel main.js utils.js environment.js --presets babel-preset-es2015 --out-dir dist",
+    "build:compile": "babel *.js --presets babel-preset-es2015 --out-dir dist && cp package.json dist/",
     "build:browserify": "browserify --standalone percy-client dist/main.js -o dist/bundle.js",
     "build": "npm run build:compile && npm run build:browserify",
     "test": "mocha --require babel-core/register",
@@ -29,6 +29,7 @@
     "babel-cli": "^6.9.0",
     "babel-core": "^6.4.5",
     "babel-preset-es2015": "^6.3.13",
+    "babel-plugin-transform-object-assign": "^6.22.0",
     "browserify": "^13.0.1",
     "mocha": "^2.4.5",
     "nock": "^7.7"

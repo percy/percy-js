@@ -6,3 +6,7 @@
 JavaScript API client library for [Percy](https://percy.io).
 
 #### Docs here: [https://percy.io/docs/api/javascript-client](https://percy.io/docs/api/javascript-client)
+
+## Testing
+
+Use `yarn test` to run the tests

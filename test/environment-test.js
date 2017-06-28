@@ -4,6 +4,7 @@ let assert = require('assert');
 
 describe('Environment', function() {
   let environment;
+
   afterEach(function() {
     environment = null;
   });
@@ -24,6 +25,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, null);
     });
   });
+
   context('PERCY_* env vars are set', function() {
     beforeEach(function() {
       environment = new Environment({
@@ -36,6 +38,7 @@ describe('Environment', function() {
         PERCY_PARALLEL_TOTAL: '3',
       });
     });
+
     it('allows override with percy env vars', function() {
       assert.strictEqual(environment.commitSha, 'percy-commit');
       assert.strictEqual(environment.branch, 'percy-branch');
@@ -50,6 +53,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.repo, 'other/foo-bar');
     });
   });
+
   context('in Travis CI', function() {
     beforeEach(function() {
       environment = new Environment({
@@ -74,12 +78,14 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelNonce, 'build-number');
       assert.strictEqual(environment.parallelTotalShards, 3);
     });
+
     context('in Pull Request build', function() {
       beforeEach(function() {
         environment._env.TRAVIS_PULL_REQUEST = '256';
         environment._env.TRAVIS_PULL_REQUEST_BRANCH = 'travis-pr-branch';
         environment._env.TRAVIS_PULL_REQUEST_SHA = 'travis-pr-head-commit-sha';
       });
+
       it('has the correct properties', function() {
         assert.strictEqual(environment.pullRequestNumber, '256');
         assert.strictEqual(environment.branch, 'travis-pr-branch');
@@ -87,6 +93,7 @@ describe('Environment', function() {
       });
     });
   });
+
   context('in Circle CI', function() {
     beforeEach(function() {
       environment = new Environment({
@@ -115,6 +122,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, null);
     });
   });
+
   context('in Codeship', function() {
     beforeEach(function() {
       environment = new Environment({
@@ -137,6 +145,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, 3);
     });
   });
+
   context('in Drone', function() {
     beforeEach(function() {
       environment = new Environment({
@@ -158,6 +167,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, null);
     });
   });
+
   context('in Semaphore CI', function() {
     beforeEach(function() {
       environment = new Environment({
@@ -181,6 +191,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.parallelTotalShards, 2);
     });
   });
+
   context('in Buildkite', function() {
     beforeEach(function() {
       environment = new Environment({
@@ -192,6 +203,7 @@ describe('Environment', function() {
         BUILDKITE_PARALLEL_JOB_COUNT: '3',
       });
     });
+
     context('push build', function() {
       it('has the correct properties', function() {
         assert.strictEqual(environment.ci, 'buildkite');
@@ -203,6 +215,7 @@ describe('Environment', function() {
         assert.strictEqual(environment.parallelTotalShards, 3);
       });
     });
+
     context('pull request build', function() {
       beforeEach(function() {
         environment._env.BUILDKITE_PULL_REQUEST = '123';
@@ -212,6 +225,7 @@ describe('Environment', function() {
         assert.strictEqual(environment.pullRequestNumber, '123');
       });
     });
+
     context('UI-triggered HEAD build', function() {
       beforeEach(function() {
         environment._env.BUILDKITE_COMMIT = 'HEAD';
