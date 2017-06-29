@@ -1,5 +1,5 @@
 let path = require('path');
-let utils = require(path.join(__dirname, '..', 'utils'));
+let utils = require(path.join(__dirname, '..', 'src', 'utils'));
 let assert = require('assert');
 
 describe('sha256hash', function() {

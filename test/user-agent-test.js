@@ -1,6 +1,6 @@
 let path = require('path');
-let UserAgent = require(path.join(__dirname, '..', 'user-agent'));
-let PercyClient = require(path.join(__dirname, '..', 'main'));
+let UserAgent = require(path.join(__dirname, '..', 'src', 'user-agent'));
+let PercyClient = require(path.join(__dirname, '..', 'src', 'main'));
 let assert = require('assert');
 
 import { version } from '../package.json';
