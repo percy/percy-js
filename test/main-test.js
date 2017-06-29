@@ -1,7 +1,7 @@
 let path = require('path');
 let assert = require('assert');
-let utils = require(path.join(__dirname, '..', 'utils'));
-let PercyClient = require(path.join(__dirname, '..', 'main'));
+let utils = require(path.join(__dirname, '..', 'src', 'utils'));
+let PercyClient = require(path.join(__dirname, '..', 'src', 'main'));
 let nock = require('nock');
 
 describe('PercyClient', function() {

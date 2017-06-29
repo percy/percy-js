@@ -1,5 +1,5 @@
 let path = require('path');
-let Environment = require(path.join(__dirname, '..', 'environment'));
+let Environment = require(path.join(__dirname, '..', 'src', 'environment'));
 let assert = require('assert');
 
 describe('Environment', function() {
