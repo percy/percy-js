@@ -82,12 +82,14 @@ class Environment {
   }
 
   get targetBranch() {
-    if (this._env.PERCY_TARGET_BRANCH) {
-      return this._env.PERCY_TARGET_BRANCH;
-    }
-    return null;
+    return this._env.PERCY_TARGET_BRANCH || null;
   }
 
+  get project() {
+    return this._env.PERCY_PROJECT || null;
+  }
+
+  // Deprecated: use `project` instead.
   get repo() {
     if (this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT) {
       return this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT;

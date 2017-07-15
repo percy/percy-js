@@ -90,7 +90,7 @@ class PercyClient {
     return this._httpClient(uri, requestOptions);
   }
 
-  createBuild(repo, options) {
+  createBuild(project, options) {
     let parallelNonce = this.environment.parallelNonce;
     let parallelTotalShards = this.environment.parallelTotalShards;
 
@@ -123,7 +123,7 @@ class PercyClient {
       };
     }
 
-    return this._httpPost(`${this.apiUrl}/repos/${repo}/builds/`, data);
+    return this._httpPost(`${this.apiUrl}/projects/${project}/builds/`, data);
   }
 
   makeResource(options) {
