@@ -97,6 +97,29 @@ describe('Environment', function() {
     });
   });
 
+  context('in Jenkins', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        JENKINS_URL: 'http://jenkins.local/',
+        BUILD_NUMBER: '111',
+        ghprbPullId: '256',
+        ghprbActualCommit: 'jenkins-commit-sha',
+        ghprbSourceBranch: 'jenkins-branch',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'jenkins');
+      assert.strictEqual(environment.commitSha, 'jenkins-commit-sha');
+      assert.strictEqual(environment.branch, 'jenkins-branch');
+      assert.strictEqual(environment.pullRequestNumber, '256');
+      assert.strictEqual(environment.project, null);
+      assert.strictEqual(environment.repo, null);  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.parallelNonce, '111');
+      assert.strictEqual(environment.parallelTotalShards, null);
+    });
+  });
+
   context('in Circle CI', function() {
     beforeEach(function() {
       environment = new Environment({
