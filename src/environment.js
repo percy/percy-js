@@ -65,7 +65,7 @@ class Environment {
         }
         return this._env.TRAVIS_BRANCH;
       case 'jenkins':
-        return this._env.ghprbTargetBranch;
+        return this._env.ghprbSourceBranch;
       case 'circle':
         return this._env.CIRCLE_BRANCH;
       case 'codeship':
@@ -149,7 +149,7 @@ class Environment {
       case 'travis':
         return this._env.TRAVIS_BUILD_NUMBER;
       case 'jenkins':
-        return this._env.ghprbPullId;
+        return this._env.BUILD_NUMBER;
       case 'circle':
         return this._env.CIRCLE_BUILD_NUM;
       case 'codeship':
