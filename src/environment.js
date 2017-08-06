@@ -157,7 +157,7 @@ class Environment {
       case 'drone':
         return this._env.DRONE_BUILD_NUMBER;
       case 'semaphore':
-        return this._env.SEMAPHORE_BUILD_NUMBER;
+        return `${this._env.SEMAPHORE_BRANCH_ID}/${this._env.SEMAPHORE_BUILD_NUMBER}`;
       case 'buildkite':
         return this._env.BUILDKITE_BUILD_ID;
     }

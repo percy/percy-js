@@ -204,6 +204,7 @@ describe('Environment', function() {
         BRANCH_NAME: 'semaphore-branch',
         REVISION: 'semaphore-commit-sha',
         SEMAPHORE_REPO_SLUG: 'repo-owner/repo-name',
+        SEMAPHORE_BRANCH_ID: 'semaphore-branch-id',
         SEMAPHORE_BUILD_NUMBER: 'semaphore-build-number',
         SEMAPHORE_THREAD_COUNT: '2',
         PULL_REQUEST_NUMBER: '123',
@@ -217,7 +218,8 @@ describe('Environment', function() {
       assert.strictEqual(environment.pullRequestNumber, '123');
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, 'repo-owner/repo-name');  // TODO: Deprecated, remove.
-      assert.strictEqual(environment.parallelNonce, 'semaphore-build-number');
+      let expected_nonce = 'semaphore-branch-id/semaphore-build-number';
+      assert.strictEqual(environment.parallelNonce, expected_nonce);
       assert.strictEqual(environment.parallelTotalShards, 2);
     });
   });
