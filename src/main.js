@@ -173,8 +173,11 @@ class PercyClient {
     return this._httpPost(`${this.apiUrl}/snapshots/${snapshotId}/finalize`, {});
   }
 
-  finalizeBuild(buildId) {
-    return this._httpPost(`${this.apiUrl}/builds/${buildId}/finalize`, {});
+  finalizeBuild(buildId, options) {
+    options = options || {};
+    let allShards = options.allShards || false;
+    let query = allShards ? '?all-shards=true' : '';
+    return this._httpPost(`${this.apiUrl}/builds/${buildId}/finalize${query}`, {});
   }
 }
 
