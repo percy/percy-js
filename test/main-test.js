@@ -294,5 +294,17 @@ describe('PercyClient', function() {
         done();
       }).catch((err) => { done(err); });
     });
+
+    it('accepts allShards argument', function(done) {
+      let responseData = {success: true};
+      nock('https://percy.io').post('/api/v1/builds/123/finalize?all-shards=true').reply(201, responseData);
+      let request = percyClient.finalizeBuild(123, {allShards: true});
+
+      request.then((response) => {
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {success: true});
+        done();
+      }).catch((err) => { done(err); });
+    });
   });
 });
