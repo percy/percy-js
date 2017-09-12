@@ -212,6 +212,53 @@ describe('PercyClient', function() {
     });
   });
 
+  describe('uploadResources', function() {
+    it('uploads the resources', function(done) {
+      const content1 = 'foo';
+      const content2 = 'bar';
+      const contents = [content1, content2];
+
+      const expectedRequestData1 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(content1),
+          'attributes': {
+            'base64-content': utils.base64encode(content1),
+          }
+        }
+      };
+      const expectedRequestData2 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(content2),
+          'attributes': {
+            'base64-content': utils.base64encode(content2),
+          }
+        }
+      };
+
+      const responseMock = function(url, requestBody) {
+        const requestJson = JSON.parse(requestBody);
+        if (requestJson.data.id === expectedRequestData1.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData1));
+        } else if (requestJson.data.id === expectedRequestData2.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData2));
+        } else {
+          assert.fail('Invalid resource uploaded');
+        }
+        const responseBody = {success: true};
+        return [201, responseBody];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').times(2).reply(201, responseMock);
+      let request = percyClient.uploadResources(123, contents);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
+    });
+  });
+
   describe('createSnapshot', function() {
     it('creates a snapshot', function(done) {
       let content = 'foo';

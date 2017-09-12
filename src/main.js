@@ -4,6 +4,8 @@ const utils = require('./utils');
 const Environment = require('./environment');
 const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
+const PromisePool = require('es6-promise-pool');
+const regeneratorRuntime = require('regenerator-runtime');
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 
 class Resource {
@@ -143,6 +145,19 @@ class PercyClient {
     }
 
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
+  }
+
+  uploadResources(buildId, contents) {
+    const _this = this;
+    function* generatePromises() {
+      for (const content of contents) {
+        yield _this.uploadResource(buildId, content);
+      }
+    }
+
+    const concurrency = 2;
+    const pool = new PromisePool(generatePromises(), concurrency);
+    return pool.start();
   }
 
   createSnapshot(buildId, resources, options) {
