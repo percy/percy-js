@@ -160,6 +160,22 @@ class PercyClient {
     return pool.start();
   }
 
+  uploadMissingResources(buildId, response, resources) {
+    const missingResources = utils.getMissingResources(response);
+    if (!missingResources.length) {
+      return Promise.resolve();
+    }
+
+    const resourcesBySha = resources.reduce((map, resource) => {
+      map[resource.sha] = resource;
+      return map;
+    }, {});
+    const missingResourceContents = missingResources
+      .map(resource => resourcesBySha[resource.id].content);
+
+    return this.uploadResources(buildId, missingResourceContents);
+  }
+
   createSnapshot(buildId, resources, options) {
     options = options || {};
     resources = resources || [];

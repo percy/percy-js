@@ -259,6 +259,93 @@ describe('PercyClient', function() {
     });
   });
 
+  describe('uploadMissingResources', function() {
+    it('does nothing when there are no missing resources', function(done) {
+      const response = {
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {
+                data: []
+              }
+            }
+          }
+        }
+      };
+      const resources = [
+        {
+          sha: '123'
+        },
+        {
+          sha: '456'
+        }
+      ];
+
+      const responseMock = function(url, requestBody) {
+        assert.fail('Should not be uploading any resources');
+        return [500];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').reply(500, responseMock);
+      const request = percyClient.uploadMissingResources(123, response, resources);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
+    });
+
+    it('uploads the missing resources', function(done) {
+      const response = {
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {
+                data: [
+                  {
+                    id: '456'
+                  }
+                ]
+              }
+            }
+          }
+        }
+      };
+      const resources = [
+        {
+          sha: '123',
+          content: 'Foo'
+        },
+        {
+          sha: '456',
+          content: 'Bar'
+        }
+      ];
+
+      const expectedRequestData = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(resources[1].content),
+          'attributes': {
+            'base64-content': utils.base64encode(resources[1].content),
+          }
+        }
+      };
+
+      const responseMock = function(url, requestBody) {
+        assert.equal(requestBody, JSON.stringify(expectedRequestData));
+        const responseBody = {success: true};
+        return [201, responseBody];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').reply(201, responseMock);
+      const request = percyClient.uploadMissingResources(123, response, resources);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
+    });
+  });
+
   describe('createSnapshot', function() {
     it('creates a snapshot', function(done) {
       let content = 'foo';
