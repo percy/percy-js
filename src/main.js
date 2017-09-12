@@ -7,6 +7,7 @@ const requestPromise = require('request-promise');
 const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime');
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
+const CONCURRENCY = 2;
 
 class Resource {
   constructor(options) {
@@ -155,8 +156,7 @@ class PercyClient {
       }
     }
 
-    const concurrency = 2;
-    const pool = new PromisePool(generatePromises(), concurrency);
+    const pool = new PromisePool(generatePromises(), CONCURRENCY);
     return pool.start();
   }
 

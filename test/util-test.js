@@ -60,15 +60,47 @@ describe('getMissingResources', function() {
 
   it('returns an empty list given no missing resources data', function() {
     assert.deepEqual(
-      utils.getMissingResources({ body: { data: { relationships: { 'missing-resources': {} } } } }),
+      utils.getMissingResources({
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {}
+            }
+          }
+        }
+      }),
       []
     );
   });
 
   it('returns the missing resources', function() {
     assert.deepEqual(
-      utils.getMissingResources({ body: { data: { relationships: { 'missing-resources': { data: [{ id: '123' }, { id: '456' }] } } } } }),
-      [{ id: '123' }, { id: '456' }]
+      utils.getMissingResources({
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {
+                data: [
+                  {
+                    id: '123'
+                  },
+                  {
+                    id: '456'
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }),
+      [
+        {
+          id: '123'
+        },
+        {
+          id: '456'
+        }
+      ]
     )
   });
 });
