@@ -4,6 +4,7 @@ const utils = require('./utils');
 const Environment = require('./environment');
 const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
+const Promise = require('bluebird');
 const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime');
 const fs = require('fs');
