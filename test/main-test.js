@@ -3,6 +3,7 @@ let assert = require('assert');
 let utils = require(path.join(__dirname, '..', 'src', 'utils'));
 let PercyClient = require(path.join(__dirname, '..', 'src', 'main'));
 let nock = require('nock');
+let fs = require('fs');
 
 describe('PercyClient', function() {
   let percyClient;
@@ -213,26 +214,31 @@ describe('PercyClient', function() {
   });
 
   describe('uploadResources', function() {
-    it('uploads the resources', function(done) {
-      const content1 = 'foo';
-      const content2 = 'bar';
-      const contents = [content1, content2];
+    it('uploads resources with content', function(done) {
+      const resources = [
+        {
+          content: 'foo'
+        },
+        {
+          content: 'bar'
+        }
+      ];
 
       const expectedRequestData1 = {
         'data': {
           'type': 'resources',
-          'id': utils.sha256hash(content1),
+          'id': utils.sha256hash(resources[0].content),
           'attributes': {
-            'base64-content': utils.base64encode(content1),
+            'base64-content': utils.base64encode(resources[0].content),
           }
         }
       };
       const expectedRequestData2 = {
         'data': {
           'type': 'resources',
-          'id': utils.sha256hash(content2),
+          'id': utils.sha256hash(resources[1].content),
           'attributes': {
-            'base64-content': utils.base64encode(content2),
+            'base64-content': utils.base64encode(resources[1].content),
           }
         }
       };
@@ -251,7 +257,60 @@ describe('PercyClient', function() {
       };
 
       nock('https://percy.io').post('/api/v1/builds/123/resources/').times(2).reply(201, responseMock);
-      let request = percyClient.uploadResources(123, contents);
+      let request = percyClient.uploadResources(123, resources);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
+    });
+
+    it('uploads resources with local path', function(done) {
+      const resources = [
+        {
+          localPath: path.join(__dirname, 'data', 'test-resource.css')
+        },
+        {
+          localPath: path.join(__dirname, 'data', 'test-resource.js')
+        }
+      ];
+
+      const cssContent = fs.readFileSync(resources[0].localPath, 'utf8').toString();
+      const expectedRequestData1 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(cssContent),
+          'attributes': {
+            'base64-content': utils.base64encode(cssContent),
+          }
+        }
+      };
+
+      const jsContent = fs.readFileSync(resources[1].localPath, 'utf8').toString();
+      const expectedRequestData2 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(jsContent),
+          'attributes': {
+            'base64-content': utils.base64encode(jsContent),
+          }
+        }
+      };
+
+      const responseMock = function(url, requestBody) {
+        const requestJson = JSON.parse(requestBody);
+        if (requestJson.data.id === expectedRequestData1.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData1));
+        } else if (requestJson.data.id === expectedRequestData2.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData2));
+        } else {
+          assert.fail('Invalid resource uploaded');
+        }
+        const responseBody = {success: true};
+        return [201, responseBody];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').times(2).reply(201, responseMock);
+      let request = percyClient.uploadResources(123, resources);
 
       request
         .then(() => { done(); })

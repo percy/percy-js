@@ -6,6 +6,7 @@ const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
 const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime');
+const fs = require('fs');
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const CONCURRENCY = 2;
 
@@ -148,10 +149,13 @@ class PercyClient {
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
   }
 
-  uploadResources(buildId, contents) {
+  uploadResources(buildId, resources) {
     const _this = this;
     function* generatePromises() {
-      for (const content of contents) {
+      for (const resource of resources) {
+        const content = resource.localPath
+          ? fs.readFileSync(resource.localPath, 'utf8')
+          : resource.content;
         yield _this.uploadResource(buildId, content);
       }
     }
@@ -161,8 +165,8 @@ class PercyClient {
   }
 
   uploadMissingResources(buildId, response, resources) {
-    const missingResources = utils.getMissingResources(response);
-    if (!missingResources.length) {
+    const missingResourceShas = utils.getMissingResources(response);
+    if (!missingResourceShas.length) {
       return Promise.resolve();
     }
 
@@ -170,10 +174,10 @@ class PercyClient {
       map[resource.sha] = resource;
       return map;
     }, {});
-    const missingResourceContents = missingResources
-      .map(resource => resourcesBySha[resource.id].content);
+    const missingResources = missingResourceShas
+      .map(resource => resourcesBySha[resource.id]);
 
-    return this.uploadResources(buildId, missingResourceContents);
+    return this.uploadResources(buildId, missingResources);
   }
 
   createSnapshot(buildId, resources, options) {
