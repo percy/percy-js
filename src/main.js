@@ -4,7 +4,12 @@ const utils = require('./utils');
 const Environment = require('./environment');
 const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
+const PromisePool = require('es6-promise-pool');
+const regeneratorRuntime = require('regenerator-runtime');
+const fs = require('fs');
+
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
+const CONCURRENCY = 2;
 
 class Resource {
   constructor(options) {
@@ -143,6 +148,37 @@ class PercyClient {
     }
 
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
+  }
+
+  uploadResources(buildId, resources) {
+    const _this = this;
+    function* generatePromises() {
+      for (const resource of resources) {
+        const content = resource.localPath
+          ? fs.readFileSync(resource.localPath)
+          : resource.content;
+        yield _this.uploadResource(buildId, content);
+      }
+    }
+
+    const pool = new PromisePool(generatePromises(), CONCURRENCY);
+    return pool.start();
+  }
+
+  uploadMissingResources(buildId, response, resources) {
+    const missingResourceShas = utils.getMissingResources(response);
+    if (!missingResourceShas.length) {
+      return Promise.resolve();
+    }
+
+    const resourcesBySha = resources.reduce((map, resource) => {
+      map[resource.sha] = resource;
+      return map;
+    }, {});
+    const missingResources = missingResourceShas
+      .map(resource => resourcesBySha[resource.id]);
+
+    return this.uploadResources(buildId, missingResources);
   }
 
   createSnapshot(buildId, resources, options) {

@@ -3,6 +3,7 @@ let assert = require('assert');
 let utils = require(path.join(__dirname, '..', 'src', 'utils'));
 let PercyClient = require(path.join(__dirname, '..', 'src', 'main'));
 let nock = require('nock');
+let fs = require('fs');
 
 describe('PercyClient', function() {
   let percyClient;
@@ -209,6 +210,198 @@ describe('PercyClient', function() {
         assert.deepEqual(response.body, {success: true});
         done();
       }).catch((err) => { done(err); });
+    });
+  });
+
+  describe('uploadResources', function() {
+    it('uploads resources with content', function(done) {
+      const resources = [
+        {
+          content: 'foo'
+        },
+        {
+          content: 'bar'
+        }
+      ];
+
+      const expectedRequestData1 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(resources[0].content),
+          'attributes': {
+            'base64-content': utils.base64encode(resources[0].content),
+          }
+        }
+      };
+      const expectedRequestData2 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(resources[1].content),
+          'attributes': {
+            'base64-content': utils.base64encode(resources[1].content),
+          }
+        }
+      };
+
+      const responseMock = function(url, requestBody) {
+        const requestJson = JSON.parse(requestBody);
+        if (requestJson.data.id === expectedRequestData1.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData1));
+        } else if (requestJson.data.id === expectedRequestData2.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData2));
+        } else {
+          assert.fail('Invalid resource uploaded');
+        }
+        const responseBody = {success: true};
+        return [201, responseBody];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').times(2).reply(201, responseMock);
+      let request = percyClient.uploadResources(123, resources);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
+    });
+
+    it('uploads resources with local path', function(done) {
+      const resources = [
+        {
+          localPath: path.join(__dirname, 'data', 'test-resource.css')
+        },
+        {
+          localPath: path.join(__dirname, 'data', 'test-resource.js')
+        }
+      ];
+
+      const cssContent = fs.readFileSync(resources[0].localPath);
+      const expectedRequestData1 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(cssContent),
+          'attributes': {
+            'base64-content': utils.base64encode(cssContent),
+          }
+        }
+      };
+
+      const jsContent = fs.readFileSync(resources[1].localPath);
+      const expectedRequestData2 = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(jsContent),
+          'attributes': {
+            'base64-content': utils.base64encode(jsContent),
+          }
+        }
+      };
+
+      const responseMock = function(url, requestBody) {
+        const requestJson = JSON.parse(requestBody);
+        if (requestJson.data.id === expectedRequestData1.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData1));
+        } else if (requestJson.data.id === expectedRequestData2.data.id) {
+          assert.equal(requestBody, JSON.stringify(expectedRequestData2));
+        } else {
+          assert.fail('Invalid resource uploaded');
+        }
+        const responseBody = {success: true};
+        return [201, responseBody];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').times(2).reply(201, responseMock);
+      let request = percyClient.uploadResources(123, resources);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
+    });
+  });
+
+  describe('uploadMissingResources', function() {
+    it('does nothing when there are no missing resources', function(done) {
+      const response = {
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {
+                data: []
+              }
+            }
+          }
+        }
+      };
+      const resources = [
+        {
+          sha: '123'
+        },
+        {
+          sha: '456'
+        }
+      ];
+
+      const responseMock = function(url, requestBody) {
+        assert.fail('Should not be uploading any resources');
+        return [500];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').reply(500, responseMock);
+      const request = percyClient.uploadMissingResources(123, response, resources);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
+    });
+
+    it('uploads the missing resources', function(done) {
+      const response = {
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {
+                data: [
+                  {
+                    id: '456'
+                  }
+                ]
+              }
+            }
+          }
+        }
+      };
+      const resources = [
+        {
+          sha: '123',
+          content: 'Foo'
+        },
+        {
+          sha: '456',
+          content: 'Bar'
+        }
+      ];
+
+      const expectedRequestData = {
+        'data': {
+          'type': 'resources',
+          'id': utils.sha256hash(resources[1].content),
+          'attributes': {
+            'base64-content': utils.base64encode(resources[1].content),
+          }
+        }
+      };
+
+      const responseMock = function(url, requestBody) {
+        assert.equal(requestBody, JSON.stringify(expectedRequestData));
+        const responseBody = {success: true};
+        return [201, responseBody];
+      };
+
+      nock('https://percy.io').post('/api/v1/builds/123/resources/').reply(201, responseMock);
+      const request = percyClient.uploadMissingResources(123, response, resources);
+
+      request
+        .then(() => { done(); })
+        .catch((err) => { done(err); });
     });
   });
 

@@ -33,3 +33,74 @@ describe('base64encode', function() {
     assert.equal(utils.base64encode('\x01\x02\x99'), 'AQLCmQ==');
   });
 });
+
+describe('getMissingResources', function() {
+  it('returns an empty list given no response', function() {
+    assert.deepEqual(utils.getMissingResources(undefined), []);
+  });
+
+  it('returns an empty list given no response body', function() {
+    assert.deepEqual(utils.getMissingResources({}), []);
+  });
+
+  it('returns an empty list given no response body data', function() {
+    assert.deepEqual(utils.getMissingResources({ body: {} }), []);
+  });
+
+  it('returns an empty list given no response body data relationship', function() {
+    assert.deepEqual(utils.getMissingResources({ body: { data: {} } }), []);
+  });
+
+  it('returns an empty list given no missing resources', function() {
+    assert.deepEqual(
+      utils.getMissingResources({ body: { data: { relationships: {} } } }),
+      []
+    );
+  });
+
+  it('returns an empty list given no missing resources data', function() {
+    assert.deepEqual(
+      utils.getMissingResources({
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {}
+            }
+          }
+        }
+      }),
+      []
+    );
+  });
+
+  it('returns the missing resources', function() {
+    assert.deepEqual(
+      utils.getMissingResources({
+        body: {
+          data: {
+            relationships: {
+              'missing-resources': {
+                data: [
+                  {
+                    id: '123'
+                  },
+                  {
+                    id: '456'
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }),
+      [
+        {
+          id: '123'
+        },
+        {
+          id: '456'
+        }
+      ]
+    )
+  });
+});

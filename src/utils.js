@@ -9,5 +9,16 @@ module.exports = {
 
   base64encode(content) {
     return base64.fromByteArray(new Buffer(content));
+  },
+
+  getMissingResources(response) {
+    return (
+      response &&
+      response.body &&
+      response.body.data &&
+      response.body.data.relationships &&
+      response.body.data.relationships['missing-resources'] &&
+      response.body.data.relationships['missing-resources'].data
+    ) || [];
   }
 }
