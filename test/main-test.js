@@ -274,7 +274,7 @@ describe('PercyClient', function() {
         }
       ];
 
-      const cssContent = fs.readFileSync(resources[0].localPath, 'utf8').toString();
+      const cssContent = fs.readFileSync(resources[0].localPath);
       const expectedRequestData1 = {
         'data': {
           'type': 'resources',
@@ -285,7 +285,7 @@ describe('PercyClient', function() {
         }
       };
 
-      const jsContent = fs.readFileSync(resources[1].localPath, 'utf8').toString();
+      const jsContent = fs.readFileSync(resources[1].localPath);
       const expectedRequestData2 = {
         'data': {
           'type': 'resources',

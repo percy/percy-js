@@ -155,7 +155,7 @@ class PercyClient {
     function* generatePromises() {
       for (const resource of resources) {
         const content = resource.localPath
-          ? fs.readFileSync(resource.localPath, 'utf8')
+          ? fs.readFileSync(resource.localPath)
           : resource.content;
         yield _this.uploadResource(buildId, content);
       }
