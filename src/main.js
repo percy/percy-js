@@ -161,7 +161,9 @@ class PercyClient {
       }
     }
 
-    const pool = new PromisePool(generatePromises(), CONCURRENCY);
+    const pool = new PromisePool(generatePromises(), CONCURRENCY, {
+      promise: Promise
+    });
     return pool.start();
   }
 
