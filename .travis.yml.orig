@@ -1,0 +1,29 @@
+sudo: false
+language: node_js
+node_js:
+  - "8"
+  - "7"
+  - "6.1"
+  - "6.0"
+  - "5"
+  - "5.1"
+  - "4"
+  - "4.2"
+  - "4.1"
+  - "4.0"
+  - "0.12"
+  - "0.11"
+<<<<<<< HEAD
+
+matrix:
+  allow_failures:
+    - node_js: "8"
+||||||| merged common ancestors
+  - "0.10"
+
+matrix:
+  allow_failures:
+    - node_js: "8"
+=======
+  - "0.10"
+>>>>>>> origin/master
