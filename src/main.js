@@ -8,6 +8,8 @@ const Promise = require('bluebird');
 const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime');
 const fs = require('fs');
+require('es6-symbol/implement');
+
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const CONCURRENCY = 2;
 
