@@ -4,11 +4,9 @@ const utils = require('./utils');
 const Environment = require('./environment');
 const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
-const Promise = require('bluebird');
 const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime');
 const fs = require('fs');
-require('es6-symbol/implement');
 
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const CONCURRENCY = 2;
@@ -163,9 +161,7 @@ class PercyClient {
       }
     }
 
-    const pool = new PromisePool(generatePromises(), CONCURRENCY, {
-      promise: Promise
-    });
+    const pool = new PromisePool(generatePromises(), CONCURRENCY);
     return pool.start();
   }
 
