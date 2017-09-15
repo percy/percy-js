@@ -10,7 +10,7 @@ module.exports = {
     mocha: true
   },
   plugins: ["prettier"],
-  extends: ["prettier", "eslint:recommended"],
+  extends: ["eslint:recommended", "prettier"],
   rules: {
     "prettier/prettier": [
       "error",
