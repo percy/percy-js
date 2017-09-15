@@ -5,7 +5,7 @@ const Environment = require('./environment');
 const UserAgent = require('./user-agent');
 const requestPromise = require('request-promise');
 const PromisePool = require('es6-promise-pool');
-const regeneratorRuntime = require('regenerator-runtime');
+const regeneratorRuntime = require('regenerator-runtime'); // eslint-disable-line no-unused-vars
 const fs = require('fs');
 
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
@@ -20,7 +20,7 @@ class Resource {
       throw new Error('Either "sha" or "content" is required to create a Resource.');
     }
     if (/\s/.test(options.resourceUrl)) {
-      throw new Error('"resourceUrl" arg includes whitespace. It needs to be encoded.')
+      throw new Error('"resourceUrl" arg includes whitespace. It needs to be encoded.');
     }
     this.resourceUrl = options.resourceUrl;
     this.content = options.content;
@@ -35,14 +35,14 @@ class Resource {
 
   serialize() {
     return {
-      'type': 'resources',
-      'id': this.sha,
-      'attributes': {
+      type: 'resources',
+      id: this.sha,
+      attributes: {
         'resource-url': this.resourceUrl,
-        'mimetype': this.mimetype || null,
+        mimetype: this.mimetype || null,
         'is-root': this.isRoot || null,
       },
-    }
+    };
   }
 }
 
@@ -53,17 +53,22 @@ class PercyClient {
     this.apiUrl = options.apiUrl || 'https://percy.io/api/v1';
     this.environment = options.environment || new Environment(process.env);
     this._httpClient = requestPromise;
-    this._httpModule = (this.apiUrl.indexOf('http://') === 0) ? http : https;
+    this._httpModule = this.apiUrl.indexOf('http://') === 0 ? http : https;
     // A custom HttpAgent with pooling and keepalive.
-    this._httpAgent = new this._httpModule.Agent({maxSockets: 5, keepAlive: true});
+    this._httpAgent = new this._httpModule.Agent({
+      maxSockets: 5,
+      keepAlive: true,
+    });
     this._clientInfo = options.clientInfo;
     this._environmentInfo = options.environmentInfo;
   }
 
   _headers(headers) {
     return Object.assign(
-      {'Authorization': `Token token=${this.token}`,
-       'User-Agent': new UserAgent(this).toString()},
+      {
+        Authorization: `Token token=${this.token}`,
+        'User-Agent': new UserAgent(this).toString(),
+      },
       headers,
     );
   }
@@ -107,23 +112,25 @@ class PercyClient {
 
     options = options || {};
     let data = {
-      'data': {
-        'type': 'builds',
-        'attributes': {
-          'branch': this.environment.branch,
+      data: {
+        type: 'builds',
+        attributes: {
+          branch: this.environment.branch,
           'target-branch': this.environment.targetBranch,
           'commit-sha': this.environment.commitSha,
           'pull-request-number': this.environment.pullRequestNumber,
           'parallel-nonce': parallelNonce,
           'parallel-total-shards': parallelTotalShards,
-        }
-      }
+        },
+      },
     };
 
     if (options.resources) {
       data['data']['relationships'] = {
-        'resources': {
-          'data': options.resources.map(function(resource) { return resource.serialize(); }),
+        resources: {
+          data: options.resources.map(function(resource) {
+            return resource.serialize();
+          }),
         },
       };
     }
@@ -138,14 +145,14 @@ class PercyClient {
   uploadResource(buildId, content) {
     let sha = utils.sha256hash(content);
     let data = {
-      'data': {
-        'type': 'resources',
-        'id': sha,
-        'attributes': {
+      data: {
+        type: 'resources',
+        id: sha,
+        attributes: {
           'base64-content': utils.base64encode(content),
         },
       },
-    }
+    };
 
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/resources/`, data);
   }
@@ -154,9 +161,7 @@ class PercyClient {
     const _this = this;
     function* generatePromises() {
       for (const resource of resources) {
-        const content = resource.localPath
-          ? fs.readFileSync(resource.localPath)
-          : resource.content;
+        const content = resource.localPath ? fs.readFileSync(resource.localPath) : resource.content;
         yield _this.uploadResource(buildId, content);
       }
     }
@@ -175,8 +180,7 @@ class PercyClient {
       map[resource.sha] = resource;
       return map;
     }, {});
-    const missingResources = missingResourceShas
-      .map(resource => resourcesBySha[resource.id]);
+    const missingResources = missingResourceShas.map(resource => resourcesBySha[resource.id]);
 
     return this.uploadResources(buildId, missingResources);
   }
@@ -186,20 +190,22 @@ class PercyClient {
     resources = resources || [];
 
     let data = {
-      'data': {
-        'type': 'snapshots',
-        'attributes': {
-          'name': options.name || null,
+      data: {
+        type: 'snapshots',
+        attributes: {
+          name: options.name || null,
           'enable-javascript': options.enableJavaScript || null,
-          'widths': options.widths || null,
+          widths: options.widths || null,
           'minimum-height': options.minimumHeight || null,
         },
-        'relationships': {
-          'resources': {
-            'data': resources.map(function(resource) { return resource.serialize(); }),
+        relationships: {
+          resources: {
+            data: resources.map(function(resource) {
+              return resource.serialize();
+            }),
           },
         },
-      }
+      },
     };
 
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/snapshots/`, data);

@@ -19,20 +19,26 @@ describe('PercyClient', function() {
 
   describe('_httpGet', function() {
     it('sends a GET request', function(done) {
-      let responseMock = function(url, requestBody) {
+      let responseMock = function() {
         // Verify some request states.
         assert.equal(this.req.headers['authorization'], 'Token token=test-token');
         let responseBody = {success: true};
         return [200, responseBody];
       };
-      nock('https://localhost').get('/foo?bar').reply(200, responseMock);
+      nock('https://localhost')
+        .get('/foo?bar')
+        .reply(200, responseMock);
       let request = percyClient._httpGet('https://localhost/foo?bar');
 
-      request.then(function(response) {
-        assert.equal(response.statusCode, 200);
-        assert.deepEqual(response.body, {success: true});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(function(response) {
+          assert.equal(response.statusCode, 200);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
@@ -47,14 +53,20 @@ describe('PercyClient', function() {
         let responseBody = {success: true};
         return [201, responseBody];
       };
-      nock('https://localhost').post('/foo').reply(201, responseMock);
+      nock('https://localhost')
+        .post('/foo')
+        .reply(201, responseMock);
       let request = percyClient._httpPost('https://localhost/foo', requestData);
 
-      request.then((response) => {
-        assert.equal(response.statusCode, 201);
-        assert.deepEqual(response.body, {success: true});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
@@ -66,38 +78,37 @@ describe('PercyClient', function() {
 
   describe('createBuild', function() {
     it('returns build data', function(done) {
-      let responseData = {foo: 123};
       let resources = [percyClient.makeResource({resourceUrl: '/foo%20bar', sha: 'fake-sha'})];
       // Make sure we're at least testing against a truthy value.
       assert.ok(percyClient.environment.branch);
 
       let expectedRequestData = {
-        'data': {
-          'type': 'builds',
-          'attributes': {
-            'branch': percyClient.environment.branch,
+        data: {
+          type: 'builds',
+          attributes: {
+            branch: percyClient.environment.branch,
             'target-branch': percyClient.environment.targetBranch,
             'commit-sha': percyClient.environment.commitSha,
             'pull-request-number': percyClient.environment.pullRequestNumber,
             'parallel-nonce': null,
             'parallel-total-shards': null,
           },
-          'relationships': {
-            'resources': {
-              'data': [
+          relationships: {
+            resources: {
+              data: [
                 {
-                  'type': 'resources',
-                  'id': 'fake-sha',
-                  'attributes': {
+                  type: 'resources',
+                  id: 'fake-sha',
+                  attributes: {
                     'resource-url': '/foo%20bar',
-                    'mimetype': null,
+                    mimetype: null,
                     'is-root': null,
                   },
-                }
+                },
               ],
             },
           },
-        }
+        },
       };
 
       let responseMock = function(url, requestBody) {
@@ -107,26 +118,37 @@ describe('PercyClient', function() {
         return [201, responseBody];
       };
 
-      nock('https://percy.io').post('/api/v1/projects/foo/bar/builds/').reply(201, responseMock);
-      let request = percyClient.createBuild('foo/bar', {resources: resources});
+      nock('https://percy.io')
+        .post('/api/v1/projects/foo/bar/builds/')
+        .reply(201, responseMock);
+      let request = percyClient.createBuild('foo/bar', {
+        resources: resources,
+      });
 
-      request.then((response) => {
-        assert.equal(response.statusCode, 201);
-        assert.deepEqual(response.body, {foo: 123});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {foo: 123});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
   describe('makeResource', function() {
     it('returns a Resource object with defaults', function() {
-      let resource = percyClient.makeResource({resourceUrl: '/foo', sha: 'fake-sha'});
+      let resource = percyClient.makeResource({
+        resourceUrl: '/foo',
+        sha: 'fake-sha',
+      });
       let expected = {
-        'type': 'resources',
-        'id': 'fake-sha',
-        'attributes': {
+        type: 'resources',
+        id: 'fake-sha',
+        attributes: {
           'resource-url': '/foo',
-          'mimetype': null,
+          mimetype: null,
           'is-root': null,
         },
       };
@@ -152,11 +174,11 @@ describe('PercyClient', function() {
       assert.equal(resource.localPath, '/absolute/path/foo');
 
       let expected = {
-        'type': 'resources',
-        'id': utils.sha256hash(content),
-        'attributes': {
+        type: 'resources',
+        id: utils.sha256hash(content),
+        attributes: {
           'resource-url': '/foo',
-          'mimetype': 'text/plain',
+          mimetype: 'text/plain',
           'is-root': true,
         },
       };
@@ -166,20 +188,20 @@ describe('PercyClient', function() {
 
     it('throws an error if resourceUrl is not given', function() {
       assert.throws(() => {
-        let resource = percyClient.makeResource({content: 'foo'});
-      }, Error)
+        percyClient.makeResource({content: 'foo'});
+      }, Error);
     });
 
     it('throws an error if resourceUrl contains a space', function() {
       assert.throws(() => {
-        let resource = percyClient.makeResource({resourceUrl: 'foo bar'});
-      }, Error)
+        percyClient.makeResource({resourceUrl: 'foo bar'});
+      }, Error);
     });
 
     it('throws an error if neither sha nor content is not given', function() {
       assert.throws(() => {
-        let resource = percyClient.makeResource({resourceUrl: '/foo'});
-      }, Error)
+        percyClient.makeResource({resourceUrl: '/foo'});
+      }, Error);
     });
   });
 
@@ -187,13 +209,13 @@ describe('PercyClient', function() {
     it('uploads a resource', function(done) {
       let content = 'foo';
       let expectedRequestData = {
-        'data': {
-          'type': 'resources',
-          'id': utils.sha256hash(content),
-          'attributes': {
+        data: {
+          type: 'resources',
+          id: utils.sha256hash(content),
+          attributes: {
             'base64-content': utils.base64encode(content),
-          }
-        }
+          },
+        },
       };
       let responseMock = function(url, requestBody) {
         // Verify some request states.
@@ -202,14 +224,20 @@ describe('PercyClient', function() {
         return [201, responseBody];
       };
 
-      nock('https://percy.io').post('/api/v1/builds/123/resources/').reply(201, responseMock);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/resources/')
+        .reply(201, responseMock);
       let request = percyClient.uploadResource(123, content);
 
-      request.then((response) => {
-        assert.equal(response.statusCode, 201);
-        assert.deepEqual(response.body, {success: true});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
@@ -217,30 +245,30 @@ describe('PercyClient', function() {
     it('uploads resources with content', function(done) {
       const resources = [
         {
-          content: 'foo'
+          content: 'foo',
         },
         {
-          content: 'bar'
-        }
+          content: 'bar',
+        },
       ];
 
       const expectedRequestData1 = {
-        'data': {
-          'type': 'resources',
-          'id': utils.sha256hash(resources[0].content),
-          'attributes': {
+        data: {
+          type: 'resources',
+          id: utils.sha256hash(resources[0].content),
+          attributes: {
             'base64-content': utils.base64encode(resources[0].content),
-          }
-        }
+          },
+        },
       };
       const expectedRequestData2 = {
-        'data': {
-          'type': 'resources',
-          'id': utils.sha256hash(resources[1].content),
-          'attributes': {
+        data: {
+          type: 'resources',
+          id: utils.sha256hash(resources[1].content),
+          attributes: {
             'base64-content': utils.base64encode(resources[1].content),
-          }
-        }
+          },
+        },
       };
 
       const responseMock = function(url, requestBody) {
@@ -256,44 +284,51 @@ describe('PercyClient', function() {
         return [201, responseBody];
       };
 
-      nock('https://percy.io').post('/api/v1/builds/123/resources/').times(2).reply(201, responseMock);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/resources/')
+        .times(2)
+        .reply(201, responseMock);
       let request = percyClient.uploadResources(123, resources);
 
       request
-        .then(() => { done(); })
-        .catch((err) => { done(err); });
+        .then(() => {
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
 
     it('uploads resources with local path', function(done) {
       const resources = [
         {
-          localPath: path.join(__dirname, 'data', 'test-resource.css')
+          localPath: path.join(__dirname, 'data', 'test-resource.css'),
         },
         {
-          localPath: path.join(__dirname, 'data', 'test-resource.js')
-        }
+          localPath: path.join(__dirname, 'data', 'test-resource.js'),
+        },
       ];
 
       const cssContent = fs.readFileSync(resources[0].localPath);
       const expectedRequestData1 = {
-        'data': {
-          'type': 'resources',
-          'id': utils.sha256hash(cssContent),
-          'attributes': {
+        data: {
+          type: 'resources',
+          id: utils.sha256hash(cssContent),
+          attributes: {
             'base64-content': utils.base64encode(cssContent),
-          }
-        }
+          },
+        },
       };
 
       const jsContent = fs.readFileSync(resources[1].localPath);
       const expectedRequestData2 = {
-        'data': {
-          'type': 'resources',
-          'id': utils.sha256hash(jsContent),
-          'attributes': {
+        data: {
+          type: 'resources',
+          id: utils.sha256hash(jsContent),
+          attributes: {
             'base64-content': utils.base64encode(jsContent),
-          }
-        }
+          },
+        },
       };
 
       const responseMock = function(url, requestBody) {
@@ -309,12 +344,19 @@ describe('PercyClient', function() {
         return [201, responseBody];
       };
 
-      nock('https://percy.io').post('/api/v1/builds/123/resources/').times(2).reply(201, responseMock);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/resources/')
+        .times(2)
+        .reply(201, responseMock);
       let request = percyClient.uploadResources(123, resources);
 
       request
-        .then(() => { done(); })
-        .catch((err) => { done(err); });
+        .then(() => {
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
@@ -325,32 +367,38 @@ describe('PercyClient', function() {
           data: {
             relationships: {
               'missing-resources': {
-                data: []
-              }
-            }
-          }
-        }
+                data: [],
+              },
+            },
+          },
+        },
       };
       const resources = [
         {
-          sha: '123'
+          sha: '123',
         },
         {
-          sha: '456'
-        }
+          sha: '456',
+        },
       ];
 
-      const responseMock = function(url, requestBody) {
+      const responseMock = function() {
         assert.fail('Should not be uploading any resources');
         return [500];
       };
 
-      nock('https://percy.io').post('/api/v1/builds/123/resources/').reply(500, responseMock);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/resources/')
+        .reply(500, responseMock);
       const request = percyClient.uploadMissingResources(123, response, resources);
 
       request
-        .then(() => { done(); })
-        .catch((err) => { done(err); });
+        .then(() => {
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
 
     it('uploads the missing resources', function(done) {
@@ -361,33 +409,33 @@ describe('PercyClient', function() {
               'missing-resources': {
                 data: [
                   {
-                    id: '456'
-                  }
-                ]
-              }
-            }
-          }
-        }
+                    id: '456',
+                  },
+                ],
+              },
+            },
+          },
+        },
       };
       const resources = [
         {
           sha: '123',
-          content: 'Foo'
+          content: 'Foo',
         },
         {
           sha: '456',
-          content: 'Bar'
-        }
+          content: 'Bar',
+        },
       ];
 
       const expectedRequestData = {
-        'data': {
-          'type': 'resources',
-          'id': utils.sha256hash(resources[1].content),
-          'attributes': {
+        data: {
+          type: 'resources',
+          id: utils.sha256hash(resources[1].content),
+          attributes: {
             'base64-content': utils.base64encode(resources[1].content),
-          }
-        }
+          },
+        },
       };
 
       const responseMock = function(url, requestBody) {
@@ -396,12 +444,18 @@ describe('PercyClient', function() {
         return [201, responseBody];
       };
 
-      nock('https://percy.io').post('/api/v1/builds/123/resources/').reply(201, responseMock);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/resources/')
+        .reply(201, responseMock);
       const request = percyClient.uploadMissingResources(123, response, resources);
 
       request
-        .then(() => { done(); })
-        .catch((err) => { done(err); });
+        .then(() => {
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
@@ -409,30 +463,30 @@ describe('PercyClient', function() {
     it('creates a snapshot', function(done) {
       let content = 'foo';
       let expectedRequestData = {
-        'data': {
-          'type': 'snapshots',
-          'attributes': {
-            'name': 'foo',
+        data: {
+          type: 'snapshots',
+          attributes: {
+            name: 'foo',
             'enable-javascript': true,
-            'widths': [1000],
+            widths: [1000],
             'minimum-height': 100,
           },
-          'relationships': {
-            'resources': {
-              'data': [
+          relationships: {
+            resources: {
+              data: [
                 {
-                  'type': 'resources',
-                  'id': utils.sha256hash(content),
-                  'attributes': {
+                  type: 'resources',
+                  id: utils.sha256hash(content),
+                  attributes: {
                     'resource-url': '/foo',
-                    'mimetype': null,
+                    mimetype: null,
                     'is-root': true,
                   },
-                }
-              ]
-            }
-          }
-        }
+                },
+              ],
+            },
+          },
+        },
       };
 
       let responseMock = function(url, requestBody) {
@@ -441,9 +495,16 @@ describe('PercyClient', function() {
         let responseBody = {success: true};
         return [201, responseBody];
       };
-      nock('https://percy.io').post('/api/v1/builds/123/snapshots/').reply(201, responseMock);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/snapshots/')
+        .reply(201, responseMock);
 
-      let options = {name: 'foo', enableJavaScript: true, widths: [1000], minimumHeight: 100}
+      let options = {
+        name: 'foo',
+        enableJavaScript: true,
+        widths: [1000],
+        minimumHeight: 100,
+      };
       let resource = percyClient.makeResource({
         resourceUrl: '/foo',
         content: content,
@@ -452,52 +513,74 @@ describe('PercyClient', function() {
       let resources = [resource];
       let request = percyClient.createSnapshot(123, resources, options);
 
-      request.then((response) => {
-        assert.equal(response.statusCode, 201);
-        // This is not the actual API response, we just mocked it above.
-        assert.deepEqual(response.body, {success: true});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          // This is not the actual API response, we just mocked it above.
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
   describe('finalizeSnapshot', function() {
     it('finalizes the snapshot', function(done) {
       let responseData = {success: true};
-      nock('https://percy.io').post('/api/v1/snapshots/123/finalize').reply(201, responseData);
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(201, responseData);
       let request = percyClient.finalizeSnapshot(123);
 
-      request.then((response) => {
-        assert.equal(response.statusCode, 201);
-        assert.deepEqual(response.body, {success: true});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 
   describe('finalizeBuild', function() {
     it('finalizes the build', function(done) {
       let responseData = {success: true};
-      nock('https://percy.io').post('/api/v1/builds/123/finalize').reply(201, responseData);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/finalize')
+        .reply(201, responseData);
       let request = percyClient.finalizeBuild(123);
 
-      request.then((response) => {
-        assert.equal(response.statusCode, 201);
-        assert.deepEqual(response.body, {success: true});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
 
     it('accepts allShards argument', function(done) {
       let responseData = {success: true};
-      nock('https://percy.io').post('/api/v1/builds/123/finalize?all-shards=true').reply(201, responseData);
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/finalize?all-shards=true')
+        .reply(201, responseData);
       let request = percyClient.finalizeBuild(123, {allShards: true});
 
-      request.then((response) => {
-        assert.equal(response.statusCode, 201);
-        assert.deepEqual(response.body, {success: true});
-        done();
-      }).catch((err) => { done(err); });
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
     });
   });
 });

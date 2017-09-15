@@ -4,17 +4,24 @@
   "description": "JavaScript API client library for Percy (https://percy.io).",
   "main": "dist/main.js",
   "scripts": {
-    "prepublish": "npm run build",
-    "build:compile": "babel src --presets babel-preset-es2015 --out-dir dist",
-    "build:browserify": "browserify --standalone percy-client dist/main.js -o dist/bundle.js",
     "build": "npm run build:compile && npm run build:browserify",
-    "test": "mocha --require babel-core/register",
+    "build:browserify": "browserify --standalone percy-client dist/main.js -o dist/bundle.js",
+    "build:compile": "babel src --presets babel-preset-es2015 --out-dir dist",
     "debug": "mocha debug --require babel-core/register",
-    "tdd": "mocha --require babel-core/register --watch"
+    "lint": "./node_modules/eslint/bin/eslint.js .",
+    "lint:fix": "./node_modules/eslint/bin/eslint.js . --fix",
+    "precommit": "lint-staged",
+    "prepublish": "npm run build",
+    "tdd": "mocha --require babel-core/register --watch",
+    "test": "mocha --require babel-core/register"
   },
-  "files": [
-    "dist/"
-  ],
+  "lint-staged": {
+    "*.{js,css}": [
+      "./node_modules/eslint/bin/eslint.js --fix --color",
+      "git add"
+    ]
+  },
+  "files": ["dist/"],
   "repository": {
     "type": "git",
     "url": "https://github.com/percy/percy-js.git"
@@ -31,8 +38,16 @@
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-preset-es2015": "^6.3.13",
     "browserify": "^13.0.1",
+    "eslint": "^4.6.1",
+    "eslint-config-prettier": "^2.4.0",
+    "eslint-plugin-prettier": "^2.2.0",
     "mocha": "^2.4.5",
-    "nock": "^9.0.14"
+    "nock": "^9.0.14",
+    "prettier": "^1.7.0"
+  },
+  "optionalDependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^4.1.3"
   },
   "dependencies": {
     "base64-js": "^1.1.2",

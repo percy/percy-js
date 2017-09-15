@@ -21,7 +21,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
-      assert.strictEqual(environment.repo, null);  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, null);
       assert.strictEqual(environment.parallelTotalShards, null);
     });
@@ -46,7 +46,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.targetBranch, 'percy-target-branch');
       assert.strictEqual(environment.pullRequestNumber, '256');
       assert.strictEqual(environment.project, 'foo/bar');
-      assert.strictEqual(environment.repo, 'foo/bar');  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, 'foo/bar'); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, 'percy-nonce');
       assert.strictEqual(environment.parallelTotalShards, 3);
 
@@ -77,7 +77,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.branch, 'travis-branch');
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
-      assert.strictEqual(environment.repo, 'travis/repo-slug');  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, 'travis/repo-slug'); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, 'build-number');
       assert.strictEqual(environment.parallelTotalShards, 3);
     });
@@ -114,7 +114,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.branch, 'jenkins-branch');
       assert.strictEqual(environment.pullRequestNumber, '256');
       assert.strictEqual(environment.project, null);
-      assert.strictEqual(environment.repo, null);  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, '111');
       assert.strictEqual(environment.parallelTotalShards, null);
     });
@@ -140,7 +140,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.branch, 'circle-branch');
       assert.strictEqual(environment.pullRequestNumber, '123');
       assert.strictEqual(environment.project, null);
-      assert.strictEqual(environment.repo, 'circle/repo-name');  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, 'circle/repo-name'); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, 'build-number');
       assert.strictEqual(environment.parallelTotalShards, 3);
 
@@ -156,7 +156,7 @@ describe('Environment', function() {
         CI_NAME: 'codeship',
         CI_BRANCH: 'codeship-branch',
         CI_BUILD_NUMBER: 'codeship-build-number',
-        CI_PULL_REQUEST: 'false',  // This is always false right now in Codeship. :|
+        CI_PULL_REQUEST: 'false', // This is always false right now in Codeship. :|
         CI_COMMIT_ID: 'codeship-commit-sha',
         CI_NODE_TOTAL: '3',
       });
@@ -168,7 +168,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.branch, 'codeship-branch');
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
-      assert.strictEqual(environment.repo, null);  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, 'codeship-build-number');
       assert.strictEqual(environment.parallelTotalShards, 3);
     });
@@ -191,7 +191,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.branch, 'drone-branch');
       assert.strictEqual(environment.pullRequestNumber, '123');
       assert.strictEqual(environment.project, null);
-      assert.strictEqual(environment.repo, null);  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, 'drone-build-number');
       assert.strictEqual(environment.parallelTotalShards, null);
     });
@@ -217,7 +217,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.branch, 'semaphore-branch');
       assert.strictEqual(environment.pullRequestNumber, '123');
       assert.strictEqual(environment.project, null);
-      assert.strictEqual(environment.repo, 'repo-owner/repo-name');  // TODO: Deprecated, remove.
+      assert.strictEqual(environment.repo, 'repo-owner/repo-name'); // TODO: Deprecated, remove.
       let expected_nonce = 'semaphore-branch-id/semaphore-build-number';
       assert.strictEqual(environment.parallelNonce, expected_nonce);
       assert.strictEqual(environment.parallelTotalShards, 2);
@@ -243,7 +243,7 @@ describe('Environment', function() {
         assert.strictEqual(environment.branch, 'buildkite-branch');
         assert.strictEqual(environment.pullRequestNumber, null);
         assert.strictEqual(environment.project, null);
-        assert.strictEqual(environment.repo, null);  // TODO: Deprecated, remove.
+        assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
         assert.strictEqual(environment.parallelNonce, 'buildkite-build-id');
         assert.strictEqual(environment.parallelTotalShards, 3);
       });

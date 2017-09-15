@@ -44,18 +44,15 @@ describe('getMissingResources', function() {
   });
 
   it('returns an empty list given no response body data', function() {
-    assert.deepEqual(utils.getMissingResources({ body: {} }), []);
+    assert.deepEqual(utils.getMissingResources({body: {}}), []);
   });
 
   it('returns an empty list given no response body data relationship', function() {
-    assert.deepEqual(utils.getMissingResources({ body: { data: {} } }), []);
+    assert.deepEqual(utils.getMissingResources({body: {data: {}}}), []);
   });
 
   it('returns an empty list given no missing resources', function() {
-    assert.deepEqual(
-      utils.getMissingResources({ body: { data: { relationships: {} } } }),
-      []
-    );
+    assert.deepEqual(utils.getMissingResources({body: {data: {relationships: {}}}}), []);
   });
 
   it('returns an empty list given no missing resources data', function() {
@@ -64,12 +61,12 @@ describe('getMissingResources', function() {
         body: {
           data: {
             relationships: {
-              'missing-resources': {}
-            }
-          }
-        }
+              'missing-resources': {},
+            },
+          },
+        },
       }),
-      []
+      [],
     );
   });
 
@@ -82,25 +79,25 @@ describe('getMissingResources', function() {
               'missing-resources': {
                 data: [
                   {
-                    id: '123'
+                    id: '123',
                   },
                   {
-                    id: '456'
-                  }
-                ]
-              }
-            }
-          }
-        }
+                    id: '456',
+                  },
+                ],
+              },
+            },
+          },
+        },
       }),
       [
         {
-          id: '123'
+          id: '123',
         },
         {
-          id: '456'
-        }
-      ]
-    )
+          id: '456',
+        },
+      ],
+    );
   });
 });

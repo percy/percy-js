@@ -9,7 +9,8 @@ class Environment {
   get ci() {
     if (this._env.TRAVIS_BUILD_ID) {
       return 'travis';
-    } else if (this._env.JENKINS_URL && this._env.ghprbPullId) { // Pull Request Builder plugin.
+    } else if (this._env.JENKINS_URL && this._env.ghprbPullId) {
+      // Pull Request Builder plugin.
       return 'jenkins';
     } else if (this._env.CIRCLECI) {
       return 'circle';
@@ -29,7 +30,7 @@ class Environment {
     if (this._env.PERCY_COMMIT) {
       return this._env.PERCY_COMMIT;
     }
-    switch(this.ci) {
+    switch (this.ci) {
       case 'travis':
         if (this.pullRequestNumber && this._env.TRAVIS_PULL_REQUEST_SHA) {
           return this._env.TRAVIS_PULL_REQUEST_SHA;
@@ -46,10 +47,11 @@ class Environment {
         return this._env.DRONE_COMMIT;
       case 'semaphore':
         return this._env.REVISION;
-      case 'buildkite':
+      case 'buildkite': {
         let commitSha = this._env.BUILDKITE_COMMIT;
         // Buildkite mixes SHAs and non-SHAs in BUILDKITE_COMMIT, so we return null if non-SHA.
         return commitSha !== 'HEAD' ? this._env.BUILDKITE_COMMIT : null;
+      }
     }
     return null;
   }
@@ -58,7 +60,7 @@ class Environment {
     if (this._env.PERCY_BRANCH) {
       return this._env.PERCY_BRANCH;
     }
-    switch(this.ci) {
+    switch (this.ci) {
       case 'travis':
         if (this.pullRequestNumber && this._env.TRAVIS_PULL_REQUEST_BRANCH) {
           return this._env.TRAVIS_PULL_REQUEST_BRANCH;
@@ -95,7 +97,7 @@ class Environment {
       return this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT;
     }
     // Deprecated flow:
-    switch(this.ci) {
+    switch (this.ci) {
       case 'travis':
         return this._env.TRAVIS_REPO_SLUG;
       case 'jenkins':
@@ -116,7 +118,7 @@ class Environment {
     if (this._env.PERCY_PULL_REQUEST) {
       return this._env.PERCY_PULL_REQUEST;
     }
-    switch(this.ci) {
+    switch (this.ci) {
       case 'travis':
         return this._env.TRAVIS_PULL_REQUEST !== 'false' ? this._env.TRAVIS_PULL_REQUEST : null;
       case 'jenkins':
@@ -134,7 +136,9 @@ class Environment {
       case 'semaphore':
         return this._env.PULL_REQUEST_NUMBER;
       case 'buildkite':
-        return this._env.BUILDKITE_PULL_REQUEST !== 'false' ? this._env.BUILDKITE_PULL_REQUEST : null;
+        return this._env.BUILDKITE_PULL_REQUEST !== 'false'
+          ? this._env.BUILDKITE_PULL_REQUEST
+          : null;
     }
     return null;
   }
@@ -145,7 +149,7 @@ class Environment {
     if (this._env.PERCY_PARALLEL_NONCE) {
       return this._env.PERCY_PARALLEL_NONCE;
     }
-    switch(this.ci) {
+    switch (this.ci) {
       case 'travis':
         return this._env.TRAVIS_BUILD_NUMBER;
       case 'jenkins':
@@ -168,7 +172,7 @@ class Environment {
     if (this._env.PERCY_PARALLEL_TOTAL) {
       return parseInt(this._env.PERCY_PARALLEL_TOTAL);
     }
-    switch(this.ci) {
+    switch (this.ci) {
       case 'travis':
         // Support for https://github.com/ArturT/knapsack
         if (this._env.CI_NODE_TOTAL) {
