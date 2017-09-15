@@ -1,12 +1,12 @@
-const crypto = require("crypto");
-const base64 = require("base64-js");
+const crypto = require('crypto');
+const base64 = require('base64-js');
 
 module.exports = {
   sha256hash(content) {
     return crypto
-      .createHash("sha256")
-      .update(content, "utf8")
-      .digest("hex");
+      .createHash('sha256')
+      .update(content, 'utf8')
+      .digest('hex');
   },
 
   base64encode(content) {
@@ -19,9 +19,9 @@ module.exports = {
         response.body &&
         response.body.data &&
         response.body.data.relationships &&
-        response.body.data.relationships["missing-resources"] &&
-        response.body.data.relationships["missing-resources"].data) ||
+        response.body.data.relationships['missing-resources'] &&
+        response.body.data.relationships['missing-resources'].data) ||
       []
     );
-  }
+  },
 };
