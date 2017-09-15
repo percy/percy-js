@@ -1,4 +1,4 @@
-import { version } from '../package.json';
+import { version } from "../package.json";
 
 class UserAgent {
   constructor(client) {
@@ -12,14 +12,18 @@ class UserAgent {
     let client = [
       `Percy/${this._apiVersion()}`,
       this._client._clientInfo,
-      `percy-js/${version}`,
-    ].filter((el) => el != null).join(' ');
+      `percy-js/${version}`
+    ]
+      .filter(el => el != null)
+      .join(" ");
 
     let environment = [
       this._client._environmentInfo,
       `node/${this._nodeVersion()}`,
-      this._client.environment.ci,
-    ].filter((el) => el != null).join('; ');
+      this._client.environment.ci
+    ]
+      .filter(el => el != null)
+      .join("; ");
 
     return `${client} (${environment})`;
   }
