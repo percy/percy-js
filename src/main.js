@@ -88,6 +88,9 @@ class PercyClient {
       context: this,
       args: [uri, requestOptions],
       interval: 50,
+      predicate: function(err) {
+        return err.statusCode == 502 || err.statusCode == 503;
+      },
     });
   }
 
@@ -106,6 +109,9 @@ class PercyClient {
       context: this,
       args: [uri, requestOptions],
       interval: 50,
+      predicate: function(err) {
+        return err.statusCode == 502 || err.statusCode == 503;
+      },
     });
   }
 
