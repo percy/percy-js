@@ -88,6 +88,7 @@ class PercyClient {
       context: this,
       args: [uri, requestOptions],
       interval: 50,
+      max_tries: 5,
       predicate: function(err) {
         return err.statusCode >= 500 && err.statusCode < 600;
       },
@@ -109,6 +110,7 @@ class PercyClient {
       context: this,
       args: [uri, requestOptions],
       interval: 50,
+      max_tries: 5,
       predicate: function(err) {
         return err.statusCode >= 500 && err.statusCode < 600;
       },
