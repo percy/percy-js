@@ -600,9 +600,9 @@ describe('PercyClient', function() {
       let request = percyClient.finalizeSnapshot(123);
 
       request.catch(err => {
-        assert.equal(err.failure.statusCode, 502);
-        assert.deepEqual(err.failure.response.body, {success: false});
-        assert.deepEqual(err.failure.error, {success: false});
+        assert.equal(err.message, '502 - {"success":false}');
+        assert.equal(err.statusCode, 502);
+        assert.deepEqual(err.response.body, {success: false});
         done();
       });
     });
