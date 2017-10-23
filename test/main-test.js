@@ -606,6 +606,21 @@ describe('PercyClient', function() {
         done();
       });
     });
+
+    it('finalize fails with 400 and returns error without retries', function(done) {
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(400, {success: false});
+
+      let request = percyClient.finalizeSnapshot(123);
+
+      request.catch(err => {
+        assert.equal(err.message, '400 - {"success":false}');
+        assert.equal(err.statusCode, 400);
+        assert.deepEqual(err.response.body, {success: false});
+        done();
+      });
+    });
   });
 
   describe('finalizeBuild', function() {
