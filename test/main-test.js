@@ -446,6 +446,10 @@ describe('PercyClient', function() {
 
       nock('https://percy.io')
         .post('/api/v1/builds/123/resources/')
+        .reply(502, {success: false});
+
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/resources/')
         .reply(201, responseMock);
       const request = percyClient.uploadMissingResources(123, response, resources);
 
@@ -528,10 +532,15 @@ describe('PercyClient', function() {
 
   describe('finalizeSnapshot', function() {
     it('finalizes the snapshot', function(done) {
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+
       let responseData = {success: true};
       nock('https://percy.io')
         .post('/api/v1/snapshots/123/finalize')
         .reply(201, responseData);
+
       let request = percyClient.finalizeSnapshot(123);
 
       request
