@@ -444,6 +444,7 @@ describe('PercyClient', function() {
         return [201, responseBody];
       };
 
+      // Add a 520 to test retries
       nock('https://percy.io')
         .post('/api/v1/builds/123/resources/')
         .reply(502, {success: false});
@@ -532,9 +533,34 @@ describe('PercyClient', function() {
 
   describe('finalizeSnapshot', function() {
     it('finalizes the snapshot', function(done) {
+      let responseData = {success: true};
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(201, responseData);
+
+      let request = percyClient.finalizeSnapshot(123);
+
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+
+    it('finalizes the snapshot with 3 retries', function(done) {
       nock('https://percy.io')
         .post('/api/v1/snapshots/123/finalize')
         .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(503, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(520, {success: false});
 
       let responseData = {success: true};
       nock('https://percy.io')
