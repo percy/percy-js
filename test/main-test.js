@@ -579,6 +579,33 @@ describe('PercyClient', function() {
           done(err);
         });
     });
+
+    it('finalize fails with status after 5 retries', function(done) {
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+
+      let request = percyClient.finalizeSnapshot(123);
+
+      request.catch(err => {
+        assert.equal(err.failure.statusCode, 502);
+        assert.deepEqual(err.failure.response.body, {success: false});
+        assert.deepEqual(err.failure.error, {success: false});
+        done();
+      });
+    });
   });
 
   describe('finalizeBuild', function() {
