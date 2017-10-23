@@ -3,6 +3,7 @@ const https = require('https');
 const utils = require('./utils');
 const Environment = require('./environment');
 const UserAgent = require('./user-agent');
+const retry = require('bluebird-retry');
 const requestPromise = require('request-promise');
 const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime'); // eslint-disable-line no-unused-vars
@@ -83,7 +84,11 @@ class PercyClient {
       agent: this._httpAgent,
     };
 
-    return this._httpClient(uri, requestOptions);
+    return retry(this._httpClient, {
+      context: this,
+      args: [uri, requestOptions],
+      interval: 50,
+    });
   }
 
   _httpPost(uri, data) {
@@ -97,7 +102,11 @@ class PercyClient {
       agent: this._httpAgent,
     };
 
-    return this._httpClient(uri, requestOptions);
+    return retry(this._httpClient, {
+      context: this,
+      args: [uri, requestOptions],
+      interval: 50,
+    });
   }
 
   createBuild(project, options) {
