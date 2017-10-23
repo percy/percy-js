@@ -444,6 +444,11 @@ describe('PercyClient', function() {
         return [201, responseBody];
       };
 
+      // Add a 520 to test retries
+      nock('https://percy.io')
+        .post('/api/v1/builds/123/resources/')
+        .reply(502, {success: false});
+
       nock('https://percy.io')
         .post('/api/v1/builds/123/resources/')
         .reply(201, responseMock);
@@ -532,6 +537,7 @@ describe('PercyClient', function() {
       nock('https://percy.io')
         .post('/api/v1/snapshots/123/finalize')
         .reply(201, responseData);
+
       let request = percyClient.finalizeSnapshot(123);
 
       request
@@ -543,6 +549,62 @@ describe('PercyClient', function() {
         .catch(err => {
           done(err);
         });
+    });
+
+    it('finalizes the snapshot with 3 retries', function(done) {
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(503, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(520, {success: false});
+
+      let responseData = {success: true};
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(201, responseData);
+
+      let request = percyClient.finalizeSnapshot(123);
+
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+
+    it('finalize fails with status after 5 retries', function(done) {
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+      nock('https://percy.io')
+        .post('/api/v1/snapshots/123/finalize')
+        .reply(502, {success: false});
+
+      let request = percyClient.finalizeSnapshot(123);
+
+      request.catch(err => {
+        assert.equal(err.message, '502 - {"success":false}');
+        assert.equal(err.statusCode, 502);
+        assert.deepEqual(err.response.body, {success: false});
+        done();
+      });
     });
   });
 
