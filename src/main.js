@@ -157,6 +157,11 @@ class PercyClient {
     return this._httpPost(`${this.apiUrl}/projects/${project}/builds/`, data);
   }
 
+  // This method is unavailable to normal write-only project tokens.
+  getBuild(buildId) {
+    return this._httpGet(`${this.apiUrl}/builds/${buildId}`);
+  }
+
   makeResource(options) {
     return new Resource(options);
   }
