@@ -162,6 +162,20 @@ class PercyClient {
     return this._httpGet(`${this.apiUrl}/builds/${buildId}`);
   }
 
+  // This method is unavailable to normal write-only project tokens.
+  getBuilds(project, filter) {
+    filter = filter || {};
+    let queryString = Object.keys(filter)
+      .map(key => 'filter[' + key + ']=' + filter[key])
+      .join('&');
+
+    if (queryString.length > 0) {
+      queryString = '?' + queryString;
+    }
+
+    return this._httpGet(`${this.apiUrl}/projects/${project}/builds${queryString}`);
+  }
+
   makeResource(options) {
     return new Resource(options);
   }

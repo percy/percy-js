@@ -164,6 +164,60 @@ describe('PercyClient', function() {
     });
   });
 
+  describe('getBuilds', function() {
+    it('returns the response body', function(done) {
+      let responseMock = function(url, requestBody) {
+        // Verify request data.
+        assert.equal(requestBody, '');
+        let responseBody = {foo: 123};
+        return [201, responseBody];
+      };
+
+      nock('https://percy.io')
+        .get('/api/v1/projects/my_project/builds')
+        .reply(201, responseMock);
+
+      let request = percyClient.getBuilds('my_project');
+
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {foo: 123});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+
+    describe('filtered by SHA', function() {
+      it('returns the response body', function(done) {
+        let responseMock = function(url, requestBody) {
+          // Verify request data.
+          assert.equal(requestBody, '');
+          let responseBody = {foo: 123};
+          return [201, responseBody];
+        };
+
+        nock('https://percy.io')
+          .get('/api/v1/projects/my_project/builds?filter[sha]=my_sha')
+          .reply(201, responseMock);
+
+        let request = percyClient.getBuilds('my_project', {sha: 'my_sha'});
+
+        request
+          .then(response => {
+            assert.equal(response.statusCode, 201);
+            assert.deepEqual(response.body, {foo: 123});
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      });
+    });
+  });
+
   describe('makeResource', function() {
     it('returns a Resource object with defaults', function() {
       let resource = percyClient.makeResource({
