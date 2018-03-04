@@ -79,8 +79,8 @@ class Environment {
       case 'buildkite':
         return this._env.BUILDKITE_BRANCH;
     }
-    // Not in a git repo? Assume that the branch is master.
-    return 'master';
+    // Branch not specified
+    return null;
   }
 
   get targetBranch() {
