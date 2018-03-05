@@ -17,7 +17,7 @@ describe('Environment', function() {
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, null);
       assert.strictEqual(environment.commitSha, null);
-      assert.strictEqual(environment.branch, 'master');
+      assert.strictEqual(environment.branch, null);
       assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);

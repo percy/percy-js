@@ -79,8 +79,6 @@ describe('PercyClient', function() {
   describe('createBuild', function() {
     it('returns build data', function(done) {
       let resources = [percyClient.makeResource({resourceUrl: '/foo%20bar', sha: 'fake-sha'})];
-      // Make sure we're at least testing against a truthy value.
-      assert.ok(percyClient.environment.branch);
 
       let expectedRequestData = {
         data: {
