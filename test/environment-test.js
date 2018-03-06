@@ -15,15 +15,27 @@ describe('Environment', function() {
     });
 
     it('has the correct properties', function() {
+      assert(typeof environment.branch == 'string');
       assert.strictEqual(environment.ci, null);
       assert.strictEqual(environment.commitSha, null);
-      assert.strictEqual(environment.branch, null);
       assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, null);
       assert.strictEqual(environment.parallelTotalShards, null);
+    });
+
+    it('has git commit information', function() {
+      let commit = environment.commitData;
+      assert(typeof commit.branch == 'string');
+      assert(typeof commit.sha == 'string');
+      assert(typeof commit.authorName == 'string');
+      assert(typeof commit.authorEmail == 'string');
+      assert(typeof commit.committerName == 'string');
+      assert(typeof commit.committerEmail == 'string');
+      assert(typeof commit.committedAt == 'string');
+      assert(typeof commit.message == 'string');
     });
   });
 
