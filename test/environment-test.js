@@ -27,6 +27,9 @@ describe('Environment', function() {
     });
 
     it('has git commit information', function() {
+      // Test for typeof string here rather than specific values because
+      // these tests check that git info can be read from the local filesystem,
+      // so all of the values will change between commits.
       let commit = environment.commitData;
       assert(typeof commit.branch == 'string');
       assert(typeof commit.sha == 'string');
