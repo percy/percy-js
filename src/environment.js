@@ -38,15 +38,23 @@ class Environment {
   }
 
   rawCommitData(commitSha) {
-    const shell = require('shelljs');
+    const child_process = require('child_process');
     const format = GIT_FORMAT_LINES.join('%n'); // git show format uses %n for newlines.
-    let result = shell.exec(`git show ${commitSha} --quiet --format="${format}"`, {silent: true});
 
-    if (result.code !== 0) {
+    // Make sure commitSha is only alphanumeric characters to prevent command injection.
+    if (commitSha.length > 100 || !commitSha.match(/^[0-9a-zA-Z]+$/)) {
       return '';
     }
 
-    return result.stdout.trim();
+    const cmd = `git show ${commitSha} --quiet --format="${format}"`;
+    try {
+      return child_process
+        .execSync(cmd)
+        .toString()
+        .trim();
+    } catch (error) {
+      return '';
+    }
   }
 
   get commitData() {
@@ -163,15 +171,16 @@ class Environment {
   }
 
   rawBranch() {
-    const shell = require('shelljs');
-    let result = shell.exec(`git rev-parse --abbrev-ref HEAD`, {silent: true});
-
-    if (result.code !== 0) {
-      shell.echo('Error: Git rev-parse failed');
+    const child_process = require('child_process');
+    const cmd = 'git rev-parse --abbrev-ref HEAD';
+    try {
+      return child_process
+        .execSync(cmd)
+        .toString()
+        .trim();
+    } catch (error) {
       return '';
     }
-
-    return result.stdout.trim();
   }
 
   get targetBranch() {
