@@ -28,10 +28,11 @@ describe('Environment', function() {
     });
 
     it('commitData reads and parses live git commit information', function() {
+      // This checks the real information coming from rawCommitData is in the
+      // expected format and can be correctly parsed.
       // Test for typeof string here rather than specific values because
       // these tests check that git info can be read from the local filesystem,
       // so all of the values will change between commits.
-      // This checks the information coming from rawCommitData is in the right format
       let commit = environment.commitData;
       assert(typeof commit.branch == 'string');
       assert(typeof commit.sha == 'string');
@@ -43,7 +44,7 @@ describe('Environment', function() {
       assert(typeof commit.message == 'string');
     });
 
-    it('commitData correctly parses commit information from git', function() {
+    it('commitData correctly parses rawCommitData', function() {
       let commitStub = sinon.stub(environment, 'rawCommitData')
         .returns(`COMMIT_SHA:620804c296827012104931d44b001f20eda9dbeb
 AUTHOR_NAME:Tim Haines

@@ -38,15 +38,15 @@ class Environment {
   }
 
   rawCommitData(commitSha) {
-    const child_process = require('child_process');
-    const format = GIT_FORMAT_LINES.join('%n'); // git show format uses %n for newlines.
-
     // Make sure commitSha is only alphanumeric characters to prevent command injection.
     if (commitSha.length > 100 || !commitSha.match(/^[0-9a-zA-Z]+$/)) {
       return '';
     }
 
+    const child_process = require('child_process');
+    const format = GIT_FORMAT_LINES.join('%n'); // git show format uses %n for newlines.
     const cmd = `git show ${commitSha} --quiet --format="${format}"`;
+
     try {
       return child_process
         .execSync(cmd)
@@ -66,26 +66,28 @@ class Environment {
       output = this.rawCommitData('HEAD');
     }
 
+    // If rawCommitData can't be read, return the branch only.
     if (output == '') {
       return {
         branch: this.branch,
       };
     }
 
-    // If not running in a git repo, allow nils for certain commit attributes.
+    // If not running in a git repo, allow undefined for certain commit attributes.
     const parse = regex => {
       return ((output && output.match(regex)) || [])[1];
     };
 
     return {
-      // // The only required attribute:
+      // The only required attribute:
       branch: this.branch,
-      // // An optional but important attribute:
+      // An optional but important attribute:
       sha: this.commitSha || parse(/COMMIT_SHA:(.*)/),
 
       // Optional attributes:
       message: parse(/COMMIT_MESSAGE:(.*)/m),
       committedAt: parse(/COMMITTED_DATE:(.*)/),
+
       // These GIT_ environment vars are from the Jenkins Git Plugin, but could be
       // used generically. This behavior may change in the future.
       authorName: parse(/AUTHOR_NAME:(.*)/) || this._env['GIT_AUTHOR_NAME'],
@@ -162,11 +164,12 @@ class Environment {
     if (result == '') {
       result = this.rawBranch();
     }
+
     if (result == '') {
+      // Branch not specified
       result = null;
     }
 
-    // Branch not specified
     return result;
   }
 
