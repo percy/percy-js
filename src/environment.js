@@ -58,6 +58,12 @@ class Environment {
       output = this.rawCommitData('HEAD');
     }
 
+    if (output == '') {
+      return {
+        branch: this.branch,
+      };
+    }
+
     // If not running in a git repo, allow nils for certain commit attributes.
     const parse = regex => {
       return ((output && output.match(regex)) || [])[1];
@@ -146,7 +152,7 @@ class Environment {
     }
 
     if (result == '') {
-      result = this.rawBranch;
+      result = this.rawBranch();
     }
     if (result == '') {
       result = null;
@@ -156,7 +162,7 @@ class Environment {
     return result;
   }
 
-  get rawBranch() {
+  rawBranch() {
     const shell = require('shelljs');
     let result = shell.exec(`git rev-parse --abbrev-ref HEAD`, {silent: true});
 
