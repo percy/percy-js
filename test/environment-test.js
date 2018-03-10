@@ -1,6 +1,7 @@
 let path = require('path');
 let Environment = require(path.join(__dirname, '..', 'src', 'environment'));
 let assert = require('assert');
+let sinon = require('sinon');
 
 describe('Environment', function() {
   let environment;
@@ -15,15 +16,71 @@ describe('Environment', function() {
     });
 
     it('has the correct properties', function() {
+      assert(typeof environment.branch == 'string');
       assert.strictEqual(environment.ci, null);
       assert.strictEqual(environment.commitSha, null);
-      assert.strictEqual(environment.branch, null);
       assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
       assert.strictEqual(environment.parallelNonce, null);
       assert.strictEqual(environment.parallelTotalShards, null);
+    });
+
+    it('commitData reads and parses live git commit information', function() {
+      // This checks the real information coming from rawCommitData is in the
+      // expected format and can be correctly parsed.
+      // Test for typeof string here rather than specific values because
+      // these tests check that git info can be read from the local filesystem,
+      // so all of the values will change between commits.
+      let commit = environment.commitData;
+      assert(typeof commit.branch == 'string');
+      assert(typeof commit.sha == 'string');
+      assert(typeof commit.authorName == 'string');
+      assert(typeof commit.authorEmail == 'string');
+      assert(typeof commit.committerName == 'string');
+      assert(typeof commit.committerEmail == 'string');
+      assert(typeof commit.committedAt == 'string');
+      assert(typeof commit.message == 'string');
+    });
+
+    it('commitData correctly parses rawCommitData', function() {
+      let commitStub = sinon.stub(environment, 'rawCommitData')
+        .returns(`COMMIT_SHA:620804c296827012104931d44b001f20eda9dbeb
+AUTHOR_NAME:Tim Haines
+AUTHOR_EMAIL:timhaines@example.com
+COMMITTER_NAME:Other Tim Haines
+COMMITTER_EMAIL:othertimhaines@example.com
+COMMITTED_DATE:2018-03-07 16:40:12 -0800
+COMMIT_MESSAGE:Sinon stubs are lovely`);
+      let branchStub = sinon.stub(environment, 'rawBranch').returns('test-branch');
+      let commit = environment.commitData;
+      assert.strictEqual(commit.branch, 'test-branch');
+      assert.strictEqual(commit.sha, '620804c296827012104931d44b001f20eda9dbeb');
+      assert.strictEqual(commit.authorName, 'Tim Haines');
+      assert.strictEqual(commit.authorEmail, 'timhaines@example.com');
+      assert.strictEqual(commit.committerName, 'Other Tim Haines');
+      assert.strictEqual(commit.committerEmail, 'othertimhaines@example.com');
+      assert.strictEqual(commit.committedAt, '2018-03-07 16:40:12 -0800');
+      assert.strictEqual(commit.message, 'Sinon stubs are lovely');
+      commitStub.restore();
+      branchStub.restore();
+    });
+
+    it('commitData returns branch only when git commit cannot be read', function() {
+      let commitStub = sinon.stub(environment, 'rawCommitData').returns('');
+      let branchStub = sinon.stub(environment, 'rawBranch').returns('test-branch');
+      let commit = environment.commitData;
+      assert.strictEqual(commit.branch, 'test-branch');
+      assert.strictEqual(commit.sha, undefined);
+      commitStub.restore();
+      branchStub.restore();
+    });
+
+    it('branch returns null when git branch cannot be read', function() {
+      let branchStub = sinon.stub(environment, 'rawBranch').returns('');
+      assert.strictEqual(environment.branch, null);
+      branchStub.restore();
     });
   });
 

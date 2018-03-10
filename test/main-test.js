@@ -79,14 +79,21 @@ describe('PercyClient', function() {
   describe('createBuild', function() {
     it('returns build data', function(done) {
       let resources = [percyClient.makeResource({resourceUrl: '/foo%20bar', sha: 'fake-sha'})];
+      let commitData = percyClient.environment.commitData;
 
       let expectedRequestData = {
         data: {
           type: 'builds',
           attributes: {
-            branch: percyClient.environment.branch,
+            branch: commitData.branch,
             'target-branch': percyClient.environment.targetBranch,
-            'commit-sha': percyClient.environment.commitSha,
+            'commit-sha': commitData.sha,
+            'commit-committed-at': commitData.committedAt,
+            'commit-author-name': commitData.authorName,
+            'commit-author-email': commitData.authorEmail,
+            'commit-committer-name': commitData.committerName,
+            'commit-committer-email': commitData.committerEmail,
+            'commit-message': commitData.message,
             'pull-request-number': percyClient.environment.pullRequestNumber,
             'parallel-nonce': null,
             'parallel-total-shards': null,

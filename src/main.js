@@ -130,13 +130,22 @@ class PercyClient {
     }
 
     options = options || {};
+
+    const commitData = options['commitData'] || this.environment.commitData;
+
     let data = {
       data: {
         type: 'builds',
         attributes: {
-          branch: this.environment.branch,
+          branch: commitData.branch,
           'target-branch': this.environment.targetBranch,
-          'commit-sha': this.environment.commitSha,
+          'commit-sha': commitData.sha,
+          'commit-committed-at': commitData.committedAt,
+          'commit-author-name': commitData.authorName,
+          'commit-author-email': commitData.authorEmail,
+          'commit-committer-name': commitData.committerName,
+          'commit-committer-email': commitData.committerEmail,
+          'commit-message': commitData.message,
           'pull-request-number': this.environment.pullRequestNumber,
           'parallel-nonce': parallelNonce,
           'parallel-total-shards': parallelTotalShards,
