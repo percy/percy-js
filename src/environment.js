@@ -37,13 +37,15 @@ class Environment {
     return null;
   }
 
-  gitExec(cmd) {
+  gitExec(args) {
     const child_process = require('child_process');
     try {
-      return child_process
-        .execSync(`git ${cmd}`)
-        .toString()
-        .trim();
+      let result = child_process.spawnSync('git', args);
+      if (result.status == 0) {
+        return result.stdout.toString().trim();
+      } else {
+        return '';
+      }
     } catch (error) {
       return '';
     }
@@ -55,8 +57,8 @@ class Environment {
       return '';
     }
 
-    const cmd = `show ${commitSha} --quiet --format="${GIT_COMMIT_FORMAT}"`;
-    return this.gitExec(cmd);
+    const args = ['show', commitSha, '--quiet', `--format="${GIT_COMMIT_FORMAT}"`];
+    return this.gitExec(args);
   }
 
   get commitData() {
@@ -176,7 +178,7 @@ class Environment {
   }
 
   rawBranch() {
-    return this.gitExec('rev-parse --abbrev-ref HEAD');
+    return this.gitExec(['rev-parse', '--abbrev-ref', 'HEAD']);
   }
 
   get targetBranch() {
