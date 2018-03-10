@@ -1,4 +1,4 @@
-const GIT_FORMAT_LINES = [
+const GIT_COMMIT_FORMAT = [
   'COMMIT_SHA:%H',
   'AUTHOR_NAME:%an',
   'AUTHOR_EMAIL:%ae',
@@ -7,7 +7,7 @@ const GIT_FORMAT_LINES = [
   'COMMITTED_DATE:%ai',
   // Note: order is important, this must come last because the regex is a multiline match.
   'COMMIT_MESSAGE:%B',
-];
+].join('%n'); // git show format uses %n for newlines.
 
 class Environment {
   constructor(env) {
@@ -37,24 +37,26 @@ class Environment {
     return null;
   }
 
+  gitExec(cmd) {
+    const child_process = require('child_process');
+    try {
+      return child_process
+        .execSync(`git ${cmd}`)
+        .toString()
+        .trim();
+    } catch (error) {
+      return '';
+    }
+  }
+
   rawCommitData(commitSha) {
     // Make sure commitSha is only alphanumeric characters to prevent command injection.
     if (commitSha.length > 100 || !commitSha.match(/^[0-9a-zA-Z]+$/)) {
       return '';
     }
 
-    const child_process = require('child_process');
-    const format = GIT_FORMAT_LINES.join('%n'); // git show format uses %n for newlines.
-    const cmd = `git show ${commitSha} --quiet --format="${format}"`;
-
-    try {
-      return child_process
-        .execSync(cmd)
-        .toString()
-        .trim();
-    } catch (error) {
-      return '';
-    }
+    const cmd = `show ${commitSha} --quiet --format="${GIT_COMMIT_FORMAT}"`;
+    return this.gitExec(cmd);
   }
 
   get commitData() {
@@ -174,16 +176,7 @@ class Environment {
   }
 
   rawBranch() {
-    const child_process = require('child_process');
-    const cmd = 'git rev-parse --abbrev-ref HEAD';
-    try {
-      return child_process
-        .execSync(cmd)
-        .toString()
-        .trim();
-    } catch (error) {
-      return '';
-    }
+    return this.gitExec('rev-parse --abbrev-ref HEAD');
   }
 
   get targetBranch() {
