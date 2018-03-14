@@ -33,6 +33,8 @@ class Environment {
       return 'semaphore';
     } else if (this._env.BUILDKITE == 'true') {
       return 'buildkite';
+    } else if (this._env.HEROKU_TEST_RUN_ID) {
+      return 'heroku';
     }
     return null;
   }
@@ -127,6 +129,8 @@ class Environment {
         // Buildkite mixes SHAs and non-SHAs in BUILDKITE_COMMIT, so we return null if non-SHA.
         return commitSha !== 'HEAD' ? this._env.BUILDKITE_COMMIT : null;
       }
+      case 'heroku':
+        return this._env.HEROKU_TEST_RUN_COMMIT_VERSION;
     }
 
     return null;
@@ -162,6 +166,9 @@ class Environment {
         break;
       case 'buildkite':
         result = this._env.BUILDKITE_BRANCH;
+        break;
+      case 'heroku':
+        result = this._env.HEROKU_TEST_RUN_BRANCH;
         break;
     }
 
@@ -262,6 +269,8 @@ class Environment {
         return `${this._env.SEMAPHORE_BRANCH_ID}/${this._env.SEMAPHORE_BUILD_NUMBER}`;
       case 'buildkite':
         return this._env.BUILDKITE_BUILD_ID;
+      case 'heroku':
+        return this._env.HEROKU_TEST_RUN_ID;
     }
     return null;
   }
@@ -299,6 +308,11 @@ class Environment {
       case 'buildkite':
         if (this._env.BUILDKITE_PARALLEL_JOB_COUNT) {
           return parseInt(this._env.BUILDKITE_PARALLEL_JOB_COUNT);
+        }
+        break;
+      case 'heroku':
+        if (this._env.CI_NODE_TOTAL) {
+          return parseInt(this._env.CI_NODE_TOTAL);
         }
         break;
     }
