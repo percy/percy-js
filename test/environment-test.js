@@ -326,4 +326,27 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       });
     });
   });
+
+  context('in Heroku CI', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        HEROKU_TEST_RUN_COMMIT_VERSION: 'heroku-commit-sha',
+        HEROKU_TEST_RUN_BRANCH: 'heroku-branch',
+        HEROKU_TEST_RUN_ID: 'heroku-test-run-id',
+        // TODO(fotinakis): need this.
+        // HEROKU_PULL_REQUEST: '123',
+        CI_NODE_TOTAL: '3',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'heroku');
+      assert.strictEqual(environment.commitSha, 'heroku-commit-sha');
+      assert.strictEqual(environment.branch, 'heroku-branch');
+      assert.strictEqual(environment.pullRequestNumber, null);
+      assert.strictEqual(environment.project, null);
+      assert.strictEqual(environment.parallelNonce, 'heroku-test-run-id');
+      assert.strictEqual(environment.parallelTotalShards, 3);
+    });
+  });
 });
