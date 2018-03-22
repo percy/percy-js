@@ -10,6 +10,7 @@
 1. [Update the release notes](https://github.com/percy/percy-js/releases) on GitHub
 1. `yarn publish` (leave new version blank)
 1. [Visit npm](https://www.npmjs.com/package/percy-client) and see the new version is live
+1. Update [percy-web](https://github.com/percy/percy-web) to use the new version
 
 * Announce the new release,
    making sure to say "thank you" to the contributors
