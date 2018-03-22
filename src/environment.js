@@ -82,10 +82,10 @@ class Environment {
     if (this.commitSha) {
       output = this.rawCommitData(this.commitSha);
     }
-    if (!output || output == '') {
+    if (!output) {
       output = this.rawCommitData('HEAD');
     }
-    if (output == '') {
+    if (!output) {
       return result;
     }
 
@@ -95,7 +95,7 @@ class Environment {
     };
 
     // If this.commitSha didn't provide a sha, use the one from the commit
-    if (!result.sha || result.sha == '') {
+    if (!result.sha) {
       result.sha = parse(/COMMIT_SHA:(.*)/);
     }
 
