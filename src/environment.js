@@ -64,6 +64,20 @@ class Environment {
   }
 
   get commitData() {
+    // Read the result from environment data
+    let result = {
+      branch: this.branch,
+      sha: this.commitSha,
+
+      // These GIT_ environment vars are from the Jenkins Git Plugin, but could be
+      // used generically. This behavior may change in the future.
+      authorName: this._env['GIT_AUTHOR_NAME'],
+      authorEmail: this._env['GIT_AUTHOR_EMAIL'],
+      committerName: this._env['GIT_COMMITTER_NAME'],
+      committerEmail: this._env['GIT_COMMITTER_EMAIL'],
+    };
+
+    // Try and get more meta-data from git
     let output = '';
     if (this.commitSha) {
       output = this.rawCommitData(this.commitSha);
@@ -71,12 +85,8 @@ class Environment {
     if (!output || output == '') {
       output = this.rawCommitData('HEAD');
     }
-
-    // If rawCommitData can't be read, return the branch only.
     if (output == '') {
-      return {
-        branch: this.branch,
-      };
+      return result;
     }
 
     // If not running in a git repo, allow undefined for certain commit attributes.
@@ -84,23 +94,19 @@ class Environment {
       return ((output && output.match(regex)) || [])[1];
     };
 
-    return {
-      // The only required attribute:
-      branch: this.branch,
-      // An optional but important attribute:
-      sha: this.commitSha || parse(/COMMIT_SHA:(.*)/),
+    // If this.commitSha didn't provide a sha, use the one from the commit
+    if (!result.sha || result.sha == '') {
+      result.sha = parse(/COMMIT_SHA:(.*)/);
+    }
 
-      // Optional attributes:
-      message: parse(/COMMIT_MESSAGE:(.*)/m),
-      committedAt: parse(/COMMITTED_DATE:(.*)/),
+    result.message = parse(/COMMIT_MESSAGE:(.*)/m);
+    result.committedAt = parse(/COMMITTED_DATE:(.*)/);
+    result.authorName = parse(/AUTHOR_NAME:(.*)/);
+    result.authorEmail = parse(/AUTHOR_EMAIL:(.*)/);
+    result.committerName = parse(/COMMITTER_NAME:(.*)/);
+    result.committerEmail = parse(/COMMITTER_EMAIL:(.*)/);
 
-      // These GIT_ environment vars are from the Jenkins Git Plugin, but could be
-      // used generically. This behavior may change in the future.
-      authorName: parse(/AUTHOR_NAME:(.*)/) || this._env['GIT_AUTHOR_NAME'],
-      authorEmail: parse(/AUTHOR_EMAIL:(.*)/) || this._env['GIT_AUTHOR_EMAIL'],
-      committerName: parse(/COMMITTER_NAME:(.*)/) || this._env['GIT_COMMITTER_NAME'],
-      committerEmail: parse(/COMMITTER_EMAIL:(.*)/) || this._env['GIT_COMMITTER_EMAIL'],
-    };
+    return result;
   }
 
   get commitSha() {

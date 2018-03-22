@@ -72,7 +72,7 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       let branchStub = sinon.stub(environment, 'rawBranch').returns('test-branch');
       let commit = environment.commitData;
       assert.strictEqual(commit.branch, 'test-branch');
-      assert.strictEqual(commit.sha, undefined);
+      assert.strictEqual(commit.sha, null);
       commitStub.restore();
       branchStub.restore();
     });
@@ -94,6 +94,10 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
         PERCY_PULL_REQUEST: '256',
         PERCY_PARALLEL_NONCE: 'percy-nonce',
         PERCY_PARALLEL_TOTAL: '3',
+        GIT_AUTHOR_NAME: 'git author',
+        GIT_AUTHOR_EMAIL: 'gitauthor@example.com',
+        GIT_COMMITTER_NAME: 'git committer',
+        GIT_COMMITTER_EMAIL: 'git committer@example.com',
       });
     });
 
@@ -110,6 +114,24 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       // TODO: Deprecated, remove. Uses PERCY_REPO_SLUG to set project if available.
       environment._env.PERCY_REPO_SLUG = 'other/foo-bar';
       assert.strictEqual(environment.repo, 'other/foo-bar');
+    });
+
+    it('commitData returns ENV vars when git cannot be read', function() {
+      let commitStub = sinon.stub(environment, 'rawCommitData').returns('');
+      let branchStub = sinon.stub(environment, 'rawBranch').returns('');
+
+      let commit = environment.commitData;
+      assert.strictEqual(commit.branch, 'percy-branch');
+      assert.strictEqual(commit.sha, 'percy-commit');
+      assert.strictEqual(commit.authorName, 'git author');
+      assert.strictEqual(commit.authorEmail, 'gitauthor@example.com');
+      assert.strictEqual(commit.committerName, 'git committer');
+      assert.strictEqual(commit.committerEmail, 'git committer@example.com');
+      assert.strictEqual(commit.committedAt, undefined);
+      assert.strictEqual(commit.message, undefined);
+
+      commitStub.restore();
+      branchStub.restore();
     });
   });
 
