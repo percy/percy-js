@@ -143,7 +143,6 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
         TRAVIS_REPO_SLUG: 'travis/repo-slug',
         TRAVIS_PULL_REQUEST: 'false',
         TRAVIS_PULL_REQUEST_BRANCH: '',
-        TRAVIS_PULL_REQUEST_SHA: '',
         TRAVIS_COMMIT: 'travis-commit-sha',
         TRAVIS_BRANCH: 'travis-branch',
         CI_NODE_TOTAL: '3',
@@ -165,13 +164,12 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       beforeEach(function() {
         environment._env.TRAVIS_PULL_REQUEST = '256';
         environment._env.TRAVIS_PULL_REQUEST_BRANCH = 'travis-pr-branch';
-        environment._env.TRAVIS_PULL_REQUEST_SHA = 'travis-pr-head-commit-sha';
       });
 
       it('has the correct properties', function() {
         assert.strictEqual(environment.pullRequestNumber, '256');
         assert.strictEqual(environment.branch, 'travis-pr-branch');
-        assert.strictEqual(environment.commitSha, 'travis-pr-head-commit-sha');
+        assert.strictEqual(environment.commitSha, 'travis-commit-sha');
       });
     });
   });
