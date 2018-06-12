@@ -139,6 +139,10 @@ class Environment {
     return null;
   }
 
+  get targetCommitSha() {
+    return this._env.PERCY_TARGET_COMMIT || null;
+  }
+
   get branch() {
     if (this._env.PERCY_BRANCH) {
       return this._env.PERCY_BRANCH;
