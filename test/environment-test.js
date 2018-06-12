@@ -91,6 +91,7 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
         PERCY_COMMIT: 'percy-commit',
         PERCY_BRANCH: 'percy-branch',
         PERCY_TARGET_BRANCH: 'percy-target-branch',
+        PERCY_TARGET_COMMIT: 'percy-target-commit',
         PERCY_PULL_REQUEST: '256',
         PERCY_PARALLEL_NONCE: 'percy-nonce',
         PERCY_PARALLEL_TOTAL: '3',
@@ -103,6 +104,7 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
 
     it('allows override with percy env vars', function() {
       assert.strictEqual(environment.commitSha, 'percy-commit');
+      assert.strictEqual(environment.targetCommitSha, 'percy-target-commit');
       assert.strictEqual(environment.branch, 'percy-branch');
       assert.strictEqual(environment.targetBranch, 'percy-target-branch');
       assert.strictEqual(environment.pullRequestNumber, '256');
@@ -152,7 +154,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'travis');
       assert.strictEqual(environment.commitSha, 'travis-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'travis-branch');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, 'travis/repo-slug'); // TODO: Deprecated, remove.
@@ -169,7 +173,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       it('has the correct properties', function() {
         assert.strictEqual(environment.pullRequestNumber, '256');
         assert.strictEqual(environment.branch, 'travis-pr-branch');
+        assert.strictEqual(environment.targetBranch, null);
         assert.strictEqual(environment.commitSha, 'travis-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
       });
     });
   });
@@ -188,7 +194,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'jenkins');
       assert.strictEqual(environment.commitSha, 'jenkins-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'jenkins-branch');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, '256');
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
@@ -214,7 +222,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'circle');
       assert.strictEqual(environment.commitSha, 'circle-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'circle-branch');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, '123');
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, 'circle/repo-name'); // TODO: Deprecated, remove.
@@ -242,7 +252,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'codeship');
       assert.strictEqual(environment.commitSha, 'codeship-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'codeship-branch');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
@@ -265,7 +277,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'drone');
       assert.strictEqual(environment.commitSha, 'drone-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'drone-branch');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, '123');
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
@@ -291,7 +305,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'semaphore');
       assert.strictEqual(environment.commitSha, 'semaphore-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'semaphore-branch');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, '123');
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.repo, 'repo-owner/repo-name'); // TODO: Deprecated, remove.
@@ -317,7 +333,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       it('has the correct properties', function() {
         assert.strictEqual(environment.ci, 'buildkite');
         assert.strictEqual(environment.commitSha, 'buildkite-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
         assert.strictEqual(environment.branch, 'buildkite-branch');
+        assert.strictEqual(environment.targetBranch, null);
         assert.strictEqual(environment.pullRequestNumber, null);
         assert.strictEqual(environment.project, null);
         assert.strictEqual(environment.repo, null); // TODO: Deprecated, remove.
@@ -362,7 +380,9 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'heroku');
       assert.strictEqual(environment.commitSha, 'heroku-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'heroku-branch');
+      assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.project, null);
       assert.strictEqual(environment.parallelNonce, 'heroku-test-run-id');

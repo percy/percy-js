@@ -87,6 +87,7 @@ describe('PercyClient', function() {
           attributes: {
             branch: commitData.branch,
             'target-branch': percyClient.environment.targetBranch,
+            'target-commit-sha': percyClient.environment.targetCommitSha,
             'commit-sha': commitData.sha,
             'commit-committed-at': commitData.committedAt,
             'commit-author-name': commitData.authorName,

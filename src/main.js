@@ -139,6 +139,7 @@ class PercyClient {
         attributes: {
           branch: commitData.branch,
           'target-branch': this.environment.targetBranch,
+          'target-commit-sha': this.environment.targetCommitSha,
           'commit-sha': commitData.sha,
           'commit-committed-at': commitData.committedAt,
           'commit-author-name': commitData.authorName,
