@@ -292,6 +292,47 @@ describe('PercyClient', function() {
     });
   });
 
+  describe('gatherBuildResources', function() {
+    it('returns an array of Resource objects', function() {
+      let rootDir = path.join(__dirname, 'data');
+      let resources = percyClient.gatherBuildResources(rootDir, {});
+
+      let expectedResources = [
+        percyClient.makeResource({
+          resourceUrl: '/test-resource.css',
+          sha: '237885ebb7b7a42f90d49dbe8767c2aebbf71b2c0f72581df38e3212a25eaf1d',
+          localPath: path.join(rootDir, 'test-resource.css'),
+        }),
+        percyClient.makeResource({
+          resourceUrl: '/test-resource.js',
+          sha: '15ffc75aa3746518346cd1c529575a64bd24f4051425b9fe4425bedeec865a6e',
+          localPath: path.join(rootDir, 'test-resource.js'),
+        }),
+      ];
+      assert.deepEqual(resources, expectedResources);
+    });
+
+    it('handles extra options correctly', function() {
+      let rootDir = path.join(__dirname, 'data');
+      let options = {
+        // Note: intentionally added trailing slash to be sure it is stripped before prepend.
+        baseUrlPath: '/assets/',
+        skippedPathRegexes: [/\.css$/],
+        followLinks: false,
+      };
+      let resources = percyClient.gatherBuildResources(rootDir, options);
+
+      let expectedResources = [
+        percyClient.makeResource({
+          resourceUrl: '/assets/test-resource.js',
+          sha: '15ffc75aa3746518346cd1c529575a64bd24f4051425b9fe4425bedeec865a6e',
+          localPath: path.join(rootDir, 'test-resource.js'),
+        }),
+      ];
+      assert.deepEqual(resources, expectedResources);
+    });
+  });
+
   describe('uploadResource', function() {
     it('uploads a resource', function(done) {
       let content = 'foo';

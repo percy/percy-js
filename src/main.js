@@ -190,6 +190,11 @@ class PercyClient {
     return new Resource(options);
   }
 
+  // Synchronously walks a directory of compiled assets and returns an array of Resource objects.
+  gatherBuildResources(rootDir, options) {
+    return utils.gatherBuildResources(this, rootDir, options);
+  }
+
   uploadResource(buildId, content) {
     let sha = utils.sha256hash(content);
     let data = {

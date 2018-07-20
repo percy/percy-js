@@ -1810,6 +1810,10 @@ for-own@^0.1.4:
   dependencies:
     for-in "^1.0.1"
 
+foreachasync@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/foreachasync/-/foreachasync-3.0.0.tgz#5502987dc8714be3392097f32e0071c9dee07cf6"
+
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
@@ -4419,6 +4423,12 @@ w3c-hr-time@^1.0.1:
   resolved "https://registry.yarnpkg.com/w3c-hr-time/-/w3c-hr-time-1.0.1.tgz#82ac2bff63d950ea9e3189a58a65625fedf19045"
   dependencies:
     browser-process-hrtime "^0.1.2"
+
+walk@^2.3.14:
+  version "2.3.14"
+  resolved "https://registry.yarnpkg.com/walk/-/walk-2.3.14.tgz#60ec8631cfd23276ae1e7363ce11d626452e1ef3"
+  dependencies:
+    foreachasync "^3.0.0"
 
 webidl-conversions@^4.0.1, webidl-conversions@^4.0.2:
   version "4.0.2"
