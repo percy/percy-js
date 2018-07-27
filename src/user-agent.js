@@ -16,7 +16,7 @@ class UserAgent {
     let environment = [
       this._client._environmentInfo,
       `node/${this._nodeVersion()}`,
-      this._client.environment.ci,
+      this._client.environment.ciVersion,
     ]
       .filter(el => el != null)
       .join('; ');

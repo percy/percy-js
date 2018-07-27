@@ -365,6 +365,32 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     });
   });
 
+  context('in GitLab', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        GITLAB_CI: 'true',
+        CI_COMMIT_SHA: 'gitlab-commit-sha',
+        CI_COMMIT_REF_NAME: 'gitlab-branch',
+        CI_JOB_ID: 'gitlab-job-id',
+        CI_SERVER_VERSION: '8.14.3-ee',
+      });
+    });
+
+    context('push build', function() {
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.ci, 'gitlab');
+        assert.strictEqual(environment.commitSha, 'gitlab-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+        assert.strictEqual(environment.branch, 'gitlab-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.pullRequestNumber, null);
+        assert.strictEqual(environment.project, null);
+        assert.strictEqual(environment.parallelNonce, 'gitlab-job-id');
+        assert.strictEqual(environment.parallelTotalShards, null);
+      });
+    });
+  });
+
   context('in Heroku CI', function() {
     beforeEach(function() {
       environment = new Environment({

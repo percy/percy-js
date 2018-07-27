@@ -35,8 +35,18 @@ class Environment {
       return 'buildkite';
     } else if (this._env.HEROKU_TEST_RUN_ID) {
       return 'heroku';
+    } else if (this._env.GITLAB_CI == 'true') {
+      return 'gitlab';
     }
     return null;
+  }
+
+  get ciVersion() {
+    switch (this.ci) {
+      case 'gitlab':
+        return `gitlab/${this._env.CI_SERVER_VERSION}`;
+    }
+    return this.ci;
   }
 
   gitExec(args) {
@@ -134,6 +144,8 @@ class Environment {
       }
       case 'heroku':
         return this._env.HEROKU_TEST_RUN_COMMIT_VERSION;
+      case 'gitlab':
+        return this._env.CI_COMMIT_SHA;
     }
 
     return null;
@@ -176,6 +188,9 @@ class Environment {
         break;
       case 'heroku':
         result = this._env.HEROKU_TEST_RUN_BRANCH;
+        break;
+      case 'gitlab':
+        result = this._env.CI_COMMIT_REF_NAME;
         break;
     }
 
@@ -278,6 +293,8 @@ class Environment {
         return this._env.BUILDKITE_BUILD_ID;
       case 'heroku':
         return this._env.HEROKU_TEST_RUN_ID;
+      case 'gitlab':
+        return this._env.CI_JOB_ID;
     }
     return null;
   }
