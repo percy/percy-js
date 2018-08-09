@@ -167,7 +167,7 @@ class PercyClient {
     if (project) {
       return this._httpPost(`${this.apiUrl}/projects/${project}/builds/`, data);
     } else {
-      return this._httpPost(`${this.apiUrl}/builds`, data);
+      return this._httpPost(`${this.apiUrl}/builds/`, data);
     }
   }
 

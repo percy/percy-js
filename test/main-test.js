@@ -77,11 +77,16 @@ describe('PercyClient', function() {
   });
 
   describe('createBuild', function() {
-    it('returns build data', function(done) {
-      let resources = [percyClient.makeResource({resourceUrl: '/foo%20bar', sha: 'fake-sha'})];
-      let commitData = percyClient.environment.commitData;
+    let resources, commitData, expectedRequestData, responseMock;
 
-      let expectedRequestData = {
+    beforeEach(function() {
+      percyClient = new PercyClient({token: 'test-token'});
+      nock.disableNetConnect();
+
+      resources = [percyClient.makeResource({resourceUrl: '/foo%20bar', sha: 'fake-sha'})];
+      commitData = percyClient.environment.commitData;
+
+      expectedRequestData = {
         data: {
           type: 'builds',
           attributes: {
@@ -117,17 +122,45 @@ describe('PercyClient', function() {
         },
       };
 
-      let responseMock = function(url, requestBody) {
+      responseMock = function(url, requestBody) {
         // Verify request data.
         assert.equal(requestBody, JSON.stringify(expectedRequestData));
         let responseBody = {foo: 123};
         return [201, responseBody];
       };
+    });
 
+    afterEach(function() {
+      nock.cleanAll();
+    });
+
+    it('returns build data when given a project identifier', function(done) {
       nock('https://percy.io')
         .post('/api/v1/projects/foo/bar/builds/')
         .reply(201, responseMock);
+
       let request = percyClient.createBuild('foo/bar', {
+        resources: resources,
+      });
+
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {foo: 123});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+
+    it('returns build data without being given a project identifier', function(done) {
+      nock('https://percy.io')
+        .post('/api/v1/builds/')
+        .reply(201, responseMock);
+
+      // intermediate state while we move to token-only build creation
+      let request = percyClient.createBuild('', {
         resources: resources,
       });
 
