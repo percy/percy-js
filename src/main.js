@@ -164,7 +164,11 @@ class PercyClient {
       };
     }
 
-    return this._httpPost(`${this.apiUrl}/projects/${project}/builds/`, data);
+    if (project) {
+      return this._httpPost(`${this.apiUrl}/projects/${project}/builds/`, data);
+    } else {
+      return this._httpPost(`${this.apiUrl}/builds`, data);
+    }
   }
 
   // This method is unavailable to normal write-only project tokens.
