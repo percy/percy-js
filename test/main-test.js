@@ -77,16 +77,16 @@ describe('PercyClient', function() {
   });
 
   describe('createBuild', function() {
-    let resources, commitData, expectedRequestData, responseMock;
+    let resources, responseMock;
 
     beforeEach(function() {
       percyClient = new PercyClient({token: 'test-token'});
       nock.disableNetConnect();
 
       resources = [percyClient.makeResource({resourceUrl: '/foo%20bar', sha: 'fake-sha'})];
-      commitData = percyClient.environment.commitData;
+      const commitData = percyClient.environment.commitData;
 
-      expectedRequestData = {
+      const expectedRequestData = {
         data: {
           type: 'builds',
           attributes: {
