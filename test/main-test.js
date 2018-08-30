@@ -134,27 +134,7 @@ describe('PercyClient', function() {
       nock.cleanAll();
     });
 
-    it('returns build data when given a project identifier', function(done) {
-      nock('https://percy.io')
-        .post('/api/v1/projects/foo/bar/builds/')
-        .reply(201, responseMock);
-
-      let request = percyClient.createBuild('foo/bar', {
-        resources: resources,
-      });
-
-      request
-        .then(response => {
-          assert.equal(response.statusCode, 201);
-          assert.deepEqual(response.body, {foo: 123});
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
-    });
-
-    it('returns build data without being given a project identifier', function(done) {
+    it('returns build data', function(done) {
       nock('https://percy.io')
         .post('/api/v1/builds/')
         .reply(201, responseMock);
