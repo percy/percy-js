@@ -119,7 +119,17 @@ class PercyClient {
     });
   }
 
-  createBuild(project, options) {
+  createBuild(deprecatedProject, deprecatedOptions) {
+    let project, options;
+
+    // if arguments is 2 and deprecatedProject is not an Object then assign both
+    if (arguments.length === 2 && !(deprecatedProject instanceof Object)) {
+      project = deprecatedProject;
+      options = deprecatedOptions;
+    } else {
+      options = deprecatedProject;
+    }
+
     let parallelNonce = this.environment.parallelNonce;
     let parallelTotalShards = this.environment.parallelTotalShards;
 
