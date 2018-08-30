@@ -159,10 +159,7 @@ describe('PercyClient', function() {
         .post('/api/v1/builds/')
         .reply(201, responseMock);
 
-      // intermediate state while we move to token-only build creation
-      let request = percyClient.createBuild('', {
-        resources: resources,
-      });
+      let request = percyClient.createBuild({resources: resources});
 
       request
         .then(response => {
