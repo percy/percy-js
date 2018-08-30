@@ -214,33 +214,6 @@ class Environment {
     return this._env.PERCY_TARGET_BRANCH || null;
   }
 
-  get project() {
-    return this._env.PERCY_PROJECT || null;
-  }
-
-  // Deprecated: use `project` instead.
-  get repo() {
-    if (this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT) {
-      return this._env.PERCY_REPO_SLUG || this._env.PERCY_PROJECT;
-    }
-    // Deprecated flow:
-    switch (this.ci) {
-      case 'travis':
-        return this._env.TRAVIS_REPO_SLUG;
-      case 'jenkins':
-        break;
-      case 'circle':
-        return `${this._env.CIRCLE_PROJECT_USERNAME}/${this._env.CIRCLE_PROJECT_REPONAME}`;
-      case 'codeship':
-        break;
-      case 'drone':
-        break;
-      case 'semaphore':
-        return this._env.SEMAPHORE_REPO_SLUG;
-    }
-    return null;
-  }
-
   get pullRequestNumber() {
     if (this._env.PERCY_PULL_REQUEST) {
       return this._env.PERCY_PULL_REQUEST;

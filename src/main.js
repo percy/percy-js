@@ -119,17 +119,7 @@ class PercyClient {
     });
   }
 
-  createBuild(deprecatedProject, deprecatedOptions) {
-    let project, options;
-
-    // if arguments is 2 and deprecatedProject is not an Object then assign both
-    if (arguments.length === 2 && !(deprecatedProject instanceof Object)) {
-      project = deprecatedProject;
-      options = deprecatedOptions;
-    } else {
-      options = deprecatedProject;
-    }
-
+  createBuild(options) {
     let parallelNonce = this.environment.parallelNonce;
     let parallelTotalShards = this.environment.parallelTotalShards;
 
@@ -174,11 +164,7 @@ class PercyClient {
       };
     }
 
-    if (project) {
-      return this._httpPost(`${this.apiUrl}/projects/${project}/builds/`, data);
-    } else {
-      return this._httpPost(`${this.apiUrl}/builds/`, data);
-    }
+    return this._httpPost(`${this.apiUrl}/builds/`, data);
   }
 
   // This method is unavailable to normal write-only project tokens.
