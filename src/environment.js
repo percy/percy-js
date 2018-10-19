@@ -255,7 +255,7 @@ class Environment {
       case 'jenkins':
         return this._env.BUILD_NUMBER;
       case 'circle':
-        return this._env.CIRCLE_BUILD_NUM;
+        return this._env.CIRCLE_WORKFLOW_WORKSPACE_ID || this._env.CIRCLE_BUILD_NUM;
       case 'codeship':
         return this._env.CI_BUILD_NUMBER;
       case 'drone':

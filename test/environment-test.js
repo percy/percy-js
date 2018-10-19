@@ -217,6 +217,13 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       environment._env.CIRCLE_NODE_TOTAL = '';
       assert.strictEqual(environment.parallelTotalShards, null);
     });
+
+    context('in Circle 2.0', function() {
+      it('has the correct properties', function() {
+        environment._env.CIRCLE_WORKFLOW_WORKSPACE_ID = 'circle-workflow-workspace-id';
+        assert.strictEqual(environment.parallelNonce, 'circle-workflow-workspace-id');
+      });
+    });
   });
 
   context('in Codeship', function() {
