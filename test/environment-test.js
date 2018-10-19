@@ -220,8 +220,8 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
 
     context('in Circle 2.0', function() {
       it('has the correct properties', function() {
-        environment._env.CIRCLE_WORKFLOW_ID = 'circle-workflow-id';
-        assert.strictEqual(environment.parallelNonce, 'circle-workflow-id');
+        environment._env.CIRCLE_WORKFLOW_WORKSPACE_ID = 'circle-workflow-workspace-id';
+        assert.strictEqual(environment.parallelNonce, 'circle-workflow-workspace-id');
       });
     });
   });
