@@ -9,12 +9,18 @@ class UserAgent {
   }
 
   toString() {
-    let client = [`Percy/${this._apiVersion()}`, this._client._clientInfo, `percy-js/${version}`]
+    let client = [
+      `Percy/${this._apiVersion()}`,
+      this._client._specificClientInfo,
+      this._client._genericClientInfo,
+      `percy-js/${version}`,
+    ]
       .filter(el => el != null)
       .join(' ');
 
     let environment = [
-      this._client._environmentInfo,
+      this._client._specificEnvironmentInfo,
+      this._client._genericEnvironmentInfo,
       `node/${this._nodeVersion()}`,
       this._client.environment.ciVersion,
     ]

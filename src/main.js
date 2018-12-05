@@ -60,8 +60,8 @@ class PercyClient {
       maxSockets: 5,
       keepAlive: true,
     });
-    this._clientInfo = options.clientInfo;
-    this._environmentInfo = options.environmentInfo;
+    this._genericClientInfo = options.clientInfo;
+    this._genericEnvironmentInfo = options.environmentInfo;
   }
 
   _headers(headers) {
@@ -261,6 +261,8 @@ class PercyClient {
       },
     };
 
+    this._specificClientInfo = options.clientInfo || 'no client info';
+    this._specificEnvironmentInfo = options.environmentInfo || 'no env info';
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/snapshots/`, data);
   }
 
