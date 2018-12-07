@@ -91,4 +91,30 @@ describe('UserAgent', function() {
       });
     });
   });
+
+  context('sdkClient and sdkEnvironment info sent from percy-agent', function() {
+    const clientInfo = 'react-percy-storybook/1.0.0';
+    const environmentInfo = 'react/15.6.1';
+    const sdkClientInfo = '@percy/cypress/0.2.0';
+    const sdkEnvironmentInfo = 'cypress/3.1.0';
+
+    describe('userAgent', function() {
+      beforeEach(function() {
+        percyClient = new PercyClient({
+          clientInfo: clientInfo,
+          environmentInfo: environmentInfo,
+        });
+        percyClient._sdkClientInfo = sdkClientInfo;
+        percyClient._sdkEnvironmentInfo = sdkEnvironmentInfo;
+        userAgent = new UserAgent(percyClient);
+      });
+      it('has the correct client and environment info', function() {
+        const expectedUserAgent =
+          `Percy/v1 ${sdkClientInfo} ${clientInfo} percy-js/${version}` +
+          ` (${sdkEnvironmentInfo}; ${environmentInfo}; node/${process.version})`;
+
+        assert.strictEqual(userAgent.toString(), expectedUserAgent);
+      });
+    });
+  });
 });

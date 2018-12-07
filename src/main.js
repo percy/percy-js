@@ -62,8 +62,8 @@ class PercyClient {
     });
     this._clientInfo = options.clientInfo;
     this._environmentInfo = options.environmentInfo;
-    this._sdkClientInfo = '(SDK client info not set)';
-    this._sdkEnvironmentInfo = '(SDK environment info not set)';
+    this._sdkClientInfo = null;
+    this._sdkEnvironmentInfo = null;
   }
 
   _headers(headers) {
