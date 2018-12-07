@@ -60,8 +60,10 @@ class PercyClient {
       maxSockets: 5,
       keepAlive: true,
     });
-    this._genericClientInfo = options.clientInfo;
-    this._genericEnvironmentInfo = options.environmentInfo;
+    this._clientInfo = options.clientInfo;
+    this._environmentInfo = options.environmentInfo;
+    this._sdkClientInfo = '(SDK client info not set)';
+    this._sdkEnvironmentInfo = '(SDK environment info not set)';
   }
 
   _headers(headers) {
@@ -261,8 +263,8 @@ class PercyClient {
       },
     };
 
-    this._specificClientInfo = options.clientInfo || 'no client info';
-    this._specificEnvironmentInfo = options.environmentInfo || 'no env info';
+    this._sdkClientInfo = options.clientInfo;
+    this._sdkEnvironmentInfo = options.environmentInfo;
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/snapshots/`, data);
   }
 
