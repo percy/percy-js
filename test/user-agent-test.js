@@ -6,6 +6,8 @@ let assert = require('assert');
 
 import {version} from '../package.json';
 
+// Regex is used to check matching in this file so we can have the tests pass both locally
+// and remotely (when `travis` is included in the environment string)
 describe('UserAgent', function() {
   let userAgent;
   let percyClient;
@@ -109,11 +111,15 @@ describe('UserAgent', function() {
         userAgent = new UserAgent(percyClient);
       });
       it('has the correct client and environment info', function() {
-        const expectedUserAgent =
-          `Percy/v1 ${sdkClientInfo} ${clientInfo} percy-js/${version}` +
-          ` (${sdkEnvironmentInfo}; ${environmentInfo}; node/${process.version})`;
+        let regex = new RegExp(
+          `Percy/v1 ${sdkClientInfo} ${clientInfo} percy-js/${version} ` +
+            `\\(${sdkEnvironmentInfo}; ${environmentInfo}; node/${process.version}(; travis)?\\)`,
+        );
 
-        assert.strictEqual(userAgent.toString(), expectedUserAgent);
+        assert(
+          userAgent.toString().match(regex),
+          `"${userAgent.toString()}" user agent does not match ${regex}`,
+        );
       });
     });
   });

@@ -667,10 +667,8 @@ describe('PercyClient', function() {
 
           // Ensure that data from createSnapshot gets through to userAgent
           const userAgent = new UserAgent(percyClient);
-          assert.deepEqual(
-            userAgent.toString(),
-            'Percy/v1 @percy/cypress/0.2.0 percy-js/3.0.2 (cypress/3.1.0; node/v8.7.0)',
-          );
+          assert(userAgent.toString().includes('@percy/cypress/0.2.0'));
+          assert(userAgent.toString().includes('cypress/3.1.0'));
 
           done();
         })
