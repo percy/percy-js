@@ -2,6 +2,7 @@ let path = require('path');
 let assert = require('assert');
 let utils = require(path.join(__dirname, '..', 'src', 'utils'));
 let PercyClient = require(path.join(__dirname, '..', 'src', 'main'));
+let UserAgent = require(path.join(__dirname, '..', 'src', 'user-agent'));
 let nock = require('nock');
 let fs = require('fs');
 
@@ -647,6 +648,8 @@ describe('PercyClient', function() {
         enableJavaScript: true,
         widths: [1000],
         minimumHeight: 100,
+        clientInfo: '@percy/cypress/0.2.0',
+        environmentInfo: 'cypress/3.1.0',
       };
       let resource = percyClient.makeResource({
         resourceUrl: '/foo',
@@ -661,6 +664,14 @@ describe('PercyClient', function() {
           assert.equal(response.statusCode, 201);
           // This is not the actual API response, we just mocked it above.
           assert.deepEqual(response.body, {success: true});
+
+          // Ensure that data from createSnapshot gets through to userAgent
+          const userAgent = new UserAgent(percyClient);
+          assert.deepEqual(
+            userAgent.toString(),
+            'Percy/v1 @percy/cypress/0.2.0 percy-js/3.0.2 (cypress/3.1.0; node/v8.7.0)',
+          );
+
           done();
         })
         .catch(err => {
