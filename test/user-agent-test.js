@@ -6,6 +6,8 @@ let assert = require('assert');
 
 import {version} from '../package.json';
 
+// Regex is used to check matching in this file so we can have the tests pass both locally
+// and remotely (when `travis` is included in the environment string)
 describe('UserAgent', function() {
   let userAgent;
   let percyClient;
@@ -82,6 +84,36 @@ describe('UserAgent', function() {
         let regex = new RegExp(
           `Percy/v1 ${clientInfo} percy-js/${version} ` +
             `\\(${environmentInfo}; node/${process.version}(; travis)?\\)`,
+        );
+
+        assert(
+          userAgent.toString().match(regex),
+          `"${userAgent.toString()}" user agent does not match ${regex}`,
+        );
+      });
+    });
+  });
+
+  context('sdkClient and sdkEnvironment info sent from percy-agent', function() {
+    const clientInfo = 'react-percy-storybook/1.0.0';
+    const environmentInfo = 'react/15.6.1';
+    const sdkClientInfo = '@percy/cypress/0.2.0';
+    const sdkEnvironmentInfo = 'cypress/3.1.0';
+
+    describe('userAgent', function() {
+      beforeEach(function() {
+        percyClient = new PercyClient({
+          clientInfo: clientInfo,
+          environmentInfo: environmentInfo,
+        });
+        percyClient._sdkClientInfo = sdkClientInfo;
+        percyClient._sdkEnvironmentInfo = sdkEnvironmentInfo;
+        userAgent = new UserAgent(percyClient);
+      });
+      it('has the correct client and environment info', function() {
+        let regex = new RegExp(
+          `Percy/v1 ${sdkClientInfo} ${clientInfo} percy-js/${version} ` +
+            `\\(${sdkEnvironmentInfo}; ${environmentInfo}; node/${process.version}(; travis)?\\)`,
         );
 
         assert(

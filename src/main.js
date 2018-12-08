@@ -62,6 +62,8 @@ class PercyClient {
     });
     this._clientInfo = options.clientInfo;
     this._environmentInfo = options.environmentInfo;
+    this._sdkClientInfo = null;
+    this._sdkEnvironmentInfo = null;
   }
 
   _headers(headers) {
@@ -261,6 +263,8 @@ class PercyClient {
       },
     };
 
+    this._sdkClientInfo = options.clientInfo;
+    this._sdkEnvironmentInfo = options.environmentInfo;
     return this._httpPost(`${this.apiUrl}/builds/${buildId}/snapshots/`, data);
   }
 
