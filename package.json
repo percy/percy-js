@@ -10,7 +10,6 @@
     "debug": "mocha debug --require babel-core/register",
     "lint": "./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "./node_modules/eslint/bin/eslint.js . --fix",
-    "precommit": "lint-staged",
     "prepublish": "npm run build",
     "tdd": "mocha --require babel-core/register --watch",
     "test": "mocha --require babel-core/register"
@@ -62,5 +61,10 @@
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "walk": "^2.3.14"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
