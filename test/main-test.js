@@ -33,7 +33,7 @@ describe('PercyClient', function() {
 
       request
         .then(function(response) {
-          assert.equal(response.statusCode, 200);
+          assert.equal(response.statusCode, 201);
           assert.deepEqual(response.body, {success: true});
           done();
         })
