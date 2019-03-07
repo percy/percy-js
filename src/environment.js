@@ -257,7 +257,7 @@ class Environment {
       case 'circle':
         return this._env.CIRCLE_WORKFLOW_WORKSPACE_ID || this._env.CIRCLE_BUILD_NUM;
       case 'codeship':
-        return this._env.CI_BUILD_NUMBER;
+        return this._env.CI_BUILD_NUMBER || this._env.CI_BUILD_ID;
       case 'drone':
         return this._env.DRONE_BUILD_NUMBER;
       case 'semaphore':

@@ -232,6 +232,7 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
         CI_NAME: 'codeship',
         CI_BRANCH: 'codeship-branch',
         CI_BUILD_NUMBER: 'codeship-build-number',
+        CI_BUILD_ID: 'codeship-build-id',
         CI_PULL_REQUEST: 'false', // This is always false right now in Codeship. :|
         CI_COMMIT_ID: 'codeship-commit-sha',
         CI_NODE_TOTAL: '3',
@@ -247,6 +248,11 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.parallelNonce, 'codeship-build-number');
       assert.strictEqual(environment.parallelTotalShards, 3);
+    });
+
+    it('falls back from CI_BUILD_NUMBER to CI_BUILD_ID for CodeShip Pro', function() {
+      delete environment._env.CI_BUILD_NUMBER;
+      assert.strictEqual(environment.parallelNonce, 'codeship-build-id');
     });
   });
 
