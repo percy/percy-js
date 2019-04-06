@@ -403,9 +403,11 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
   context('in Azure', function() {
     beforeEach(function() {
       environment = new Environment({
-        SYSTEM_TEAMFOUNDATIONCOLLECTIONURI: 'https://dev.azure.com/Perceptual/',
+        BUILD_BUILDID: 'azure-build-id',
         BUILD_SOURCEVERSION: 'azure-commit-sha',
         BUILD_SOURCEBRANCHNAME: 'azure-branch',
+        SYSTEM_PARALLELEXECUTIONTYPE: 'None',
+        TF_BUILD: 'True',
       });
     });
 
@@ -416,8 +418,20 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       assert.strictEqual(environment.branch, 'azure-branch');
       assert.strictEqual(environment.targetBranch, null);
       assert.strictEqual(environment.pullRequestNumber, null);
-      assert.strictEqual(environment.parallelNonce, null);
+      assert.strictEqual(environment.parallelNonce, 'azure-build-id');
       assert.strictEqual(environment.parallelTotalShards, null);
+    });
+
+    context('in parallel build', function() {
+      beforeEach(function() {
+        environment._env.SYSTEM_PARALLELEXECUTIONTYPE = 'MultiMachine';
+        environment._env.SYSTEM_TOTALJOBSINPHASE = '5';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.parallelNonce, 'azure-build-id');
+        assert.strictEqual(environment.parallelTotalShards, 5);
+      });
     });
 
     context('in Pull Request build', function() {

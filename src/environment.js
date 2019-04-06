@@ -37,7 +37,7 @@ class Environment {
       return 'heroku';
     } else if (this._env.GITLAB_CI == 'true') {
       return 'gitlab';
-    } else if (this._env.SYSTEM_TEAMFOUNDATIONCOLLECTIONURI) {
+    } else if (this._env.TF_BUILD == 'True') {
       return 'azure';
     }
     return null;
@@ -277,6 +277,8 @@ class Environment {
         return this._env.HEROKU_TEST_RUN_ID;
       case 'gitlab':
         return this._env.CI_JOB_ID;
+      case 'azure':
+        return this._env.BUILD_BUILDID;
     }
     return null;
   }
@@ -319,6 +321,16 @@ class Environment {
       case 'heroku':
         if (this._env.CI_NODE_TOTAL) {
           return parseInt(this._env.CI_NODE_TOTAL);
+        }
+        break;
+      case 'azure':
+        // SYSTEM_TOTALJOBSINPHASE is set for parallel builds and non-parallel matrix builds, so
+        // check build strategy is parallel by ensuring SYSTEM_PARALLELEXECUTIONTYPE == MultiMachine
+        if (
+          this._env.SYSTEM_PARALLELEXECUTIONTYPE == 'MultiMachine' &&
+          this._env.SYSTEM_TOTALJOBSINPHASE
+        ) {
+          return parseInt(this._env.SYSTEM_TOTALJOBSINPHASE);
         }
         break;
     }
