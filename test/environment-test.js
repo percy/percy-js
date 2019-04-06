@@ -399,4 +399,41 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       assert.strictEqual(environment.parallelTotalShards, 3);
     });
   });
+
+  context('in Azure', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        SYSTEM_TEAMFOUNDATIONCOLLECTIONURI: 'https://dev.azure.com/Perceptual/',
+        BUILD_SOURCEVERSION: 'azure-commit-sha',
+        BUILD_SOURCEBRANCHNAME: 'azure-branch',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'azure');
+      assert.strictEqual(environment.commitSha, 'azure-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
+      assert.strictEqual(environment.branch, 'azure-branch');
+      assert.strictEqual(environment.targetBranch, null);
+      assert.strictEqual(environment.pullRequestNumber, null);
+      assert.strictEqual(environment.parallelNonce, null);
+      assert.strictEqual(environment.parallelTotalShards, null);
+    });
+
+    context('in Pull Request build', function() {
+      beforeEach(function() {
+        environment._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER = '512';
+        environment._env.SYSTEM_PULLREQUEST_SOURCECOMMITID = 'azure-pr-commit-sha';
+        environment._env.SYSTEM_PULLREQUEST_SOURCEBRANCH = 'azure-pr-branch';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.pullRequestNumber, '512');
+        assert.strictEqual(environment.branch, 'azure-pr-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.commitSha, 'azure-pr-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+      });
+    });
+  });
 });

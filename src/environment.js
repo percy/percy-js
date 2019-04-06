@@ -37,6 +37,8 @@ class Environment {
       return 'heroku';
     } else if (this._env.GITLAB_CI == 'true') {
       return 'gitlab';
+    } else if (this._env.SYSTEM_TEAMFOUNDATIONCOLLECTIONURI) {
+      return 'azure';
     }
     return null;
   }
@@ -146,6 +148,8 @@ class Environment {
         return this._env.HEROKU_TEST_RUN_COMMIT_VERSION;
       case 'gitlab':
         return this._env.CI_COMMIT_SHA;
+      case 'azure':
+        return this._env.SYSTEM_PULLREQUEST_SOURCECOMMITID || this._env.BUILD_SOURCEVERSION;
     }
 
     return null;
@@ -191,6 +195,9 @@ class Environment {
         break;
       case 'gitlab':
         result = this._env.CI_COMMIT_REF_NAME;
+        break;
+      case 'azure':
+        result = this._env.SYSTEM_PULLREQUEST_SOURCEBRANCH || this._env.BUILD_SOURCEBRANCHNAME;
         break;
     }
 
@@ -239,6 +246,8 @@ class Environment {
         return this._env.BUILDKITE_PULL_REQUEST !== 'false'
           ? this._env.BUILDKITE_PULL_REQUEST
           : null;
+      case 'azure':
+        return this._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER || null;
     }
     return null;
   }
