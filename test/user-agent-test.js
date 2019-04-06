@@ -26,7 +26,8 @@ describe('UserAgent', function() {
     describe('userAgent', function() {
       it('is correct', function() {
         let regex = new RegExp(
-          `Percy/v1 percy-js/${version} ` + `\\(node/${process.version}(; travis)?\\)`,
+          `Percy/v1 percy-js/${version} ` +
+            `\\(node/${process.version}(; ${percyClient.environment.ciVersion})?\\)`,
         );
 
         assert(
@@ -83,7 +84,8 @@ describe('UserAgent', function() {
       it('has the correct client and environment info', function() {
         let regex = new RegExp(
           `Percy/v1 ${clientInfo} percy-js/${version} ` +
-            `\\(${environmentInfo}; node/${process.version}(; travis)?\\)`,
+            `\\(${environmentInfo}; node/${process.version}` +
+            `(; ${percyClient.environment.ciVersion})?\\)`,
         );
 
         assert(
@@ -113,7 +115,8 @@ describe('UserAgent', function() {
       it('has the correct client and environment info', function() {
         let regex = new RegExp(
           `Percy/v1 ${sdkClientInfo} ${clientInfo} percy-js/${version} ` +
-            `\\(${sdkEnvironmentInfo}; ${environmentInfo}; node/${process.version}(; travis)?\\)`,
+            `\\(${sdkEnvironmentInfo}; ${environmentInfo}; node/${process.version}` +
+            `(; ${percyClient.environment.ciVersion})?\\)`,
         );
 
         assert(
