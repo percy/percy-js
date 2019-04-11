@@ -450,4 +450,42 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       });
     });
   });
+
+  context('in Appveyor', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        APPVEYOR: 'True',
+        APPVEYOR_BUILD_ID: 'appveyor-build-id',
+        APPVEYOR_REPO_COMMIT: 'appveyor-commit-sha',
+        APPVEYOR_REPO_BRANCH: 'appveyor-branch',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'appveyor');
+      assert.strictEqual(environment.commitSha, 'appveyor-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
+      assert.strictEqual(environment.branch, 'appveyor-branch');
+      assert.strictEqual(environment.targetBranch, null);
+      assert.strictEqual(environment.pullRequestNumber, null);
+      assert.strictEqual(environment.parallelNonce, 'appveyor-build-id');
+      assert.strictEqual(environment.parallelTotalShards, null);
+    });
+
+    context('in Pull Request build', function() {
+      beforeEach(function() {
+        environment._env.APPVEYOR_PULL_REQUEST_NUMBER = '512';
+        environment._env.APPVEYOR_PULL_REQUEST_HEAD_COMMIT = 'appveyor-pr-commit-sha';
+        environment._env.APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH = 'appveyor-pr-branch';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.pullRequestNumber, '512');
+        assert.strictEqual(environment.branch, 'appveyor-pr-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.commitSha, 'appveyor-pr-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+      });
+    });
+  });
 });

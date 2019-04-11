@@ -22,7 +22,6 @@ test_script:
   # run tests
   - yarn build
   - yarn test
-  - env
 
 build:
   off
