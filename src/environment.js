@@ -39,7 +39,10 @@ class Environment {
       return 'gitlab';
     } else if (this._env.TF_BUILD == 'True') {
       return 'azure';
+    } else if (this._env.APPVEYOR == 'True' || this._env.APPVEYOR == 'true') {
+      return 'appveyor';
     }
+
     return null;
   }
 
@@ -150,6 +153,8 @@ class Environment {
         return this._env.CI_COMMIT_SHA;
       case 'azure':
         return this._env.SYSTEM_PULLREQUEST_SOURCECOMMITID || this._env.BUILD_SOURCEVERSION;
+      case 'appveyor':
+        return this._env.APPVEYOR_PULL_REQUEST_HEAD_COMMIT || this._env.APPVEYOR_REPO_COMMIT;
     }
 
     return null;
@@ -199,6 +204,8 @@ class Environment {
       case 'azure':
         result = this._env.SYSTEM_PULLREQUEST_SOURCEBRANCH || this._env.BUILD_SOURCEBRANCHNAME;
         break;
+      case 'appveyor':
+        result = this._env.APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH || this._env.APPVEYOR_REPO_BRANCH;
     }
 
     if (result == '') {
@@ -248,6 +255,8 @@ class Environment {
           : null;
       case 'azure':
         return this._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER || null;
+      case 'appveyor':
+        return this._env.APPVEYOR_PULL_REQUEST_NUMBER || null;
     }
     return null;
   }
@@ -279,6 +288,8 @@ class Environment {
         return this._env.CI_JOB_ID;
       case 'azure':
         return this._env.BUILD_BUILDID;
+      case 'appveyor':
+        return this._env.APPVEYOR_BUILD_ID;
     }
     return null;
   }
