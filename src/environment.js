@@ -22,7 +22,7 @@ class Environment {
       return 'travis';
     } else if (this._env.JENKINS_URL && this._env.ghprbPullId) {
       // Pull Request Builder plugin.
-      return 'jenkins';
+      return 'jenkins-prb';
     } else if (this._env.CIRCLECI) {
       return 'circle';
     } else if (this._env.CI_NAME && this._env.CI_NAME == 'codeship') {
@@ -131,7 +131,7 @@ class Environment {
     switch (this.ci) {
       case 'travis':
         return this._env.TRAVIS_COMMIT;
-      case 'jenkins':
+      case 'jenkins-prb':
         // Pull Request Builder Plugin OR Git Plugin.
         return this._env.ghprbActualCommit || this._env.GIT_COMMIT;
       case 'circle':
@@ -177,7 +177,7 @@ class Environment {
           result = this._env.TRAVIS_BRANCH;
         }
         break;
-      case 'jenkins':
+      case 'jenkins-prb':
         result = this._env.ghprbSourceBranch;
         break;
       case 'circle':
@@ -235,7 +235,7 @@ class Environment {
     switch (this.ci) {
       case 'travis':
         return this._env.TRAVIS_PULL_REQUEST !== 'false' ? this._env.TRAVIS_PULL_REQUEST : null;
-      case 'jenkins':
+      case 'jenkins-prb':
         return this._env.ghprbPullId;
       case 'circle':
         if (this._env.CI_PULL_REQUESTS && this._env.CI_PULL_REQUESTS !== '') {
@@ -270,7 +270,7 @@ class Environment {
     switch (this.ci) {
       case 'travis':
         return this._env.TRAVIS_BUILD_NUMBER;
-      case 'jenkins':
+      case 'jenkins-prb':
         return this._env.BUILD_NUMBER;
       case 'circle':
         return this._env.CIRCLE_WORKFLOW_WORKSPACE_ID || this._env.CIRCLE_BUILD_NUM;
@@ -305,7 +305,7 @@ class Environment {
           return parseInt(this._env.CI_NODE_TOTAL);
         }
         break;
-      case 'jenkins':
+      case 'jenkins-prb':
         break;
       case 'circle':
         if (this._env.CIRCLE_NODE_TOTAL) {

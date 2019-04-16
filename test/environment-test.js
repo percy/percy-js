@@ -180,7 +180,7 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     });
 
     it('has the correct properties', function() {
-      assert.strictEqual(environment.ci, 'jenkins');
+      assert.strictEqual(environment.ci, 'jenkins-prb');
       assert.strictEqual(environment.commitSha, 'jenkins-commit-sha');
       assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'jenkins-branch');
