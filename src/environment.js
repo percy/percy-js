@@ -152,7 +152,7 @@ class Environment {
     return false;
   }
 
-  getSecondToLastCommitSHA() {
+  get secondToLastCommitSHA() {
     let formattedCommitData = this.rawCommitData('HEAD^');
 
     if (!formattedCommitData) {
@@ -174,7 +174,7 @@ class Environment {
         return this._env.ghprbActualCommit || this._env.GIT_COMMIT;
       case 'jenkins':
         if (this.jenkinsMergeCommitBuild()) {
-          return this.getSecondToLastCommitSHA();
+          return this.secondToLastCommitSHA;
         }
         return this._env.GIT_COMMIT;
       case 'circle':
