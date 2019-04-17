@@ -113,6 +113,21 @@ COMMIT_MESSAGE:A shiny new feature`);
 
       commitStub.restore();
     });
+
+    it('getSecondToLastCommitSHA returns commit SHA for HEAD^', function() {
+      let commitStub = sinon.stub(environment, 'rawCommitData');
+      commitStub.withArgs('HEAD^').returns(`COMMIT_SHA:second-to-last-merge-commit-sha
+AUTHOR_NAME:Fred
+AUTHOR_EMAIL:fred@example.com
+COMMITTER_NAME:Fred
+COMMITTER_EMAIL:fred@example.com
+COMMITTED_DATE:2018-03-07 16:40:12 -0800
+COMMIT_MESSAGE:A shiny new feature`);
+
+      assert.strictEqual(environment.getSecondToLastCommitSHA(), 'second-to-last-merge-commit-sha');
+
+      commitStub.restore();
+    });
   });
 
   context('PERCY_* env vars are set', function() {
