@@ -139,11 +139,28 @@ class Environment {
     let authorEmail = this.parse(formattedCommitData, /AUTHOR_EMAIL:(.*)/);
     let message = this.parse(formattedCommitData, /COMMIT_MESSAGE:(.*)/m);
 
+    // eslint-disable-next-line no-console
+    console.warn('\n[percy][WARNING] jenkinsMergeCommitBuild authorName: ', authorName);
+    // eslint-disable-next-line no-console
+    console.warn('\n[percy][WARNING] jenkinsMergeCommitBuild authorEmail: ', authorEmail);
+    // eslint-disable-next-line no-console
+    console.warn('\n[percy][WARNING] jenkinsMergeCommitBuild message: ', message);
+
     if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
+      // eslint-disable-next-line no-console
+      console.warn('\n[percy][WARNING] jenkinsMergeCommitBuild matched Author');
       // Example merge message: Merge commit 'ec4d24c3d22f3c95e34af95c1fda2d462396d885' into HEAD
       if (message.substring(0, 13) === 'Merge commit ' && message.substring(55) === ' into HEAD') {
+        // eslint-disable-next-line no-console
+        console.warn('\n[percy][WARNING] jenkinsMergeCommitBuild matched message');
         return true;
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn('\n[percy]jenkinsMergeCommitBuild mismatched message:', message.length);
       }
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn('\n[percy][WARNING] jenkinsMergeCommitBuild mismatched Author');
     }
 
     return false;
