@@ -129,19 +129,23 @@ class Environment {
   }
 
   jenkinsMergeCommitBuild(commitSha) {
-    if (commitSha) {
-      let output = this.rawCommitData(commitSha);
-      let authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
-      let authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
-      let message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
+    if (!commitSha) {
+      return false;
+    }
 
-      if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
-        if (
-          message.substring(0, 13) === 'Merge commit ' &&
-          message.substring(55) === ' into HEAD'
-        ) {
-          return true;
-        }
+    let output = this.rawCommitData(commitSha);
+
+    if (!output) {
+      return false;
+    }
+
+    let authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
+    let authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
+    let message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
+
+    if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
+      if (message.substring(0, 13) === 'Merge commit ' && message.substring(55) === ' into HEAD') {
+        return true;
       }
     }
 
@@ -150,6 +154,11 @@ class Environment {
 
   getSecondToLastCommitSHA() {
     let output = this.rawCommitData('HEAD^');
+
+    if (!output) {
+      return null;
+    }
+
     return this.parse(output, /COMMIT_SHA:(.*)/);
   }
 
