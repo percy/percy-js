@@ -1,3 +1,5 @@
+const utils = require('./utils');
+
 const GIT_COMMIT_FORMAT = [
   'COMMIT_SHA:%H',
   'AUTHOR_NAME:%an',
@@ -23,6 +25,8 @@ class Environment {
     } else if (this._env.JENKINS_URL && this._env.ghprbPullId) {
       // Pull Request Builder plugin.
       return 'jenkins-prb';
+    } else if (this._env.JENKINS_URL) {
+      return 'jenkins';
     } else if (this._env.CIRCLECI) {
       return 'circle';
     } else if (this._env.CI_NAME && this._env.CI_NAME == 'codeship') {
@@ -78,6 +82,11 @@ class Environment {
     return this.gitExec(args);
   }
 
+  // If not running in a git repo, allow undefined for certain commit attributes.
+  parse(text, regex) {
+    return ((text && text.match(regex)) || [])[1];
+  }
+
   get commitData() {
     // Read the result from environment data
     let result = {
@@ -104,24 +113,42 @@ class Environment {
       return result;
     }
 
-    // If not running in a git repo, allow undefined for certain commit attributes.
-    const parse = regex => {
-      return ((output && output.match(regex)) || [])[1];
-    };
-
     // If this.commitSha didn't provide a sha, use the one from the commit
     if (!result.sha) {
-      result.sha = parse(/COMMIT_SHA:(.*)/);
+      result.sha = this.parse(output, /COMMIT_SHA:(.*)/);
     }
 
-    result.message = parse(/COMMIT_MESSAGE:(.*)/m);
-    result.committedAt = parse(/COMMITTED_DATE:(.*)/);
-    result.authorName = parse(/AUTHOR_NAME:(.*)/);
-    result.authorEmail = parse(/AUTHOR_EMAIL:(.*)/);
-    result.committerName = parse(/COMMITTER_NAME:(.*)/);
-    result.committerEmail = parse(/COMMITTER_EMAIL:(.*)/);
+    result.message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
+    result.committedAt = this.parse(output, /COMMITTED_DATE:(.*)/);
+    result.authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
+    result.authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
+    result.committerName = this.parse(output, /COMMITTER_NAME:(.*)/);
+    result.committerEmail = this.parse(output, /COMMITTER_EMAIL:(.*)/);
 
     return result;
+  }
+
+  jenkinsMergeCommitBuild(commitSha) {
+    let output = this.rawCommitData(commitSha);
+    let authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
+    let authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
+    let message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
+
+    if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
+      if (
+        message.substring(0, 13) === 'Merge commit ' &&
+        message.substring(56, 10) === ' into HEAD'
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  getSecondToLastCommit() {
+    let output = this.rawCommitData('HEAD^');
+    return this.parse(output, /COMMIT_SHA:(.*)/);
   }
 
   get commitSha() {
@@ -134,6 +161,11 @@ class Environment {
       case 'jenkins-prb':
         // Pull Request Builder Plugin OR Git Plugin.
         return this._env.ghprbActualCommit || this._env.GIT_COMMIT;
+      case 'jenkins':
+        if (this.jenkinsMergeCommitBuild()) {
+          return this.getSecondToLastCommit();
+        }
+        return this._env.GIT_COMMIT;
       case 'circle':
         return this._env.CIRCLE_SHA1;
       case 'codeship':
@@ -179,6 +211,9 @@ class Environment {
         break;
       case 'jenkins-prb':
         result = this._env.ghprbSourceBranch;
+        break;
+      case 'jenkins':
+        result = this._env.CHANGE_BRANCH || this._env.GIT_BRANCH;
         break;
       case 'circle':
         result = this._env.CIRCLE_BRANCH;
@@ -237,6 +272,8 @@ class Environment {
         return this._env.TRAVIS_PULL_REQUEST !== 'false' ? this._env.TRAVIS_PULL_REQUEST : null;
       case 'jenkins-prb':
         return this._env.ghprbPullId;
+      case 'jenkins':
+        return this._env.CHANGE_ID;
       case 'circle':
         if (this._env.CI_PULL_REQUESTS && this._env.CI_PULL_REQUESTS !== '') {
           return this._env.CI_PULL_REQUESTS.split('/').slice(-1)[0];
@@ -272,6 +309,11 @@ class Environment {
         return this._env.TRAVIS_BUILD_NUMBER;
       case 'jenkins-prb':
         return this._env.BUILD_NUMBER;
+      case 'jenkins':
+        if (this._env.BUILD_TAG) {
+          return utils.reverseString(this._env.BUILD_TAG).substring(0, 60);
+        }
+        break;
       case 'circle':
         return this._env.CIRCLE_WORKFLOW_WORKSPACE_ID || this._env.CIRCLE_BUILD_NUM;
       case 'codeship':
@@ -306,6 +348,8 @@ class Environment {
         }
         break;
       case 'jenkins-prb':
+        break;
+      case 'jenkins':
         break;
       case 'circle':
         if (this._env.CIRCLE_NODE_TOTAL) {
