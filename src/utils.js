@@ -98,4 +98,11 @@ module.exports = {
 
     return resources;
   },
+
+  reverseString(str) {
+    return str
+      .split('')
+      .reverse()
+      .join('');
+  },
 };
