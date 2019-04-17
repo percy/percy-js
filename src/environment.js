@@ -83,8 +83,8 @@ class Environment {
   }
 
   // If not running in a git repo, allow undefined for certain commit attributes.
-  parse(text, regex) {
-    return ((text && text.match(regex)) || [])[1];
+  parse(formattedCommitData, regex) {
+    return ((formattedCommitData && formattedCommitData.match(regex)) || [])[1];
   }
 
   get commitData() {
@@ -102,28 +102,28 @@ class Environment {
     };
 
     // Try and get more meta-data from git
-    let output = '';
+    let formattedCommitData = '';
     if (this.commitSha) {
-      output = this.rawCommitData(this.commitSha);
+      formattedCommitData = this.rawCommitData(this.commitSha);
     }
-    if (!output) {
-      output = this.rawCommitData('HEAD');
+    if (!formattedCommitData) {
+      formattedCommitData = this.rawCommitData('HEAD');
     }
-    if (!output) {
+    if (!formattedCommitData) {
       return result;
     }
 
     // If this.commitSha didn't provide a sha, use the one from the commit
     if (!result.sha) {
-      result.sha = this.parse(output, /COMMIT_SHA:(.*)/);
+      result.sha = this.parse(formattedCommitData, /COMMIT_SHA:(.*)/);
     }
 
-    result.message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
-    result.committedAt = this.parse(output, /COMMITTED_DATE:(.*)/);
-    result.authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
-    result.authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
-    result.committerName = this.parse(output, /COMMITTER_NAME:(.*)/);
-    result.committerEmail = this.parse(output, /COMMITTER_EMAIL:(.*)/);
+    result.message = this.parse(formattedCommitData, /COMMIT_MESSAGE:(.*)/m);
+    result.committedAt = this.parse(formattedCommitData, /COMMITTED_DATE:(.*)/);
+    result.authorName = this.parse(formattedCommitData, /AUTHOR_NAME:(.*)/);
+    result.authorEmail = this.parse(formattedCommitData, /AUTHOR_EMAIL:(.*)/);
+    result.committerName = this.parse(formattedCommitData, /COMMITTER_NAME:(.*)/);
+    result.committerEmail = this.parse(formattedCommitData, /COMMITTER_EMAIL:(.*)/);
 
     return result;
   }
@@ -133,15 +133,15 @@ class Environment {
       return false;
     }
 
-    let output = this.rawCommitData(commitSha);
+    let formattedCommitData = this.rawCommitData(commitSha);
 
-    if (!output) {
+    if (!formattedCommitData) {
       return false;
     }
 
-    let authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
-    let authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
-    let message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
+    let authorName = this.parse(formattedCommitData, /AUTHOR_NAME:(.*)/);
+    let authorEmail = this.parse(formattedCommitData, /AUTHOR_EMAIL:(.*)/);
+    let message = this.parse(formattedCommitData, /COMMIT_MESSAGE:(.*)/m);
 
     if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
       if (message.substring(0, 13) === 'Merge commit ' && message.substring(55) === ' into HEAD') {
@@ -153,13 +153,13 @@ class Environment {
   }
 
   getSecondToLastCommitSHA() {
-    let output = this.rawCommitData('HEAD^');
+    let formattedCommitData = this.rawCommitData('HEAD^');
 
-    if (!output) {
+    if (!formattedCommitData) {
       return null;
     }
 
-    return this.parse(output, /COMMIT_SHA:(.*)/);
+    return this.parse(formattedCommitData, /COMMIT_SHA:(.*)/);
   }
 
   get commitSha() {
