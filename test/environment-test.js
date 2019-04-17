@@ -236,23 +236,6 @@ COMMIT_MESSAGE:A shiny new feature`);
       assert.strictEqual(environment.parallelTotalShards, null);
     });
 
-    context('in parallel build', function() {
-      beforeEach(function() {
-        // Should be reversed and truncated for parallelNonce
-        // Real BUILD_TAG example: jenkins-Percy-example-percy-puppeteer-PR-34-merge-2
-        environment._env.BUILD_TAG =
-          'XXXb7b7a42f90d49dbe8767c2aebbf7-project-branch-build-number-123';
-      });
-
-      it('has the correct properties', function() {
-        assert.strictEqual(
-          environment.parallelNonce,
-          '321-rebmun-dliub-hcnarb-tcejorp-7fbbea2c7678ebd94d09f24a7b7b',
-        );
-        assert.strictEqual(environment.parallelTotalShards, null);
-      });
-    });
-
     context('in Pull Request build (non-merge)', function() {
       beforeEach(function() {
         environment._env.CHANGE_ID = '111';
@@ -303,6 +286,23 @@ COMMIT_MESSAGE:A shiny new feature`);
 
         commitStub.restore();
         jenkinsMergeCommitBuildStub.restore();
+      });
+    });
+
+    context('in parallel build', function() {
+      beforeEach(function() {
+        // Should be reversed and truncated for parallelNonce
+        // Real BUILD_TAG example: jenkins-Percy-example-percy-puppeteer-PR-34-merge-2
+        environment._env.BUILD_TAG =
+          'XXXb7b7a42f90d49dbe8767c2aebbf7-project-branch-build-number-123';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(
+          environment.parallelNonce,
+          '321-rebmun-dliub-hcnarb-tcejorp-7fbbea2c7678ebd94d09f24a7b7b',
+        );
+        assert.strictEqual(environment.parallelTotalShards, null);
       });
     });
 
