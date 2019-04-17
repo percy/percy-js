@@ -128,12 +128,8 @@ class Environment {
     return result;
   }
 
-  jenkinsMergeCommitBuild(commitSha) {
-    if (!commitSha) {
-      return false;
-    }
-
-    let formattedCommitData = this.rawCommitData(commitSha);
+  get jenkinsMergeCommitBuild() {
+    let formattedCommitData = this.rawCommitData('HEAD');
 
     if (!formattedCommitData) {
       return false;
@@ -174,7 +170,7 @@ class Environment {
         // Pull Request Builder Plugin OR Git Plugin.
         return this._env.ghprbActualCommit || this._env.GIT_COMMIT;
       case 'jenkins':
-        if (this.jenkinsMergeCommitBuild()) {
+        if (this.jenkinsMergeCommitBuild) {
           return this.secondToLastCommitSHA;
         }
         return this._env.GIT_COMMIT;

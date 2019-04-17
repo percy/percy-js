@@ -91,7 +91,7 @@ COMMITTER_EMAIL:nobody@nowhere
 COMMITTED_DATE:2018-03-07 16:40:12 -0800
 COMMIT_MESSAGE:Merge commit 'ec4d24c3d22f3c95e34af95c1fda2d462396d885' into HEAD`);
 
-      assert.strictEqual(environment.jenkinsMergeCommitBuild('jenkins-merge-commit-sha'), true);
+      assert.strictEqual(environment.jenkinsMergeCommitBuild, true);
 
       commitStub.restore();
     });
@@ -106,10 +106,7 @@ COMMITTER_EMAIL:fred@example.com
 COMMITTED_DATE:2018-03-07 16:40:12 -0800
 COMMIT_MESSAGE:A shiny new feature`);
 
-      assert.strictEqual(
-        environment.jenkinsMergeCommitBuild('jenkins-non-merge-commit-sha'),
-        false,
-      );
+      assert.strictEqual(environment.jenkinsMergeCommitBuild, false);
 
       commitStub.restore();
     });
@@ -245,7 +242,9 @@ COMMIT_MESSAGE:A shiny new feature`);
 
       it('has the correct properties', function() {
         let jenkinsMergeCommitBuildStub = sinon.stub(environment, 'jenkinsMergeCommitBuild');
-        jenkinsMergeCommitBuildStub.returns(false);
+        jenkinsMergeCommitBuildStub.get(function getterFn() {
+          return false;
+        });
 
         assert.strictEqual(environment.pullRequestNumber, '111');
         assert.strictEqual(environment.branch, 'jenkins-non-merge-pr-branch');
@@ -266,7 +265,9 @@ COMMIT_MESSAGE:A shiny new feature`);
 
       it('has the correct properties', function() {
         let jenkinsMergeCommitBuildStub = sinon.stub(environment, 'jenkinsMergeCommitBuild');
-        jenkinsMergeCommitBuildStub.returns(true);
+        jenkinsMergeCommitBuildStub.get(function getterFn() {
+          return true;
+        });
 
         let commitStub = sinon.stub(environment, 'rawCommitData');
 
