@@ -129,17 +129,19 @@ class Environment {
   }
 
   jenkinsMergeCommitBuild(commitSha) {
-    let output = this.rawCommitData(commitSha);
-    let authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
-    let authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
-    let message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
+    if (commitSha) {
+      let output = this.rawCommitData(commitSha);
+      let authorName = this.parse(output, /AUTHOR_NAME:(.*)/);
+      let authorEmail = this.parse(output, /AUTHOR_EMAIL:(.*)/);
+      let message = this.parse(output, /COMMIT_MESSAGE:(.*)/m);
 
-    if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
-      if (
-        message.substring(0, 13) === 'Merge commit ' &&
-        message.substring(56, 10) === ' into HEAD'
-      ) {
-        return true;
+      if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
+        if (
+          message.substring(0, 13) === 'Merge commit ' &&
+          message.substring(55) === ' into HEAD'
+        ) {
+          return true;
+        }
       }
     }
 
@@ -273,7 +275,7 @@ class Environment {
       case 'jenkins-prb':
         return this._env.ghprbPullId;
       case 'jenkins':
-        return this._env.CHANGE_ID;
+        return this._env.CHANGE_ID || null;
       case 'circle':
         if (this._env.CI_PULL_REQUESTS && this._env.CI_PULL_REQUESTS !== '') {
           return this._env.CI_PULL_REQUESTS.split('/').slice(-1)[0];

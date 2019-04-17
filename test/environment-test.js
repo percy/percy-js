@@ -80,6 +80,39 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
       assert.strictEqual(environment.branch, null);
       branchStub.restore();
     });
+
+    it('jenkinsMergeCommitBuild returns true for merge commits', function() {
+      let commitStub = sinon.stub(environment, 'rawCommitData');
+      commitStub.returns(`COMMIT_SHA:jenkins-merge-commit-sha
+AUTHOR_NAME:Jenkins
+AUTHOR_EMAIL:nobody@nowhere
+COMMITTER_NAME:Jenkins
+COMMITTER_EMAIL:nobody@nowhere
+COMMITTED_DATE:2018-03-07 16:40:12 -0800
+COMMIT_MESSAGE:Merge commit 'ec4d24c3d22f3c95e34af95c1fda2d462396d885' into HEAD`);
+
+      assert.strictEqual(environment.jenkinsMergeCommitBuild('jenkins-merge-commit-sha'), true);
+
+      commitStub.restore();
+    });
+
+    it('jenkinsMergeCommitBuild returns false for non merge commits', function() {
+      let commitStub = sinon.stub(environment, 'rawCommitData');
+      commitStub.returns(`COMMIT_SHA:jenkins-non-merge-commit-sha
+AUTHOR_NAME:Fred
+AUTHOR_EMAIL:fred@example.com
+COMMITTER_NAME:Fred
+COMMITTER_EMAIL:fred@example.com
+COMMITTED_DATE:2018-03-07 16:40:12 -0800
+COMMIT_MESSAGE:A shiny new feature`);
+
+      assert.strictEqual(
+        environment.jenkinsMergeCommitBuild('jenkins-non-merge-commit-sha'),
+        false,
+      );
+
+      commitStub.restore();
+    });
   });
 
   context('PERCY_* env vars are set', function() {
@@ -172,22 +205,113 @@ COMMIT_MESSAGE:Sinon stubs are lovely`);
     beforeEach(function() {
       environment = new Environment({
         JENKINS_URL: 'http://jenkins.local/',
-        BUILD_NUMBER: '111',
-        ghprbPullId: '256',
-        ghprbActualCommit: 'jenkins-commit-sha',
-        ghprbSourceBranch: 'jenkins-branch',
+        GIT_COMMIT: 'jenkins-commit-sha',
+        GIT_BRANCH: 'jenkins-branch',
       });
     });
 
     it('has the correct properties', function() {
-      assert.strictEqual(environment.ci, 'jenkins-prb');
+      assert.strictEqual(environment.ci, 'jenkins');
       assert.strictEqual(environment.commitSha, 'jenkins-commit-sha');
       assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'jenkins-branch');
       assert.strictEqual(environment.targetBranch, null);
-      assert.strictEqual(environment.pullRequestNumber, '256');
-      assert.strictEqual(environment.parallelNonce, '111');
+      assert.strictEqual(environment.pullRequestNumber, null);
+      assert.strictEqual(environment.parallelNonce, null);
       assert.strictEqual(environment.parallelTotalShards, null);
+    });
+
+    context('in parallel build', function() {
+      beforeEach(function() {
+        // Should be reversed and truncated for parallelNonce
+        // Real BUILD_TAG example: jenkins-Percy-example-percy-puppeteer-PR-34-merge-2
+        environment._env.BUILD_TAG =
+          'XXXb7b7a42f90d49dbe8767c2aebbf7-project-branch-build-number-123';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(
+          environment.parallelNonce,
+          '321-rebmun-dliub-hcnarb-tcejorp-7fbbea2c7678ebd94d09f24a7b7b',
+        );
+        assert.strictEqual(environment.parallelTotalShards, null);
+      });
+    });
+
+    context('in Pull Request build (non-merge)', function() {
+      beforeEach(function() {
+        environment._env.CHANGE_ID = '111';
+        environment._env.GIT_COMMIT = 'jenkins-non-merge-pr-commit-sha';
+        environment._env.CHANGE_BRANCH = 'jenkins-non-merge-pr-branch';
+      });
+
+      it('has the correct properties', function() {
+        let jenkinsMergeCommitBuildStub = sinon.stub(environment, 'jenkinsMergeCommitBuild');
+        jenkinsMergeCommitBuildStub.returns(false);
+
+        assert.strictEqual(environment.pullRequestNumber, '111');
+        assert.strictEqual(environment.branch, 'jenkins-non-merge-pr-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.commitSha, 'jenkins-non-merge-pr-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+
+        jenkinsMergeCommitBuildStub.restore();
+      });
+    });
+
+    context('in Pull Request build (merge commit)', function() {
+      beforeEach(function() {
+        environment._env.CHANGE_ID = '123';
+        environment._env.GIT_COMMIT = 'jenkins-merge-pr-merge-commit-sha';
+        environment._env.CHANGE_BRANCH = 'jenkins-merge-pr-branch';
+      });
+
+      it('has the correct properties', function() {
+        let jenkinsMergeCommitBuildStub = sinon.stub(environment, 'jenkinsMergeCommitBuild');
+        jenkinsMergeCommitBuildStub.returns(true);
+
+        let commitStub = sinon.stub(environment, 'rawCommitData');
+
+        commitStub.withArgs('HEAD^').returns(`COMMIT_SHA:jenkins-merge-pr-REAL-commit-sha
+    AUTHOR_NAME:Tim Haines
+    AUTHOR_EMAIL:timhaines@example.com
+    COMMITTER_NAME:Other Tim Haines
+    COMMITTER_EMAIL:othertimhaines@example.com
+    COMMITTED_DATE:2018-03-07 16:40:12 -0800
+    COMMIT_MESSAGE:Sinon stubs are lovely`);
+
+        assert.strictEqual(environment.pullRequestNumber, '123');
+        assert.strictEqual(environment.branch, 'jenkins-merge-pr-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.commitSha, 'jenkins-merge-pr-REAL-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+
+        commitStub.restore();
+        jenkinsMergeCommitBuildStub.restore();
+      });
+    });
+
+    context('with pull request builder plugin', function() {
+      beforeEach(function() {
+        environment = new Environment({
+          JENKINS_URL: 'http://jenkins.local/',
+          BUILD_NUMBER: '111',
+          ghprbPullId: '256',
+          ghprbActualCommit: 'jenkins-prb-commit-sha',
+          ghprbSourceBranch: 'jenkins-prb-branch',
+        });
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.ci, 'jenkins-prb');
+        assert.strictEqual(environment.commitSha, 'jenkins-prb-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+        assert.strictEqual(environment.branch, 'jenkins-prb-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.pullRequestNumber, '256');
+        assert.strictEqual(environment.parallelNonce, '111');
+        assert.strictEqual(environment.parallelTotalShards, null);
+      });
     });
   });
 
