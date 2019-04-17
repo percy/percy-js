@@ -144,6 +144,7 @@ class Environment {
     let message = this.parse(formattedCommitData, /COMMIT_MESSAGE:(.*)/m);
 
     if (authorName === 'Jenkins' && authorEmail === 'nobody@nowhere') {
+      // Example merge message: Merge commit 'ec4d24c3d22f3c95e34af95c1fda2d462396d885' into HEAD
       if (message.substring(0, 13) === 'Merge commit ' && message.substring(55) === ' into HEAD') {
         return true;
       }
