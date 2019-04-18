@@ -162,7 +162,7 @@ class Environment {
   }
 
   get secondToLastCommitSHA() {
-    let formattedCommitData = this.rawCommitData('HEAD^');
+    let formattedCommitData = this.rawCommitData("'HEAD^'");
 
     // eslint-disable-next-line no-console
     console.warn(
