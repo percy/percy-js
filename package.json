@@ -1,6 +1,6 @@
 {
   "name": "percy-client",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "JavaScript API client library for Percy (https://percy.io).",
   "main": "dist/main.js",
   "scripts": {
