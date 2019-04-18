@@ -65,7 +65,7 @@ class Environment {
       if (result.status == 0) {
         return result.stdout.toString().trim();
       } else {
-        return '';
+        return result.stdout.toString().trim() + result.stderr.toString().trim();
       }
     } catch (error) {
       return '';
