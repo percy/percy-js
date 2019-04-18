@@ -168,9 +168,21 @@ class Environment {
   get secondToLastCommitSHA() {
     let formattedCommitData = this.rawCommitData('HEAD^');
 
+    // eslint-disable-next-line no-console
+    console.warn(
+      '\n[percy][WARNING] secondToLastCommitSHA with formattedCommitData',
+      formattedCommitData,
+    );
+
     if (!formattedCommitData) {
       return null;
     }
+
+    // eslint-disable-next-line no-console
+    console.warn(
+      '\n[percy][WARNING] secondToLastCommitSHA returning ',
+      this.parse(formattedCommitData, /COMMIT_SHA:(.*)/),
+    );
 
     return this.parse(formattedCommitData, /COMMIT_SHA:(.*)/);
   }
