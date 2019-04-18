@@ -10,6 +10,7 @@
     "debug": "mocha debug --require babel-core/register",
     "lint": "./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "./node_modules/eslint/bin/eslint.js . --fix",
+    "prepare": "npm run build",
     "prepublish": "npm run build",
     "tdd": "mocha --require babel-core/register --watch",
     "test": "mocha --require babel-core/register"
