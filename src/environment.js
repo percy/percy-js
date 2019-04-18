@@ -73,8 +73,8 @@ class Environment {
   }
 
   rawCommitData(commitSha) {
-    // Make sure commitSha is only alphanumeric characters to prevent command injection.
-    if (commitSha.length > 100 || !commitSha.match(/^[0-9a-zA-Z]+$/)) {
+    // Make sure commitSha is only alphanumeric characters and ^ to prevent command injection.
+    if (commitSha.length > 100 || !commitSha.match(/^[0-9a-zA-Z^]+$/)) {
       return '';
     }
 
