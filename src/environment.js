@@ -130,7 +130,6 @@ class Environment {
 
   get jenkinsMergeCommitBuild() {
     let formattedCommitData = this.rawCommitData('HEAD');
-    throw `in jenkinsMergeCommitBuild with data: ${formattedCommitData}`
     if (!formattedCommitData) {
       return false;
     }
@@ -178,7 +177,6 @@ class Environment {
 
   get commitSha() {
     // eslint-disable-next-line no-console
-    // throw `[percy][WARNING] commitSha in ci: ${this.ci}`;
     if (this._env.PERCY_COMMIT) {
       return this._env.PERCY_COMMIT;
     }
@@ -191,13 +189,11 @@ class Environment {
       case 'jenkins':
         if (this.jenkinsMergeCommitBuild) {
           // eslint-disable-next-line no-console
-          throw `about to return secondToLastCommitSHA ${this.secondToLastCommitSHA}`;
-          // eslint-disable-next-line no-console
-          // console.warn(
-          //   '\n[percy][WARNING] about to return secondToLastCommitSHA: ',
-          //   this.secondToLastCommitSHA,
-          // );
-          // return this.secondToLastCommitSHA;
+          console.warn(
+            '\n[percy][WARNING] about to return secondToLastCommitSHA: ',
+            this.secondToLastCommitSHA,
+          );
+          return this.secondToLastCommitSHA;
         }
         // eslint-disable-next-line no-console
         console.warn('\n[percy][WARNING] about to return _env.GIT_COMMIT: ', this._env.GIT_COMMIT);
