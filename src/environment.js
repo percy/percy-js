@@ -190,8 +190,15 @@ class Environment {
         return this._env.ghprbActualCommit || this._env.GIT_COMMIT;
       case 'jenkins':
         if (this.jenkinsMergeCommitBuild) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            '\n[percy][WARNING] about to return secondToLastCommitSHA: ',
+            this.secondToLastCommitSHA,
+          );
           return this.secondToLastCommitSHA;
         }
+        // eslint-disable-next-line no-console
+        console.warn('\n[percy][WARNING] about to return _env.GIT_COMMIT: ', this._env.GIT_COMMIT);
         return this._env.GIT_COMMIT;
       case 'circle':
         return this._env.CIRCLE_SHA1;
