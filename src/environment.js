@@ -60,15 +60,11 @@ class Environment {
 
   gitExec(args) {
     const child_process = require('child_process');
-    try {
-      let result = child_process.spawnSync('git', args);
-      if (result.status == 0) {
-        return result.stdout.toString().trim();
-      } else {
-        return result.stdout.toString().trim() + result.stderr.toString().trim();
-      }
-    } catch (error) {
-      return '';
+    let result = child_process.spawnSync('git', args);
+    if (result.status == 0) {
+      return result.stdout.toString().trim();
+    } else {
+      return result.stdout.toString().trim() + result.stderr.toString().trim();
     }
   }
 
