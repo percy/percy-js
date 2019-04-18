@@ -177,6 +177,8 @@ class Environment {
   }
 
   get commitSha() {
+    // eslint-disable-next-line no-console
+    console.warn('\n[percy][WARNING] commitSha in ci', this.ci);
     if (this._env.PERCY_COMMIT) {
       return this._env.PERCY_COMMIT;
     }
