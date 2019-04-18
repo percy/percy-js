@@ -125,6 +125,19 @@ COMMIT_MESSAGE:A shiny new feature`);
 
       commitStub.restore();
     });
+
+    it('rawCommitData will return a value for HEAD^', function() {
+      // Reads the real commit data from this repository. The value changes, but should not be ''.
+      var commitData = environment.rawCommitData('HEAD^');
+      assert(typeof commitData == 'string');
+      assert.notEqual(commitData, '');
+    });
+
+    it('rawCommitData will return an empty string for an invalid commitSha', function() {
+      var commitData = environment.rawCommitData('abc;invalid command');
+      assert(typeof commitData == 'string');
+      assert.strictEqual(commitData, '');
+    });
   });
 
   context('PERCY_* env vars are set', function() {
