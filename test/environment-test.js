@@ -641,4 +641,27 @@ COMMIT_MESSAGE:A shiny new feature`);
       });
     });
   });
+
+  context('in Probo', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        PROBO_ENVIRONMENT: 'TRUE',
+        BUILD_ID: 'probo-build-id',
+        COMMIT_REF: 'probo-commit-sha',
+        BRANCH_NAME: 'probo-branch',
+        PULL_REQUEST_LINK: 'https://github.com/owner/repo-name/pull/123',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'probo');
+      assert.strictEqual(environment.commitSha, 'probo-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
+      assert.strictEqual(environment.branch, 'probo-branch');
+      assert.strictEqual(environment.targetBranch, null);
+      assert.strictEqual(environment.parallelNonce, 'probo-build-id');
+      assert.strictEqual(environment.parallelTotalShards, null);
+      assert.strictEqual(environment.pullRequestNumber, '123');
+    });
+  });
 });

@@ -45,6 +45,8 @@ class Environment {
       return 'azure';
     } else if (this._env.APPVEYOR == 'True' || this._env.APPVEYOR == 'true') {
       return 'appveyor';
+    } else if (this._env.PROBO_ENVIRONMENT == 'TRUE') {
+      return 'probo';
     }
 
     return null;
@@ -195,6 +197,8 @@ class Environment {
         return this._env.SYSTEM_PULLREQUEST_SOURCECOMMITID || this._env.BUILD_SOURCEVERSION;
       case 'appveyor':
         return this._env.APPVEYOR_PULL_REQUEST_HEAD_COMMIT || this._env.APPVEYOR_REPO_COMMIT;
+      case 'probo':
+        return this._env.COMMIT_REF;
     }
 
     return null;
@@ -249,6 +253,10 @@ class Environment {
         break;
       case 'appveyor':
         result = this._env.APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH || this._env.APPVEYOR_REPO_BRANCH;
+        break;
+      case 'probo':
+        result = this._env.BRANCH_NAME;
+        break;
     }
 
     if (result == '') {
@@ -302,6 +310,11 @@ class Environment {
         return this._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER || null;
       case 'appveyor':
         return this._env.APPVEYOR_PULL_REQUEST_NUMBER || null;
+      case 'probo':
+        if (this._env.PULL_REQUEST_LINK && this._env.PULL_REQUEST_LINK !== '') {
+          return this._env.PULL_REQUEST_LINK.split('/').slice(-1)[0];
+        }
+        break;
     }
     return null;
   }
@@ -340,6 +353,8 @@ class Environment {
         return this._env.BUILD_BUILDID;
       case 'appveyor':
         return this._env.APPVEYOR_BUILD_ID;
+      case 'probo':
+        return this._env.BUILD_ID;
     }
     return null;
   }
