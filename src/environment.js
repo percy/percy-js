@@ -47,6 +47,8 @@ class Environment {
       return 'appveyor';
     } else if (this._env.PROBO_ENVIRONMENT == 'TRUE') {
       return 'probo';
+    } else if (this._env.BITBUCKET_BUILD_NUMBER) {
+      return 'bitbucket';
     }
 
     return null;
@@ -199,6 +201,8 @@ class Environment {
         return this._env.APPVEYOR_PULL_REQUEST_HEAD_COMMIT || this._env.APPVEYOR_REPO_COMMIT;
       case 'probo':
         return this._env.COMMIT_REF;
+      case 'bitbucket':
+        return this._env.BITBUCKET_COMMIT;
     }
 
     return null;
@@ -256,6 +260,9 @@ class Environment {
         break;
       case 'probo':
         result = this._env.BRANCH_NAME;
+        break;
+      case 'bitbucket':
+        result = this._env.BITBUCKET_BRANCH;
         break;
     }
 
@@ -315,6 +322,8 @@ class Environment {
           return this._env.PULL_REQUEST_LINK.split('/').slice(-1)[0];
         }
         break;
+      case 'bitbucket':
+        return this._env.BITBUCKET_PR_ID || null;
     }
     return null;
   }
@@ -355,6 +364,8 @@ class Environment {
         return this._env.APPVEYOR_BUILD_ID;
       case 'probo':
         return this._env.BUILD_ID;
+      case 'bitbucket':
+        return this._env.BITBUCKET_BUILD_NUMBER;
     }
     return null;
   }
