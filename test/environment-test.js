@@ -664,4 +664,39 @@ COMMIT_MESSAGE:A shiny new feature`);
       assert.strictEqual(environment.pullRequestNumber, '123');
     });
   });
+
+  context('in Bitbucket Pipelines', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        BITBUCKET_BUILD_NUMBER: 'bitbucket-build-number',
+        BITBUCKET_COMMIT: 'bitbucket-commit-sha',
+        BITBUCKET_BRANCH: 'bitbucket-branch',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'bitbucket');
+      assert.strictEqual(environment.commitSha, 'bitbucket-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
+      assert.strictEqual(environment.branch, 'bitbucket-branch');
+      assert.strictEqual(environment.targetBranch, null);
+      assert.strictEqual(environment.pullRequestNumber, null);
+      assert.strictEqual(environment.parallelNonce, 'bitbucket-build-number');
+      assert.strictEqual(environment.parallelTotalShards, null);
+    });
+
+    context('in Pull Request build', function() {
+      beforeEach(function() {
+        environment._env.BITBUCKET_PR_ID = '981';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.pullRequestNumber, '981');
+        assert.strictEqual(environment.branch, 'bitbucket-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.commitSha, 'bitbucket-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+      });
+    });
+  });
 });
