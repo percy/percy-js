@@ -527,6 +527,20 @@ COMMIT_MESSAGE:A shiny new feature`);
         assert.strictEqual(environment.parallelTotalShards, null);
       });
     });
+
+    context('in Pull Request build', function() {
+      beforeEach(function() {
+        environment._env.CI_MERGE_REQUEST_IID = '2217';
+      });
+
+      it('has the correct properties', function() {
+        assert.strictEqual(environment.pullRequestNumber, '2217');
+        assert.strictEqual(environment.branch, 'gitlab-branch');
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.commitSha, 'gitlab-commit-sha');
+        assert.strictEqual(environment.targetCommitSha, null);
+      });
+    });
   });
 
   context('in Heroku CI', function() {

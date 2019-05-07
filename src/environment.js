@@ -313,6 +313,8 @@ class Environment {
         return this._env.BUILDKITE_PULL_REQUEST !== 'false'
           ? this._env.BUILDKITE_PULL_REQUEST
           : null;
+      case 'gitlab':
+        return this._env.CI_MERGE_REQUEST_IID || null;
       case 'azure':
         return this._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER || null;
       case 'appveyor':
