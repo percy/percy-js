@@ -10,9 +10,10 @@
     "debug": "mocha debug --require babel-core/register",
     "lint": "./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "./node_modules/eslint/bin/eslint.js . --fix",
-    "prepublish": "npm run build",
+    "prepublish": "npm run snyk-protect; npm run build",
     "tdd": "mocha --require babel-core/register --watch",
-    "test": "mocha --require babel-core/register"
+    "test": "mocha --require babel-core/register",
+    "snyk-protect": "snyk protect"
   },
   "lint-staged": {
     "*.{js,css}": [
@@ -58,11 +59,13 @@
     "regenerator-runtime": "^0.13.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
-    "walk": "^2.3.14"
+    "walk": "^2.3.14",
+    "snyk": "^1.189.0"
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  }
+  },
+  "snyk": true
 }
