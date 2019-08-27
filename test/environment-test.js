@@ -186,6 +186,32 @@ COMMIT_MESSAGE:A shiny new feature`);
     });
   });
 
+  context('in an unknown CI', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        CI: 'true',
+      });
+    });
+
+    it('returns the right CI value', function() {
+      assert.strictEqual(environment.ci, 'CI/unknown');
+    });
+  });
+
+  context('in a known CI env with CI = true', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        TRAVIS_BUILD_ID: '1234`',
+        CI: 'true',
+      });
+    });
+
+    it('returns the right CI value', function() {
+      assert.notEqual(environment.ci, 'CI/unknown');
+      assert.strictEqual(environment.ci, 'travis');
+    });
+  });
+
   context('in Travis CI', function() {
     beforeEach(function() {
       environment = new Environment({
