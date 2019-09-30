@@ -9,6 +9,8 @@ const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime'); // eslint-disable-line no-unused-vars
 const fs = require('fs');
 
+require('dotenv').config();
+
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const CONCURRENCY = 2;
 
