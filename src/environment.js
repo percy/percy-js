@@ -215,6 +215,11 @@ class Environment {
     return this._env.PERCY_TARGET_COMMIT || null;
   }
 
+  get partialBuild() {
+    let partial = this._env.PERCY_PARTIAL_BUILD;
+    return !!partial && partial !== '0';
+  }
+
   get branch() {
     if (this._env.PERCY_BRANCH) {
       return this._env.PERCY_BRANCH;

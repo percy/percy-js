@@ -154,6 +154,7 @@ class PercyClient {
           'pull-request-number': this.environment.pullRequestNumber,
           'parallel-nonce': parallelNonce,
           'parallel-total-shards': parallelTotalShards,
+          partial: this.environment.partialBuild,
         },
       },
     };
