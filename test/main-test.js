@@ -104,6 +104,7 @@ describe('PercyClient', function() {
             'pull-request-number': percyClient.environment.pullRequestNumber,
             'parallel-nonce': null,
             'parallel-total-shards': null,
+            partial: percyClient.environment.partialBuild,
           },
           relationships: {
             resources: {
