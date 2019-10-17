@@ -23,6 +23,7 @@ describe('Environment', function() {
       assert.strictEqual(environment.pullRequestNumber, null);
       assert.strictEqual(environment.parallelNonce, null);
       assert.strictEqual(environment.parallelTotalShards, null);
+      assert.strictEqual(environment.partialBuild, false);
     });
 
     it('commitData reads and parses live git commit information', function() {
@@ -150,6 +151,7 @@ COMMIT_MESSAGE:A shiny new feature`);
         PERCY_PULL_REQUEST: '256',
         PERCY_PARALLEL_NONCE: 'percy-nonce',
         PERCY_PARALLEL_TOTAL: '3',
+        PERCY_PARTIAL_BUILD: '1',
         GIT_AUTHOR_NAME: 'git author',
         GIT_AUTHOR_EMAIL: 'gitauthor@example.com',
         GIT_COMMITTER_NAME: 'git committer',
@@ -165,6 +167,7 @@ COMMIT_MESSAGE:A shiny new feature`);
       assert.strictEqual(environment.pullRequestNumber, '256');
       assert.strictEqual(environment.parallelNonce, 'percy-nonce');
       assert.strictEqual(environment.parallelTotalShards, 3);
+      assert.strictEqual(environment.partialBuild, true);
     });
 
     it('commitData returns ENV vars when git cannot be read', function() {
