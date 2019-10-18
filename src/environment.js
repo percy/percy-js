@@ -355,7 +355,7 @@ class Environment {
         }
         break;
       case 'circle':
-        return this._env.CIRCLE_WORKFLOW_WORKSPACE_ID || this._env.CIRCLE_BUILD_NUM;
+        return this._env.CIRCLE_WORKFLOW_ID || this._env.CIRCLE_BUILD_NUM;
       case 'codeship':
         return this._env.CI_BUILD_NUMBER || this._env.CI_BUILD_ID;
       case 'drone':
