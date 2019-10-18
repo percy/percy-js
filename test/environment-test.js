@@ -539,7 +539,7 @@ COMMIT_MESSAGE:A shiny new feature`);
         GITLAB_CI: 'true',
         CI_COMMIT_SHA: 'gitlab-commit-sha',
         CI_COMMIT_REF_NAME: 'gitlab-branch',
-        CI_JOB_ID: 'gitlab-job-id',
+        CI_PIPELINE_ID: 'gitlab-job-id',
         CI_SERVER_VERSION: '8.14.3-ee',
       });
     });

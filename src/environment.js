@@ -367,7 +367,7 @@ class Environment {
       case 'heroku':
         return this._env.HEROKU_TEST_RUN_ID;
       case 'gitlab':
-        return this._env.CI_JOB_ID;
+        return this._env.CI_PIPELINE_ID;
       case 'azure':
         return this._env.BUILD_BUILDID;
       case 'appveyor':
