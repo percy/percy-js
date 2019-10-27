@@ -234,6 +234,40 @@ describe('PercyClient', function() {
           });
       });
     });
+
+    describe('filtered by state, branch, and shas', function() {
+      it('returns the response body', function(done) {
+        let responseMock = function(url, requestBody) {
+          // Verify request data.
+          assert.equal(requestBody, '');
+          let responseBody = {foo: 123};
+          return [201, responseBody];
+        };
+
+        nock('https://percy.io')
+          .get(
+            '/api/v1/projects/my_project/builds?filter[branch]=master&filter[state]=finished' +
+              '&filter[shas][]=my_sha&filter[shas][]=my_other_sha',
+          )
+          .reply(201, responseMock);
+
+        let request = percyClient.getBuilds('my_project', {
+          branch: 'master',
+          state: 'finished',
+          shas: ['my_sha', 'my_other_sha'],
+        });
+
+        request
+          .then(response => {
+            assert.equal(response.statusCode, 201);
+            assert.deepEqual(response.body, {foo: 123});
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      });
+    });
   });
 
   describe('makeResource', function() {
