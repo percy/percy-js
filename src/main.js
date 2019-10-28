@@ -185,7 +185,7 @@ class PercyClient {
         if (Array.isArray(filter[key])) {
           // If filter value is an array, match Percy API's format expectations of:
           //   filter[key][]=value1&filter[key][]=value2
-          return filter[key].map(array_value => 'filter[' + key + '][]=' + array_value).join('&');
+          return filter[key].map(array_value => `filter[${key}][]=${array_value}`).join('&');
         } else {
           return 'filter[' + key + ']=' + filter[key];
         }
