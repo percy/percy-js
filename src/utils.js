@@ -1,4 +1,3 @@
-const base64 = require('base64-js');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -15,7 +14,7 @@ module.exports = {
   },
 
   base64encode(content) {
-    return base64.fromByteArray(new Buffer(content));
+    return Buffer.from(content).toString('base64');
   },
 
   getMissingResources(response) {
