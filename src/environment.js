@@ -49,6 +49,8 @@ class Environment {
       return 'probo';
     } else if (this._env.BITBUCKET_BUILD_NUMBER) {
       return 'bitbucket';
+    } else if (this._env.PERCY_GITHUB_ACTION) {
+      return `github-action/${this._env.PERCY_GITHUB_ACTION}`;
     } else if (this._env.CI) {
       // this should always be the last branch
       return 'CI/unknown';

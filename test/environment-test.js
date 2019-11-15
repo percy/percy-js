@@ -215,6 +215,21 @@ COMMIT_MESSAGE:A shiny new feature`);
     });
   });
 
+  // Most of the env vars are set within the GitHub action
+  // Which are tested in that repo. This will test to verify
+  // the user agent is properly passed through
+  context('in GitHub Actions', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        PERCY_GITHUB_ACTION: 'exec-action/0.1.0',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'github-action/exec-action/0.1.0');
+    });
+  });
+
   context('in Travis CI', function() {
     beforeEach(function() {
       environment = new Environment({
