@@ -2,17 +2,24 @@
   "name": "percy-client",
   "version": "3.3.0",
   "description": "JavaScript API client library for Percy (https://percy.io).",
-  "main": "dist/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/percy/percy-js.git"
+  },
+  "author": "Perceptual Inc.",
+  "license": "MIT",
+  "main": "src/main.js",
+  "files": [
+    "src"
+  ],
   "scripts": {
-    "build": "npm run build:compile && npm run build:browserify",
-    "build:browserify": "browserify --standalone percy-client dist/main.js -o dist/bundle.js",
-    "build:compile": "babel src --presets babel-preset-es2015 --out-dir dist",
-    "debug": "mocha debug --require babel-core/register",
-    "lint": "./node_modules/eslint/bin/eslint.js .",
-    "lint:fix": "./node_modules/eslint/bin/eslint.js . --fix",
-    "prepublish": "npm run build",
-    "tdd": "mocha --require babel-core/register --watch",
-    "test": "mocha --require babel-core/register"
+    "lint": "eslint . --fix",
+    "test": "mocha test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "*.{js,css}": [
@@ -20,25 +27,7 @@
       "git add"
     ]
   },
-  "files": [
-    "dist/"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/percy/percy-js.git"
-  },
-  "author": "Perceptual Inc.",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/percy/percy-js/issues"
-  },
-  "homepage": "https://github.com/percy/percy-js",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-plugin-transform-object-assign": "^6.22.0",
-    "babel-preset-es2015": "^6.3.13",
-    "browserify": "^16.2.3",
     "eslint": "^6.0.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.0.1",
@@ -59,10 +48,5 @@
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "walk": "^2.3.14"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }

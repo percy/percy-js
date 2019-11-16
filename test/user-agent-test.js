@@ -4,7 +4,7 @@ let PercyClient = require(path.join(__dirname, '..', 'src', 'main'));
 let Environment = require(path.join(__dirname, '..', 'src', 'environment'));
 let assert = require('assert');
 
-import {version} from '../package.json';
+let {version} = require('../package.json');
 
 // Regex is used to check matching in this file so we can have the tests pass both locally
 // and remotely (when `travis` is included in the environment string)
