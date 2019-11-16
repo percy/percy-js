@@ -744,10 +744,9 @@ describe('PercyClient', function() {
         .post('/api/v1/snapshots/123/finalize')
         .reply(520, {success: false});
 
-      let responseData = {success: true};
       nock('https://percy.io')
         .post('/api/v1/snapshots/123/finalize')
-        .reply(201, responseData);
+        .reply(201, {success: true});
 
       let request = percyClient.finalizeSnapshot(123);
 
@@ -757,36 +756,25 @@ describe('PercyClient', function() {
           assert.deepEqual(response.body, {success: true});
           done();
         })
-        .catch(err => {
-          done(err);
-        });
+        .catch(done);
     });
 
     it('finalize fails with status after 5 retries', function(done) {
       nock('https://percy.io')
         .post('/api/v1/snapshots/123/finalize')
-        .reply(502, {success: false});
-      nock('https://percy.io')
-        .post('/api/v1/snapshots/123/finalize')
-        .reply(502, {success: false});
-      nock('https://percy.io')
-        .post('/api/v1/snapshots/123/finalize')
-        .reply(502, {success: false});
-      nock('https://percy.io')
-        .post('/api/v1/snapshots/123/finalize')
-        .reply(502, {success: false});
-      nock('https://percy.io')
-        .post('/api/v1/snapshots/123/finalize')
+        .times(5)
         .reply(502, {success: false});
 
       let request = percyClient.finalizeSnapshot(123);
 
-      request.catch(err => {
-        assert.equal(err.message, '502 - {"success":false}');
-        assert.equal(err.statusCode, 502);
-        assert.deepEqual(err.response.body, {success: false});
-        done();
-      });
+      request
+        .catch(err => {
+          assert.equal(err.message, '502 - {"success":false}');
+          assert.equal(err.statusCode, 502);
+          assert.deepEqual(err.response.body, {success: false});
+          done();
+        })
+        .catch(done);
     });
 
     it('finalize fails with 400 and returns error without retries', function(done) {
@@ -796,12 +784,14 @@ describe('PercyClient', function() {
 
       let request = percyClient.finalizeSnapshot(123);
 
-      request.catch(err => {
-        assert.equal(err.message, '400 - {"success":false}');
-        assert.equal(err.statusCode, 400);
-        assert.deepEqual(err.response.body, {success: false});
-        done();
-      });
+      request
+        .catch(err => {
+          assert.equal(err.message, '400 - {"success":false}');
+          assert.equal(err.statusCode, 400);
+          assert.deepEqual(err.response.body, {success: false});
+          done();
+        })
+        .catch(done);
     });
   });
 
