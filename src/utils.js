@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const fetch = require('node-fetch');
 const path = require('path');
+const retry = require('promise-retry');
 const walk = require('walk');
 
 const MAX_FILE_SIZE_BYTES = 15728640; // 15MB.
@@ -26,6 +28,47 @@ module.exports = {
         response.body.data.relationships['missing-resources'] &&
         response.body.data.relationships['missing-resources'].data) ||
       []
+    );
+  },
+
+  retryRequest(uri, requestOptions) {
+    return retry(
+      retry =>
+        fetch(uri, requestOptions)
+          .then(res => {
+            return res.json().then(body => {
+              let response = {
+                statusCode: res.status,
+                statusMessage: res.statusText,
+                headers: res.headers.raw(),
+                mehod: res.method,
+                url: res.url,
+                body,
+              };
+
+              if (!res.ok) {
+                throw Object.assign(new Error(), {
+                  message: `${res.status} - ${JSON.stringify(body)}`,
+                  statusCode: res.status,
+                  response,
+                });
+              }
+
+              return response;
+            });
+          })
+          .catch(err => {
+            if (err.statusCode >= 500 && err.statusCode < 600) {
+              return retry(err);
+            } else {
+              return Promise.reject(err);
+            }
+          }),
+      {
+        retries: 4,
+        minTimeout: 50,
+        factor: 1,
+      },
     );
   },
 

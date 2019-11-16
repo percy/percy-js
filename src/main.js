@@ -1,12 +1,9 @@
 const http = require('http');
 const https = require('https');
+const PromisePool = require('es6-promise-pool');
 const utils = require('./utils');
 const Environment = require('./environment');
 const UserAgent = require('./user-agent');
-const retry = require('bluebird-retry');
-const requestPromise = require('request-promise');
-const PromisePool = require('es6-promise-pool');
-const regeneratorRuntime = require('regenerator-runtime'); // eslint-disable-line no-unused-vars
 const fs = require('fs');
 
 require('dotenv').config();
@@ -55,7 +52,6 @@ class PercyClient {
     this.token = options.token;
     this.apiUrl = options.apiUrl || 'https://percy.io/api/v1';
     this.environment = options.environment || new Environment(process.env);
-    this._httpClient = requestPromise;
     this._httpModule = this.apiUrl.indexOf('http://') === 0 ? http : https;
     // A custom HttpAgent with pooling and keepalive.
     this._httpAgent = new this._httpModule.Agent({
@@ -79,47 +75,19 @@ class PercyClient {
   }
 
   _httpGet(uri) {
-    let requestOptions = {
+    return utils.retryRequest(uri, {
       method: 'GET',
-      uri: uri,
       headers: this._headers(),
-      json: true,
-      resolveWithFullResponse: true,
       agent: this._httpAgent,
-    };
-
-    return retry(this._httpClient, {
-      context: this,
-      args: [uri, requestOptions],
-      interval: 50,
-      max_tries: 5,
-      throw_original: true,
-      predicate: function(err) {
-        return err.statusCode >= 500 && err.statusCode < 600;
-      },
     });
   }
 
   _httpPost(uri, data) {
-    let requestOptions = {
+    return utils.retryRequest(uri, {
       method: 'POST',
-      uri: uri,
-      body: data,
+      body: JSON.stringify(data),
       headers: this._headers({'Content-Type': JSON_API_CONTENT_TYPE}),
-      json: true,
-      resolveWithFullResponse: true,
       agent: this._httpAgent,
-    };
-
-    return retry(this._httpClient, {
-      context: this,
-      args: [uri, requestOptions],
-      interval: 50,
-      max_tries: 5,
-      throw_original: true,
-      predicate: function(err) {
-        return err.statusCode >= 500 && err.statusCode < 600;
-      },
     });
   }
 
