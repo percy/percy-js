@@ -49,8 +49,8 @@ class Environment {
       return 'probo';
     } else if (this._env.BITBUCKET_BUILD_NUMBER) {
       return 'bitbucket';
-    } else if (this._env.PERCY_GITHUB_ACTION) {
-      return `github-action/${this._env.PERCY_GITHUB_ACTION}`;
+    } else if (this._env.GITHUB_ACTIONS == 'true') {
+      return 'github';
     } else if (this._env.CI) {
       // this should always be the last branch
       return 'CI/unknown';
@@ -63,6 +63,8 @@ class Environment {
     switch (this.ci) {
       case 'gitlab':
         return `gitlab/${this._env.CI_SERVER_VERSION}`;
+      case 'github':
+        return `github/${this._env.PERCY_GITHUB_ACTION || 'unkown'}`;
     }
     return this.ci;
   }
@@ -208,6 +210,8 @@ class Environment {
         return this._env.COMMIT_REF;
       case 'bitbucket':
         return this._env.BITBUCKET_COMMIT;
+      case 'github':
+        return this._env.GITHUB_SHA;
     }
 
     return null;
@@ -273,6 +277,13 @@ class Environment {
         break;
       case 'bitbucket':
         result = this._env.BITBUCKET_BRANCH;
+        break;
+      case 'github':
+        if (this._env.GITHUB_REF && this._env.GITHUB_REF.match(/^refs\//)) {
+          result = this._env.GITHUB_REF.replace(/^refs\/\w+?\//, '');
+        } else {
+          result = this._env.GITHUB_REF;
+        }
         break;
     }
 

@@ -215,18 +215,26 @@ COMMIT_MESSAGE:A shiny new feature`);
     });
   });
 
-  // Most of the env vars are set within the GitHub action
-  // Which are tested in that repo. This will test to verify
-  // the user agent is properly passed through
   context('in GitHub Actions', function() {
     beforeEach(function() {
       environment = new Environment({
-        PERCY_GITHUB_ACTION: 'exec-action/0.1.0',
+        PERCY_GITHUB_ACTION: 'test-action/0.1.0',
+        GITHUB_ACTIONS: 'true',
+        GITHUB_SHA: 'github-commit-sha',
+        GITHUB_REF: 'refs/head/github/branch',
       });
     });
 
     it('has the correct properties', function() {
-      assert.strictEqual(environment.ci, 'github-action/exec-action/0.1.0');
+      assert.strictEqual(environment.ci, 'github');
+      assert.strictEqual(environment.ciVersion, 'github/test-action/0.1.0');
+      assert.strictEqual(environment.commitSha, 'github-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
+      assert.strictEqual(environment.branch, 'github/branch');
+      assert.strictEqual(environment.targetBranch, null);
+      assert.strictEqual(environment.pullRequestNumber, null);
+      assert.strictEqual(environment.parallelNonce, null);
+      assert.strictEqual(environment.parallelTotalShards, null);
     });
   });
 
