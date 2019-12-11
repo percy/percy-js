@@ -55,17 +55,19 @@ describe('PercyClient', function() {
       mock.done();
     });
 
-    it('retries on ECONNRESET', async () => {
-      let mock = nock('https://localhost')
-        .get('/foo')
-        .replyWithError({code: 'ECONNRESET'})
-        .get('/foo')
-        .reply(201, {success: true});
+    ['ECONNRESET', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'EAI_AGAIN'].forEach(code => {
+      it(`retries on ${code}`, async () => {
+        let mock = nock('https://localhost')
+          .get('/foo')
+          .replyWithError({code})
+          .get('/foo')
+          .reply(201, {success: true});
 
-      let response = await percyClient._httpGet('https://localhost/foo');
-      assert.equal(response.statusCode, 201);
-      assert.deepEqual(response.body, {success: true});
-      mock.done();
+        let response = await percyClient._httpGet('https://localhost/foo');
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {success: true});
+        mock.done();
+      });
     });
   });
 
@@ -109,17 +111,19 @@ describe('PercyClient', function() {
       mock.done();
     });
 
-    it('retries on ECONNRESET', async () => {
-      let mock = nock('https://localhost')
-        .post('/foo')
-        .replyWithError({code: 'ECONNRESET'})
-        .post('/foo')
-        .reply(201, {success: true});
+    ['ECONNRESET', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'EAI_AGAIN'].forEach(code => {
+      it(`retries on ${code}`, async () => {
+        let mock = nock('https://localhost')
+          .post('/foo')
+          .replyWithError({code})
+          .post('/foo')
+          .reply(201, {success: true});
 
-      let response = await percyClient._httpPost('https://localhost/foo', {foo: 123});
-      assert.equal(response.statusCode, 201);
-      assert.deepEqual(response.body, {success: true});
-      mock.done();
+        let response = await percyClient._httpPost('https://localhost/foo', {foo: 123});
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {success: true});
+        mock.done();
+      });
     });
   });
 
