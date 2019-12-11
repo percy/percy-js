@@ -14,6 +14,16 @@ require('dotenv').config();
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const CONCURRENCY = 2;
 
+function retryPredicate(err) {
+  if (err.statusCode) {
+    return err.statusCode >= 500 && err.statusCode < 600;
+  } else if (err.error && !!err.error.code) {
+    return err.error.code === 'ECONNRESET';
+  } else {
+    return false;
+  }
+}
+
 class Resource {
   constructor(options) {
     if (!options.resourceUrl) {
@@ -94,9 +104,7 @@ class PercyClient {
       interval: 50,
       max_tries: 5,
       throw_original: true,
-      predicate: function(err) {
-        return err.statusCode >= 500 && err.statusCode < 600;
-      },
+      predicate: retryPredicate,
     });
   }
 
@@ -117,15 +125,7 @@ class PercyClient {
       interval: 50,
       max_tries: 5,
       throw_original: true,
-      predicate: function(err) {
-        if (err.statusCode) {
-          return err.statusCode >= 500 && err.statusCode < 600;
-        }
-        if (err.error && !!err.error.code) {
-          return err.error.code == 'ECONNRESET';
-        }
-        return false;
-      },
+      predicate: retryPredicate,
     });
   }
 

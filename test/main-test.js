@@ -41,6 +41,32 @@ describe('PercyClient', function() {
           done(err);
         });
     });
+
+    it('retries on 500s', async () => {
+      let mock = nock('https://localhost')
+        .get('/foo')
+        .reply(500, {success: false})
+        .get('/foo')
+        .reply(201, {success: true});
+
+      let response = await percyClient._httpGet('https://localhost/foo');
+      assert.equal(response.statusCode, 201);
+      assert.deepEqual(response.body, {success: true});
+      mock.done();
+    });
+
+    it('retries on ECONNRESET', async () => {
+      let mock = nock('https://localhost')
+        .get('/foo')
+        .replyWithError({code: 'ECONNRESET'})
+        .get('/foo')
+        .reply(201, {success: true});
+
+      let response = await percyClient._httpGet('https://localhost/foo');
+      assert.equal(response.statusCode, 201);
+      assert.deepEqual(response.body, {success: true});
+      mock.done();
+    });
   });
 
   describe('_httpPost', function() {
@@ -70,62 +96,30 @@ describe('PercyClient', function() {
         });
     });
 
-    it('retries on 500s', function(done) {
-      let requestData = {foo: 123};
-      let errorResponseMock = function() {
-        let responseBody = {success: false};
-        return responseBody;
-      };
-      nock('https://localhost')
+    it('retries on 500s', async () => {
+      let mock = nock('https://localhost')
         .post('/foo')
-        .once()
-        .reply(500, errorResponseMock);
-      let request = percyClient._httpPost('https://localhost/foo', requestData);
-
-      let successResponseMock = function() {
-        let responseBody = {success: true};
-        return responseBody;
-      };
-      nock('https://localhost')
+        .reply(500, {success: false})
         .post('/foo')
-        .reply(201, successResponseMock);
+        .reply(201, {success: true});
 
-      request
-        .then(response => {
-          assert.equal(response.statusCode, 201);
-          assert.deepEqual(response.body, {success: true});
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      let response = await percyClient._httpPost('https://localhost/foo', {foo: 123});
+      assert.equal(response.statusCode, 201);
+      assert.deepEqual(response.body, {success: true});
+      mock.done();
     });
 
-    it('retries on ECONNRESET', function(done) {
-      let requestData = {foo: 123};
-      nock('https://localhost')
+    it('retries on ECONNRESET', async () => {
+      let mock = nock('https://localhost')
         .post('/foo')
-        .once()
-        .replyWithError({code: 'ECONNRESET'});
-      let request = percyClient._httpPost('https://localhost/foo', requestData);
-
-      let successResponseMock = function() {
-        let responseBody = {success: true};
-        return responseBody;
-      };
-      nock('https://localhost')
+        .replyWithError({code: 'ECONNRESET'})
         .post('/foo')
-        .reply(201, successResponseMock);
+        .reply(201, {success: true});
 
-      request
-        .then(response => {
-          assert.equal(response.statusCode, 201);
-          assert.deepEqual(response.body, {success: true});
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      let response = await percyClient._httpPost('https://localhost/foo', {foo: 123});
+      assert.equal(response.statusCode, 201);
+      assert.deepEqual(response.body, {success: true});
+      mock.done();
     });
   });
 
