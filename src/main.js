@@ -118,7 +118,13 @@ class PercyClient {
       max_tries: 5,
       throw_original: true,
       predicate: function(err) {
-        return err.statusCode >= 500 && err.statusCode < 600;
+        if (err.statusCode) {
+          return err.statusCode >= 500 && err.statusCode < 600;
+        }
+        if (err.error && !!err.error.code) {
+          return err.error.code == 'ECONNRESET';
+        }
+        return false;
       },
     });
   }

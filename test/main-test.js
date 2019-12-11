@@ -52,12 +52,70 @@ describe('PercyClient', function() {
         assert.equal(this.req.headers['authorization'], `Token token=test-token`);
         assert.equal(requestBody, JSON.stringify(requestData));
         let responseBody = {success: true};
-        return [201, responseBody];
+        return responseBody;
       };
       nock('https://localhost')
         .post('/foo')
         .reply(201, responseMock);
       let request = percyClient._httpPost('https://localhost/foo', requestData);
+
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+
+    it('retries on 500s', function(done) {
+      let requestData = {foo: 123};
+      let errorResponseMock = function() {
+        let responseBody = {success: false};
+        return responseBody;
+      };
+      nock('https://localhost')
+        .post('/foo')
+        .once()
+        .reply(500, errorResponseMock);
+      let request = percyClient._httpPost('https://localhost/foo', requestData);
+
+      let successResponseMock = function() {
+        let responseBody = {success: true};
+        return responseBody;
+      };
+      nock('https://localhost')
+        .post('/foo')
+        .reply(201, successResponseMock);
+
+      request
+        .then(response => {
+          assert.equal(response.statusCode, 201);
+          assert.deepEqual(response.body, {success: true});
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+
+    it('retries on ECONNRESET', function(done) {
+      let requestData = {foo: 123};
+      nock('https://localhost')
+        .post('/foo')
+        .once()
+        .replyWithError({code: 'ECONNRESET'});
+      let request = percyClient._httpPost('https://localhost/foo', requestData);
+
+      let successResponseMock = function() {
+        let responseBody = {success: true};
+        return responseBody;
+      };
+      nock('https://localhost')
+        .post('/foo')
+        .reply(201, successResponseMock);
 
       request
         .then(response => {
