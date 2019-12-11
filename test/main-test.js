@@ -41,6 +41,34 @@ describe('PercyClient', function() {
           done(err);
         });
     });
+
+    it('retries on 500s', async () => {
+      let mock = nock('https://localhost')
+        .get('/foo')
+        .reply(500, {success: false})
+        .get('/foo')
+        .reply(201, {success: true});
+
+      let response = await percyClient._httpGet('https://localhost/foo');
+      assert.equal(response.statusCode, 201);
+      assert.deepEqual(response.body, {success: true});
+      mock.done();
+    });
+
+    ['ECONNRESET', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'EAI_AGAIN'].forEach(code => {
+      it(`retries on ${code}`, async () => {
+        let mock = nock('https://localhost')
+          .get('/foo')
+          .replyWithError({code})
+          .get('/foo')
+          .reply(201, {success: true});
+
+        let response = await percyClient._httpGet('https://localhost/foo');
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {success: true});
+        mock.done();
+      });
+    });
   });
 
   describe('_httpPost', function() {
@@ -52,7 +80,7 @@ describe('PercyClient', function() {
         assert.equal(this.req.headers['authorization'], `Token token=test-token`);
         assert.equal(requestBody, JSON.stringify(requestData));
         let responseBody = {success: true};
-        return [201, responseBody];
+        return responseBody;
       };
       nock('https://localhost')
         .post('/foo')
@@ -68,6 +96,34 @@ describe('PercyClient', function() {
         .catch(err => {
           done(err);
         });
+    });
+
+    it('retries on 500s', async () => {
+      let mock = nock('https://localhost')
+        .post('/foo')
+        .reply(500, {success: false})
+        .post('/foo')
+        .reply(201, {success: true});
+
+      let response = await percyClient._httpPost('https://localhost/foo', {foo: 123});
+      assert.equal(response.statusCode, 201);
+      assert.deepEqual(response.body, {success: true});
+      mock.done();
+    });
+
+    ['ECONNRESET', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'EAI_AGAIN'].forEach(code => {
+      it(`retries on ${code}`, async () => {
+        let mock = nock('https://localhost')
+          .post('/foo')
+          .replyWithError({code})
+          .post('/foo')
+          .reply(201, {success: true});
+
+        let response = await percyClient._httpPost('https://localhost/foo', {foo: 123});
+        assert.equal(response.statusCode, 201);
+        assert.deepEqual(response.body, {success: true});
+        mock.done();
+      });
     });
   });
 

@@ -11,8 +11,19 @@ const fs = require('fs');
 
 require('dotenv').config();
 
+const RETRY_ERROR_CODES = ['ECONNRESET', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'EAI_AGAIN'];
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
 const CONCURRENCY = 2;
+
+function retryPredicate(err) {
+  if (err.statusCode) {
+    return err.statusCode >= 500 && err.statusCode < 600;
+  } else if (err.error && !!err.error.code) {
+    return RETRY_ERROR_CODES.includes(err.error.code);
+  } else {
+    return false;
+  }
+}
 
 class Resource {
   constructor(options) {
@@ -94,9 +105,7 @@ class PercyClient {
       interval: 50,
       max_tries: 5,
       throw_original: true,
-      predicate: function(err) {
-        return err.statusCode >= 500 && err.statusCode < 600;
-      },
+      predicate: retryPredicate,
     });
   }
 
@@ -117,9 +126,7 @@ class PercyClient {
       interval: 50,
       max_tries: 5,
       throw_original: true,
-      predicate: function(err) {
-        return err.statusCode >= 500 && err.statusCode < 600;
-      },
+      predicate: retryPredicate,
     });
   }
 
