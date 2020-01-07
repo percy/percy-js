@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1.0.0
+      - name: Set Node 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install
+        run: yarn
+      - name: Lint
+        run: yarn lint
+      - name: Test
+        run: yarn test
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
