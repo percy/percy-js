@@ -16,5 +16,3 @@ jobs:
         run: yarn lint
       - name: Test
         run: yarn test
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
