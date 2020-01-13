@@ -64,7 +64,7 @@ class Environment {
       case 'gitlab':
         return `gitlab/${this._env.CI_SERVER_VERSION}`;
       case 'github':
-        return `github/${this._env.PERCY_GITHUB_ACTION || 'unkown'}`;
+        return `github/${this._env.PERCY_GITHUB_ACTION || 'unknown'}`;
     }
     return this.ci;
   }
