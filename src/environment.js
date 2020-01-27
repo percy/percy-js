@@ -51,6 +51,8 @@ class Environment {
       return 'bitbucket';
     } else if (this._env.GITHUB_ACTIONS == 'true') {
       return 'github';
+    } else if (this._env.NETLIFY == 'true') {
+      return 'netlify';
     } else if (this._env.CI) {
       // this should always be the last branch
       return 'CI/unknown';
@@ -207,6 +209,7 @@ class Environment {
       case 'appveyor':
         return this._env.APPVEYOR_PULL_REQUEST_HEAD_COMMIT || this._env.APPVEYOR_REPO_COMMIT;
       case 'probo':
+      case 'netlify':
         return this._env.COMMIT_REF;
       case 'bitbucket':
         return this._env.BITBUCKET_COMMIT;
@@ -285,6 +288,9 @@ class Environment {
           result = this._env.GITHUB_REF;
         }
         break;
+      case 'netlify':
+        result = this._env.BRANCH;
+        break;
     }
 
     if (result == '') {
@@ -347,6 +353,11 @@ class Environment {
         break;
       case 'bitbucket':
         return this._env.BITBUCKET_PR_ID || null;
+      case 'netlify':
+        if (this._env.PULL_REQUEST == 'true') {
+          return this._env.REVIEW_ID;
+        }
+        break;
     }
     return null;
   }
