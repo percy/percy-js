@@ -765,4 +765,27 @@ COMMIT_MESSAGE:A shiny new feature`);
       });
     });
   });
+
+  context('in Netlify builds', function() {
+    beforeEach(function() {
+      environment = new Environment({
+        NETLIFY: 'true',
+        COMMIT_REF: 'netlify-commit-sha',
+        BRANCH: 'netlify-branch',
+        PULL_REQUEST: 'true',
+        REVIEW_ID: '123',
+      });
+    });
+
+    it('has the correct properties', function() {
+      assert.strictEqual(environment.ci, 'netlify');
+      assert.strictEqual(environment.commitSha, 'netlify-commit-sha');
+      assert.strictEqual(environment.targetCommitSha, null);
+      assert.strictEqual(environment.branch, 'netlify-branch');
+      assert.strictEqual(environment.targetBranch, null);
+      assert.strictEqual(environment.pullRequestNumber, '123');
+      assert.strictEqual(environment.parallelNonce, null);
+      assert.strictEqual(environment.parallelTotalShards, null);
+    });
+  });
 });
