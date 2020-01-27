@@ -771,7 +771,7 @@ COMMIT_MESSAGE:A shiny new feature`);
       environment = new Environment({
         NETLIFY: 'true',
         COMMIT_REF: 'netlify-commit-sha',
-        BRANCH: 'netlify-branch',
+        HEAD: 'netlify-branch',
         PULL_REQUEST: 'true',
         REVIEW_ID: '123',
       });

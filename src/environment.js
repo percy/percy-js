@@ -289,7 +289,7 @@ class Environment {
         }
         break;
       case 'netlify':
-        result = this._env.BRANCH;
+        result = this._env.HEAD;
         break;
     }
 
