@@ -63,10 +63,12 @@ class Environment {
 
   get ciVersion() {
     switch (this.ci) {
-      case 'gitlab':
-        return `gitlab/${this._env.CI_SERVER_VERSION}`;
       case 'github':
         return `github/${this._env.PERCY_GITHUB_ACTION || 'unknown'}`;
+      case 'gitlab':
+        return `gitlab/${this._env.CI_SERVER_VERSION}`;
+      case 'semaphore':
+        return this._env.SEMAPHORE_GIT_SHA ? 'semaphore/2.0' : 'semaphore';
     }
     return this.ci;
   }
@@ -194,7 +196,7 @@ class Environment {
       case 'drone':
         return this._env.DRONE_COMMIT;
       case 'semaphore':
-        return this._env.REVISION;
+        return this._env.REVISION || this._env.SEMAPHORE_GIT_PR_SHA || this._env.SEMAPHORE_GIT_SHA;
       case 'buildkite': {
         let commitSha = this._env.BUILDKITE_COMMIT;
         // Buildkite mixes SHAs and non-SHAs in BUILDKITE_COMMIT, so we return null if non-SHA.
@@ -258,7 +260,10 @@ class Environment {
         result = this._env.DRONE_BRANCH;
         break;
       case 'semaphore':
-        result = this._env.BRANCH_NAME;
+        result =
+          this._env.BRANCH_NAME ||
+          this._env.SEMAPHORE_GIT_PR_BRANCH ||
+          this._env.SEMAPHORE_GIT_BRANCH;
         break;
       case 'buildkite':
         result = this._env.BUILDKITE_BRANCH;
@@ -335,7 +340,7 @@ class Environment {
       case 'drone':
         return this._env.CI_PULL_REQUEST;
       case 'semaphore':
-        return this._env.PULL_REQUEST_NUMBER;
+        return this._env.PULL_REQUEST_NUMBER || this._env.SEMAPHORE_GIT_PR_NUMBER || null;
       case 'buildkite':
         return this._env.BUILDKITE_PULL_REQUEST !== 'false'
           ? this._env.BUILDKITE_PULL_REQUEST
@@ -385,7 +390,10 @@ class Environment {
       case 'drone':
         return this._env.DRONE_BUILD_NUMBER;
       case 'semaphore':
-        return `${this._env.SEMAPHORE_BRANCH_ID}/${this._env.SEMAPHORE_BUILD_NUMBER}`;
+        return (
+          this._env.SEMAPHORE_WORKFLOW_ID ||
+          `${this._env.SEMAPHORE_BRANCH_ID}/${this._env.SEMAPHORE_BUILD_NUMBER}`
+        );
       case 'buildkite':
         return this._env.BUILDKITE_BUILD_ID;
       case 'heroku':
