@@ -499,6 +499,7 @@ COMMIT_MESSAGE:A shiny new feature`);
 
     it('has the correct properties', function() {
       assert.strictEqual(environment.ci, 'semaphore');
+      assert.strictEqual(environment.ciVersion, 'semaphore');
       assert.strictEqual(environment.commitSha, 'semaphore-commit-sha');
       assert.strictEqual(environment.targetCommitSha, null);
       assert.strictEqual(environment.branch, 'semaphore-branch');
@@ -507,6 +508,51 @@ COMMIT_MESSAGE:A shiny new feature`);
       let expected_nonce = 'semaphore-branch-id/semaphore-build-number';
       assert.strictEqual(environment.parallelNonce, expected_nonce);
       assert.strictEqual(environment.parallelTotalShards, 2);
+    });
+
+    describe('Semaphore 2.0', () => {
+      beforeEach(() => {
+        environment = new Environment({
+          SEMAPHORE: 'true',
+          SEMAPHORE_GIT_SHA: 'semaphore-2-sha',
+          SEMAPHORE_GIT_BRANCH: 'semaphore-2-branch',
+          SEMAPHORE_WORKFLOW_ID: 'semaphore-2-workflow-id',
+        });
+      });
+
+      it('has the correct properties', () => {
+        assert.strictEqual(environment.ci, 'semaphore');
+        assert.strictEqual(environment.ciVersion, 'semaphore/2.0');
+        assert.strictEqual(environment.commitSha, 'semaphore-2-sha');
+        assert.strictEqual(environment.branch, 'semaphore-2-branch');
+        assert.strictEqual(environment.targetCommitSha, null);
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.pullRequestNumber, null);
+        assert.strictEqual(environment.parallelNonce, 'semaphore-2-workflow-id');
+        assert.strictEqual(environment.parallelTotalShards, null);
+      });
+
+      it('has the correct properties for PR builds', () => {
+        environment = new Environment({
+          SEMAPHORE: 'true',
+          SEMAPHORE_GIT_SHA: 'semaphore-2-sha',
+          SEMAPHORE_GIT_PR_SHA: 'semaphore-2-pr-sha',
+          SEMAPHORE_GIT_BRANCH: 'semaphore-2-branch',
+          SEMAPHORE_GIT_PR_BRANCH: 'semaphore-2-pr-branch',
+          SEMAPHORE_GIT_PR_NUMBER: '50',
+          SEMAPHORE_WORKFLOW_ID: 'semaphore-2-workflow-id',
+        });
+
+        assert.strictEqual(environment.ci, 'semaphore');
+        assert.strictEqual(environment.ciVersion, 'semaphore/2.0');
+        assert.strictEqual(environment.commitSha, 'semaphore-2-pr-sha');
+        assert.strictEqual(environment.branch, 'semaphore-2-pr-branch');
+        assert.strictEqual(environment.targetCommitSha, null);
+        assert.strictEqual(environment.targetBranch, null);
+        assert.strictEqual(environment.pullRequestNumber, '50');
+        assert.strictEqual(environment.parallelNonce, 'semaphore-2-workflow-id');
+        assert.strictEqual(environment.parallelTotalShards, null);
+      });
     });
   });
 
