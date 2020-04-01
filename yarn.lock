@@ -2996,9 +2996,9 @@ jsprim@^1.2.2:
     verror "1.10.0"
 
 jssha@^2.1.0:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/jssha/-/jssha-2.3.1.tgz#147b2125369035ca4b2f7d210dc539f009b3de9a"
-  integrity sha1-FHshJTaQNcpLL30hDcU58Amz3po=
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/jssha/-/jssha-2.4.0.tgz#99561b53bbf97b99ffb3342a4df3da7a64c0a71a"
+  integrity sha512-MlACL8dJB0SRwqenQzYxhSt/5c/ooIJykbZdP2wj+vhvhzYRAKZYnt8yDY7tXzMz8AZtrS4mS2bTmDdyt0vpBQ==
 
 just-extend@^4.0.2:
   version "4.0.2"
