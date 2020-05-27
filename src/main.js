@@ -9,7 +9,7 @@ const PromisePool = require('es6-promise-pool');
 const regeneratorRuntime = require('regenerator-runtime'); // eslint-disable-line no-unused-vars
 const fs = require('fs');
 
-require('dotenv').config();
+require('./dotenv').config();
 
 const RETRY_ERROR_CODES = ['ECONNRESET', 'ECONNREFUSED', 'EPIPE', 'EHOSTUNREACH', 'EAI_AGAIN'];
 const JSON_API_CONTENT_TYPE = 'application/vnd.api+json';
