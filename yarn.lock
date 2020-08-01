@@ -2982,10 +2982,10 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jssha@^2.1.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/jssha/-/jssha-2.4.0.tgz#99561b53bbf97b99ffb3342a4df3da7a64c0a71a"
-  integrity sha512-MlACL8dJB0SRwqenQzYxhSt/5c/ooIJykbZdP2wj+vhvhzYRAKZYnt8yDY7tXzMz8AZtrS4mS2bTmDdyt0vpBQ==
+jssha@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/jssha/-/jssha-3.1.1.tgz#760321a992df998754b7bcb0730bfb5565033d2e"
+  integrity sha512-Fon8jNpUbNQAIcZLosMPKxywu1d1it4BBBjVPgdG9tn3nanbunEAyQD0EVjotuq9VKCgivdQe4iwm9C9m3gHHg==
 
 just-extend@^4.0.2:
   version "4.0.2"
