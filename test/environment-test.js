@@ -700,19 +700,37 @@ COMMIT_MESSAGE:A shiny new feature`);
     });
 
     context('in Pull Request build', function() {
-      beforeEach(function() {
-        environment._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER = '512';
-        environment._env.SYSTEM_PULLREQUEST_SOURCECOMMITID = 'azure-pr-commit-sha';
-        environment._env.SYSTEM_PULLREQUEST_SOURCEBRANCH = 'azure-pr-branch';
-      });
+      context('in build triggered by Git'), function() {
+        beforeEach(function() {
+          environment._env.SYSTEM_PULLREQUEST_PULLREQUESTID = '512';
+          environment._env.SYSTEM_PULLREQUEST_SOURCECOMMITID = 'azure-pr-commit-sha';
+          environment._env.SYSTEM_PULLREQUEST_SOURCEBRANCH = 'azure-pr-branch';
+        });
 
-      it('has the correct properties', function() {
-        assert.strictEqual(environment.pullRequestNumber, '512');
-        assert.strictEqual(environment.branch, 'azure-pr-branch');
-        assert.strictEqual(environment.targetBranch, null);
-        assert.strictEqual(environment.commitSha, 'azure-pr-commit-sha');
-        assert.strictEqual(environment.targetCommitSha, null);
-      });
+        it('has the correct properties', function() {
+          assert.strictEqual(environment.pullRequestNumber, '512');
+          assert.strictEqual(environment.branch, 'azure-pr-branch');
+          assert.strictEqual(environment.targetBranch, null);
+          assert.strictEqual(environment.commitSha, 'azure-pr-commit-sha');
+          assert.strictEqual(environment.targetCommitSha, null);
+        });
+      };
+
+      context('in build triggered by GitHub'), function() {
+        beforeEach(function() {
+          environment._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER = '512';
+          environment._env.SYSTEM_PULLREQUEST_SOURCECOMMITID = 'azure-pr-commit-sha';
+          environment._env.SYSTEM_PULLREQUEST_SOURCEBRANCH = 'azure-pr-branch';
+        });
+
+        it('has the correct properties', function() {
+          assert.strictEqual(environment.pullRequestNumber, '512');
+          assert.strictEqual(environment.branch, 'azure-pr-branch');
+          assert.strictEqual(environment.targetBranch, null);
+          assert.strictEqual(environment.commitSha, 'azure-pr-commit-sha');
+          assert.strictEqual(environment.targetCommitSha, null);
+        });
+      };
     });
   });
 
