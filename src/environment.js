@@ -348,8 +348,11 @@ class Environment {
       case 'gitlab':
         return this._env.CI_MERGE_REQUEST_IID || null;
       case 'azure':
-        return this._env.SYSTEM_PULLREQUEST_PULLREQUESTID
-          || this._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER || null;
+        return (
+          this._env.SYSTEM_PULLREQUEST_PULLREQUESTID ||
+          this._env.SYSTEM_PULLREQUEST_PULLREQUESTNUMBER ||
+          null
+        );
       case 'appveyor':
         return this._env.APPVEYOR_PULL_REQUEST_NUMBER || null;
       case 'probo':
