@@ -1,0 +1,23 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "03:00"
+    timezone: US/Central
+  ignore:
+  - dependency-name: eslint
+    versions:
+    - 7.19.0
+    - 7.21.0
+  - dependency-name: nock
+    versions:
+    - 13.0.7
+    - 13.0.9
+  - dependency-name: mocha
+    versions:
+    - 8.3.0
+  - dependency-name: husky
+    versions:
+    - 5.1.2
