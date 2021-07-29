@@ -1,3 +1,5 @@
+⚠️ This package has been deprecated in favor of [`@percy/client`](https://github.com/percy/cli/tree/master/packages/client)
+
 # percy-js
 
 [![Build Status](https://travis-ci.org/percy/percy-js.svg?branch=master)](https://travis-ci.org/percy/percy-js)
