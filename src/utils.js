@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 
-const MAX_FILE_SIZE_BYTES = 15728640; // 15MB.
+const MAX_FILE_SIZE_BYTES = 26214400; // 25MB.
 
 module.exports = {
   sha256hash(content) {
