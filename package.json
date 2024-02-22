@@ -55,7 +55,7 @@
     "dotenv": "^8.1.0",
     "es6-promise-pool": "^2.5.0",
     "jssha": "^2.1.0",
-    "regenerator-runtime": "^0.13.1",
+    "regenerator-runtime": "^0.14.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "walk": "^2.3.14"
