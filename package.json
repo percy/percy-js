@@ -64,5 +64,8 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "resolutions": {
+    "fsevents": "^2.3.3"
   }
 }
